@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html,
+  body,
+  #root {
+    overscroll-behavior-y: contain;
+    overflow-x: clip;
+  }
+
+  button,
+  [role="button"],
+  a,
+  select,
+  input,
+  textarea,
+  label {
+    touch-action: manipulation;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-serif);
+  }
+}
+
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+.gold-foil-gradient {
+  background: linear-gradient(
+    115deg,
+    #9f7637 0%,
+    #d6b373 28%,
+    #f2dfb3 48%,
+    #c99c52 72%,
+    #8c6429 100%
+  );
+}
+
+.gold-foil-text {
+  background: linear-gradient(
+    115deg,
+    #b68944 0%,
+    #e5c687 40%,
+    #fff1cc 55%,
+    #c79950 85%,
+    #9c7130 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.pouch-matte-surface {
+  background:
+    radial-gradient(ellipse at 32% 20%, rgba(92, 54, 34, 0.42) 0%, rgba(30, 17, 12, 0) 62%),
+    linear-gradient(165deg, #2b1912 0%, #1c100b 52%, #140b07 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
