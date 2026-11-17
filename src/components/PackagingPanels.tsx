@@ -270,26 +270,28 @@ export function FrontPanel({
 
         {/* Dynamic Roast & Bean Variant Replacement when changed from default */}
         {hasTextOverride && (
-          <div
-            className="absolute inset-x-[10%] top-[48.2%] h-[10.8%] flex flex-col items-center justify-center text-center pointer-events-none z-10 px-2"
-            style={{
-              background:
-                'linear-gradient(90deg, rgba(40,25,18,0.97) 0%, rgba(28,16,11,0.98) 50%, rgba(24,14,9,0.97) 100%)',
-              maskImage:
-                'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 56%, rgba(0,0,0,0.85) 75%, rgba(0,0,0,0) 100%)',
-              WebkitMaskImage:
-                'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 56%, rgba(0,0,0,0.85) 75%, rgba(0,0,0,0) 100%)',
-            }}
-          >
+          <div className="absolute inset-x-[9%] top-[48.0%] h-[11.2%] flex flex-col items-center justify-center text-center pointer-events-none z-10 px-2">
+            <div
+              aria-hidden="true"
+              className="absolute inset-0"
+              style={{
+                background:
+                  'linear-gradient(90deg, rgba(40,25,18,0.98) 0%, rgba(28,16,11,0.99) 50%, rgba(24,14,9,0.98) 100%)',
+                maskImage:
+                  'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 62%, rgba(0,0,0,0.88) 80%, rgba(0,0,0,0) 100%)',
+                WebkitMaskImage:
+                  'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 62%, rgba(0,0,0,0.88) 80%, rgba(0,0,0,0) 100%)',
+              }}
+            />
             <p
-              className={`font-sans font-semibold text-[#FAF5EB] leading-tight tracking-[0.01em] ${
+              className={`relative z-10 font-sans font-semibold text-[#FAF5EB] leading-tight tracking-[0.01em] ${
                 compact ? 'text-[7.5px]' : 'text-[11.5px]'
               }`}
             >
               {roast.subtitle}
             </p>
             <p
-              className={`font-sans font-semibold text-[#FAF5EB] leading-tight mt-0.5 ${
+              className={`relative z-10 font-sans font-semibold text-[#FAF5EB] leading-tight mt-0.5 ${
                 compact ? 'text-[7.5px]' : 'text-[11.5px]'
               }`}
             >
@@ -773,18 +775,20 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
 
         {/* Dynamic Roast & Bean Variant Override on Rear when changed from default */}
         {hasRearTextOverride && (
-          <div
-            className="absolute inset-x-[8%] top-[24.5%] h-[33%] flex flex-col items-center justify-center text-center pointer-events-none px-3 z-10"
-            style={{
-              background:
-                'linear-gradient(90deg, rgba(40,25,18,0.97) 0%, rgba(28,16,11,0.98) 50%, rgba(24,14,9,0.97) 100%)',
-              maskImage:
-                'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 56%, rgba(0,0,0,0.85) 75%, rgba(0,0,0,0) 100%)',
-              WebkitMaskImage:
-                'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 56%, rgba(0,0,0,0.85) 75%, rgba(0,0,0,0) 100%)',
-            }}
-          >
-            <p className={`text-[#F4ECE0] leading-relaxed ${compact ? 'text-[6.2px]' : 'text-[10.5px]'}`}>
+          <div className="absolute inset-x-[7%] top-[24.2%] h-[34%] flex flex-col items-center justify-center text-center pointer-events-none px-3 z-10">
+            <div
+              aria-hidden="true"
+              className="absolute inset-0"
+              style={{
+                background:
+                  'linear-gradient(90deg, rgba(40,25,18,0.98) 0%, rgba(28,16,11,0.99) 50%, rgba(24,14,9,0.98) 100%)',
+                maskImage:
+                  'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 64%, rgba(0,0,0,0.88) 82%, rgba(0,0,0,0) 100%)',
+                WebkitMaskImage:
+                  'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 64%, rgba(0,0,0,0.88) 82%, rgba(0,0,0,0) 100%)',
+              }}
+            />
+            <p className={`relative z-10 text-[#F4ECE0] leading-relaxed ${compact ? 'text-[6.2px]' : 'text-[10.5px]'}`}>
               Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari
               lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter{' '}
               <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span>{' '}
@@ -793,7 +797,7 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
               <span className="font-semibold">harum dan nikmat</span>
             </p>
             <p
-              className={`mt-3 font-sans font-semibold tracking-[0.04em] uppercase text-[#FAF5EB] ${
+              className={`relative z-10 mt-3 font-sans font-semibold tracking-[0.04em] uppercase text-[#FAF5EB] ${
                 compact ? 'text-[5.5px]' : 'text-[9px]'
               }`}
             >

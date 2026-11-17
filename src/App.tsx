@@ -245,59 +245,59 @@ export default function App() {
               </div>
 
               <div className="lg:col-span-6 flex flex-col">
-                <div
-                  className={`relative flex-1 min-h-[450px] lg:min-h-[560px] rounded-xl overflow-hidden border border-[#1A1412]/12 ${
-                    heroScene !== 'natural-kawi' ? 'bg-white' : 'bg-[#1D120D]'
-                  }`}
-                >
-                  <LiveMockupScene
-                    config={config}
-                    scene={heroScene}
-                    size="hero"
-                    backgroundOnly={previewBgOnly}
-                  />
-
-                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 inline-flex flex-wrap items-center gap-1 p-1 bg-[#1A1412]/90 md:backdrop-blur-sm rounded-lg max-w-[calc(100%-1.5rem)]">
-                    <button
-                      type="button"
-                      onClick={() => setHeroScene('natural-kawi')}
-                      className={`px-3 py-2 min-h-[44px] text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                        heroScene === 'natural-kawi'
-                          ? 'bg-[#FAF5EB] text-[#1A1412]'
-                          : 'text-[#E7D8C3] hover:text-white'
-                      }`}
-                    >
-                      Suasana Natural
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setHeroScene('studio-front')}
-                      className={`px-3 py-2 min-h-[44px] text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                        heroScene === 'studio-front'
-                          ? 'bg-[#FAF5EB] text-[#1A1412]'
-                          : 'text-[#E7D8C3] hover:text-white'
-                      }`}
-                    >
-                      Studio Depan
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setHeroScene('studio-rear')}
-                      className={`px-3 py-2 min-h-[44px] text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                        heroScene === 'studio-rear'
-                          ? 'bg-[#FAF5EB] text-[#1A1412]'
-                          : 'text-[#E7D8C3] hover:text-white'
-                      }`}
-                    >
-                      Studio Belakang
-                    </button>
+                <div className="flex-1 flex flex-col rounded-xl overflow-hidden border border-[#1A1412]/12 bg-[#1D120D]">
+                  <div className="px-3.5 py-2.5 bg-[#EFECE6] border-b border-[#1A1412]/10 flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#574D47]">
+                      Pratinjau Mockup · {activeShapeMeta.code} ({config.netWeight})
+                    </span>
+                    <div className="inline-flex flex-wrap items-center gap-1 p-1 bg-[#E2DDD3] rounded-lg">
+                      <button
+                        type="button"
+                        onClick={() => setHeroScene('natural-kawi')}
+                        className={`px-2.5 py-1.5 min-h-[36px] text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                          heroScene === 'natural-kawi'
+                            ? 'bg-[#1A1412] text-[#FAF5EB]'
+                            : 'text-[#574D47] hover:text-[#1A1412]'
+                        }`}
+                      >
+                        Suasana Natural
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setHeroScene('studio-front')}
+                        className={`px-2.5 py-1.5 min-h-[36px] text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                          heroScene === 'studio-front'
+                            ? 'bg-[#1A1412] text-[#FAF5EB]'
+                            : 'text-[#574D47] hover:text-[#1A1412]'
+                        }`}
+                      >
+                        Studio Depan
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setHeroScene('studio-rear')}
+                        className={`px-2.5 py-1.5 min-h-[36px] text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                          heroScene === 'studio-rear'
+                            ? 'bg-[#1A1412] text-[#FAF5EB]'
+                            : 'text-[#574D47] hover:text-[#1A1412]'
+                        }`}
+                      >
+                        Studio Belakang
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="absolute inset-x-0 bottom-0 z-20 p-5 bg-gradient-to-t from-black/85 via-black/45 to-transparent text-[#FAF5EB] pointer-events-none">
-                    <p className="text-xs font-medium tracking-[0.14em] uppercase text-[#E9C98E] tabular-nums">
-                      {activeShapeMeta.code} · {activeShapeMeta.shortLabel} · {config.netWeight}
-                    </p>
-                    <p className="mt-0.5 text-sm text-[#F4ECE0]/90">{heroDynamicDescription}</p>
+                  <div
+                    className={`relative flex-1 min-h-[430px] lg:min-h-[540px] ${
+                      heroScene !== 'natural-kawi' ? 'bg-white' : 'bg-[#1D120D]'
+                    }`}
+                  >
+                    <LiveMockupScene
+                      config={config}
+                      scene={heroScene}
+                      size="hero"
+                      backgroundOnly={previewBgOnly}
+                    />
                   </div>
                 </div>
               </div>
@@ -359,28 +359,11 @@ export default function App() {
                             {meta.description} ({activeVariantMeta.frontLabel} · {activeRoastMeta.label})
                           </p>
                         </div>
-                        <div className="mt-3 pt-2.5 border-t border-[#1A1412]/10 space-y-2">
-                          <div className="space-y-1 text-[11px] leading-snug">
-                            <p className="font-semibold uppercase tracking-[0.12em] text-[#8A6429] text-[10px]">
-                              Jenis Font Desain
-                            </p>
-                            <p className="text-[#1A1412]">
-                              <span className="text-[#574D47]">Display: </span>
-                              <span className="font-serif font-bold text-[12px]">Swash Display Serif</span>
-                            </p>
-                            <p className="text-[#574D47] text-[10px]">
-                              {meta.fonts.tagline.replace('Plus Jakarta Sans · ', '')}
-                            </p>
-                            <p className="text-[#1A1412]">
-                              <span className="text-[#574D47]">Body: </span>
-                              <span className="font-sans font-semibold">Plus Jakarta Sans</span>
-                            </p>
-                            <p className="text-[#1A1412]">
-                              <span className="text-[#574D47]">Teknis: </span>
-                              <span className="font-mono text-[10.5px]">IBM Plex Mono</span>
-                            </p>
-                          </div>
-                          <p className="pt-2 border-t border-[#1A1412]/10 font-mono text-[10px] text-[#574D47] tabular-nums">
+                        <div className="mt-3 pt-2.5 border-t border-[#1A1412]/10 space-y-1.5">
+                          <p className="text-[11px] font-medium text-[#8A6429] leading-snug">
+                            {meta.fonts.tagline.replace('Plus Jakarta Sans · ', '')}
+                          </p>
+                          <p className="font-mono text-[10px] text-[#574D47] tabular-nums">
                             {cardWeightSpecs.dimensions}
                           </p>
                         </div>
@@ -600,14 +583,14 @@ export default function App() {
                       <div key={shapeId} className="flex flex-col">
                         <div className="flex items-center justify-between mb-2 px-1 gap-2">
                           <div className="min-w-0">
-                            <p className="text-xs font-semibold text-[#1A1412] truncate">
+                            <p className="text-xs font-semibold text-[#1A1412] leading-snug">
                               {meta.code} · {meta.shortLabel}
                             </p>
                             <p className="font-mono text-[10px] text-[#574D47] tabular-nums">
                               {specs.dimensions} · {config.netWeight}
                             </p>
-                            <p className="text-[10.5px] text-[#8A6429] truncate">
-                              Font: {meta.fonts.summary}
+                            <p className="text-[10.5px] text-[#8A6429] leading-snug">
+                              {meta.fonts.tagline.replace('Plus Jakarta Sans · ', '')}
                             </p>
                           </div>
                           <button

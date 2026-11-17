@@ -289,7 +289,7 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
 
   // Quick configuration pills box
   doc.setFillColor(239, 236, 230);
-  doc.roundedRect(MARGIN, y, CONTENT_W, 18, 2, 2, 'F');
+  doc.roundedRect(MARGIN, y, CONTENT_W, 20, 2, 2, 'F');
   const colW = CONTENT_W / 4;
   const quickMeta = [
     { k: 'DIMENSI AKTIF', v: `${weightSpecs.dimensions}` },
@@ -302,14 +302,14 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
     doc.setTextColor(138, 100, 41);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(6.8);
-    doc.text(pdfSafe(item.k), qx, y + 5.8);
+    doc.text(pdfSafe(item.k), qx, y + 5.6);
     doc.setTextColor(26, 20, 18);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.2);
-    const valLines = doc.splitTextToSize(pdfSafe(item.v), colW - 5);
-    doc.text(valLines, qx, y + 10.5);
+    doc.setFontSize(8);
+    const valLines = doc.splitTextToSize(pdfSafe(item.v), colW - 5).slice(0, 2);
+    doc.text(valLines, qx, y + 10.4);
   });
-  y += 23;
+  y += 24.5;
 
   // Visual Showcase: Left = Natural Mockup, Right = Front + Back Panels
   const showcaseH = 92;
@@ -371,9 +371,6 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
 
   // Copywriting & Typography Official Block
   y = drawSectionHeading(doc, y, 'Ringkasan Teks & Tipografi Resmi', 'Copywriting Kemasan & Identitas Font');
-  doc.setFillColor(246, 245, 242);
-  doc.setDrawColor(222, 217, 206);
-  doc.roundedRect(MARGIN, y, CONTENT_W, 74, 2, 2, 'FD');
 
   const copyBlocks = [
     {
@@ -394,8 +391,20 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
     },
   ];
 
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  const measuredBlocks = copyBlocks.map((b) => {
+    const wrapped = doc.splitTextToSize(pdfSafe(b.val), CONTENT_W - 8);
+    return { ...b, wrapped };
+  });
+  const totalBlockH = measuredBlocks.reduce((acc, item) => acc + 3.8 + item.wrapped.length * 3.7 + 3, 6);
+
+  doc.setFillColor(246, 245, 242);
+  doc.setDrawColor(222, 217, 206);
+  doc.roundedRect(MARGIN, y, CONTENT_W, totalBlockH, 2, 2, 'FD');
+
   let cy = y + 6;
-  copyBlocks.forEach((b) => {
+  measuredBlocks.forEach((b) => {
     doc.setTextColor(138, 100, 41);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7);
@@ -404,9 +413,8 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
     doc.setTextColor(26, 20, 18);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
-    const wrapped = doc.splitTextToSize(pdfSafe(b.val), CONTENT_W - 8);
-    doc.text(wrapped, MARGIN + 4, cy + 3.8);
-    cy += 3.8 + wrapped.length * 3.7 + 3;
+    doc.text(b.wrapped, MARGIN + 4, cy + 3.8);
+    cy += 3.8 + b.wrapped.length * 3.7 + 3;
   });
 
   // ============================================================================
@@ -707,7 +715,7 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
 
   // 2-column grid for 6 color swatches
   const swW = (CONTENT_W - 4) / 2;
-  const swH = 20;
+  const swH = 22;
   COLOR_TOKENS.forEach((token, idx) => {
     const col = idx % 2;
     const row = Math.floor(idx / 2);
@@ -720,25 +728,26 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
 
     doc.setFillColor(...token.rgb);
     doc.setDrawColor(190, 182, 168);
-    doc.roundedRect(sx + 3, sy + 3, 14, 14, 1.5, 1.5, 'FD');
+    doc.roundedRect(sx + 3, sy + 4, 14, 14, 1.5, 1.5, 'FD');
 
     doc.setTextColor(26, 20, 18);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.4);
-    doc.text(pdfSafe(token.name), sx + 20, sy + 6.5);
+    doc.setFontSize(8.2);
+    doc.text(pdfSafe(token.name), sx + 20, sy + 6.2);
 
     doc.setTextColor(138, 100, 41);
     doc.setFont('courier', 'bold');
-    doc.setFontSize(7.5);
-    doc.text(pdfSafe(`${token.hex} · ${token.cmyk}`), sx + 20, sy + 11.2);
+    doc.setFontSize(7.2);
+    doc.text(pdfSafe(`${token.hex} · ${token.cmyk}`), sx + 20, sy + 10.6);
 
     doc.setTextColor(87, 77, 71);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.2);
-    doc.text(pdfSafe(`${token.role} · ${token.finish}`), sx + 20, sy + 15.8);
+    doc.setFontSize(6.9);
+    const finishLines = doc.splitTextToSize(pdfSafe(`${token.role} · ${token.finish}`), swW - 23).slice(0, 2);
+    doc.text(finishLines, sx + 20, sy + 14.8);
   });
 
-  y += Math.ceil(COLOR_TOKENS.length / 2) * (swH + 3) + 6;
+  y += Math.ceil(COLOR_TOKENS.length / 2) * (swH + 3) + 5;
 
   y = drawSectionHeading(
     doc,

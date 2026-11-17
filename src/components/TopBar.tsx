@@ -1,4 +1,5 @@
 import { Download, FileText } from 'lucide-react';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface TopBarProps {
   onDownloadClick: () => void;
@@ -15,10 +16,10 @@ export function TopBar({
 }: TopBarProps) {
   return (
     <header className="sticky top-0 z-40 bg-[#F6F5F2]/98 md:bg-[#F6F5F2]/92 md:backdrop-blur-md border-b border-[#1A1412]/10">
-      <div className="max-w-[1360px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3 md:gap-6">
+      <div className="max-w-[1360px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2 sm:gap-3 md:gap-6">
         <a
           href="#mockup-studio"
-          className="font-serif text-xl font-semibold tracking-wide text-[#1A1412] whitespace-nowrap shrink-0 min-h-[44px] inline-flex items-center"
+          className="font-serif text-lg sm:text-xl font-semibold tracking-wide text-[#1A1412] whitespace-nowrap shrink-0 min-h-[44px] inline-flex items-center"
         >
           PackagingStudio
         </a>
@@ -56,12 +57,14 @@ export function TopBar({
           </a>
         </nav>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <PWAInstallButton variant="navbar" />
+
           <button
             type="button"
             onClick={onExportPdfClick}
             disabled={isExportingPdf}
-            className="inline-flex items-center gap-1.5 min-h-[44px] px-3.5 py-2 text-xs font-semibold tracking-wide text-[#FAF5EB] bg-[#8A6429] hover:bg-[#73511D] disabled:opacity-60 transition-colors rounded-md whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A67B38]"
+            className="inline-flex items-center gap-1.5 min-h-[44px] px-2.5 sm:px-3.5 py-2 text-xs font-semibold tracking-wide text-[#FAF5EB] bg-[#8A6429] hover:bg-[#73511D] disabled:opacity-60 transition-colors rounded-md whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A67B38]"
           >
             <FileText className="w-3.5 h-3.5 text-[#FAF5EB]" />
             <span>{isExportingPdf ? 'Memproses PDF...' : 'Ekspor PDF'}</span>

@@ -61,9 +61,9 @@ export function PrintSpecsSection({
                 type="button"
                 disabled={isExportingPdf}
                 onClick={onExportPdf}
-                className="w-full min-h-[44px] flex items-center justify-between px-5 py-3 bg-[#8A6429] text-[#FAF5EB] hover:bg-[#73511D] disabled:opacity-60 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+                className="w-full min-h-[44px] flex items-center justify-between gap-3 px-5 py-3 bg-[#8A6429] text-[#FAF5EB] hover:bg-[#73511D] disabled:opacity-60 rounded-lg transition-colors cursor-pointer text-left"
               >
-                <span className="text-sm font-semibold truncate pr-2">
+                <span className="text-sm font-semibold leading-snug">
                   {isExportingPdf
                     ? 'Menyusun PDF Dossier...'
                     : `Ekspor PDF Lengkap (${shapeMeta.shortLabel} · ${config.netWeight})`}
@@ -81,9 +81,9 @@ export function PrintSpecsSection({
                 type="button"
                 disabled={isExporting}
                 onClick={() => onExport('full-dieline')}
-                className="w-full min-h-[44px] flex items-center justify-between px-5 py-3 bg-[#1A1412] text-[#FAF5EB] hover:bg-[#31221B] disabled:opacity-60 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+                className="w-full min-h-[44px] flex items-center justify-between gap-3 px-5 py-3 bg-[#1A1412] text-[#FAF5EB] hover:bg-[#31221B] disabled:opacity-60 rounded-lg transition-colors cursor-pointer text-left"
               >
-                <span className="text-sm font-medium truncate pr-2">
+                <span className="text-sm font-medium leading-snug">
                   Unduh Sheet Full Print ({shapeMeta.shortLabel} · {config.netWeight})
                 </span>
                 <Download className="w-4 h-4 text-[#D8B474] shrink-0" />
@@ -120,9 +120,9 @@ export function PrintSpecsSection({
                 type="button"
                 disabled={isExporting}
                 onClick={() => onExport('bg-full-dieline')}
-                className="w-full min-h-[44px] flex items-center justify-between px-5 py-3 bg-[#8A6429] text-[#FAF5EB] hover:bg-[#73511D] disabled:opacity-60 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+                className="w-full min-h-[44px] flex items-center justify-between gap-3 px-5 py-3 bg-[#8A6429] text-[#FAF5EB] hover:bg-[#73511D] disabled:opacity-60 rounded-lg transition-colors cursor-pointer text-left"
               >
-                <span className="text-sm font-medium truncate pr-2">
+                <span className="text-sm font-medium leading-snug">
                   Unduh Background Murni Full Sheet ({config.netWeight})
                 </span>
                 <Download className="w-4 h-4 text-[#FAF5EB] shrink-0" />

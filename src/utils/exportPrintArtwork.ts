@@ -452,8 +452,23 @@ export async function renderPrintSheetCanvas(
       }
 
       if (hasTextOverride) {
-        ctx.fillStyle = 'rgba(28, 16, 11, 0.94)';
-        ctx.fillRect(px + pw * 0.08, py + ph * 0.485, pw * 0.84, ph * 0.11);
+        const bx = px + pw * 0.08;
+        const by = py + ph * 0.482;
+        const bw = pw * 0.84;
+        const bh = ph * 0.115;
+        const patchGrad = ctx.createRadialGradient(
+          bx + bw / 2,
+          by + bh / 2,
+          bh * 0.15,
+          bx + bw / 2,
+          by + bh / 2,
+          bw * 0.56
+        );
+        patchGrad.addColorStop(0, 'rgba(34, 21, 14, 0.99)');
+        patchGrad.addColorStop(0.68, 'rgba(28, 17, 11, 0.95)');
+        patchGrad.addColorStop(1, 'rgba(28, 17, 11, 0)');
+        ctx.fillStyle = patchGrad;
+        ctx.fillRect(bx, by, bw, bh);
         ctx.fillStyle = '#FAF5EB';
         ctx.textAlign = 'center';
         ctx.font = `600 ${Math.round(pw * 0.036)}px "Plus Jakarta Sans", sans-serif`;
@@ -699,13 +714,37 @@ export async function renderPrintSheetCanvas(
       }
 
       if (config.sealPlacement !== 'back') {
-        ctx.fillStyle = '#1E120C';
-        ctx.fillRect(px + pw * 0.06, py + ph * 0.74, pw * 0.14, ph * 0.12);
+        const sx = px + pw * 0.125;
+        const sy = py + ph * 0.802;
+        const sr = pw * 0.085;
+        const sealCover = ctx.createRadialGradient(sx, sy, sr * 0.55, sx, sy, sr);
+        sealCover.addColorStop(0, 'rgba(24, 14, 9, 0.99)');
+        sealCover.addColorStop(0.78, 'rgba(24, 14, 9, 0.92)');
+        sealCover.addColorStop(1, 'rgba(24, 14, 9, 0)');
+        ctx.fillStyle = sealCover;
+        ctx.beginPath();
+        ctx.arc(sx, sy, sr, 0, Math.PI * 2);
+        ctx.fill();
       }
 
       if (hasTextOverride) {
-        ctx.fillStyle = 'rgba(28, 16, 11, 0.94)';
-        ctx.fillRect(px + pw * 0.06, py + ph * 0.245, pw * 0.88, ph * 0.34);
+        const bx = px + pw * 0.06;
+        const by = py + ph * 0.242;
+        const bw = pw * 0.88;
+        const bh = ph * 0.345;
+        const rearPatch = ctx.createRadialGradient(
+          bx + bw / 2,
+          by + bh / 2,
+          bh * 0.2,
+          bx + bw / 2,
+          by + bh / 2,
+          bw * 0.58
+        );
+        rearPatch.addColorStop(0, 'rgba(34, 21, 14, 0.99)');
+        rearPatch.addColorStop(0.72, 'rgba(28, 17, 11, 0.96)');
+        rearPatch.addColorStop(1, 'rgba(28, 17, 11, 0)');
+        ctx.fillStyle = rearPatch;
+        ctx.fillRect(bx, by, bw, bh);
         ctx.textAlign = 'center';
         ctx.fillStyle = '#FAF5EB';
         ctx.font = `400 ${Math.round(pw * 0.024)}px "Plus Jakarta Sans", sans-serif`;

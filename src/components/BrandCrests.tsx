@@ -155,7 +155,7 @@ export function MandalaHeritageCrest({
         y={line2 ? '74' : '84'}
         textAnchor="middle"
         fill="#FAF5EB"
-        fontSize={compact ? '13' : '15'}
+        fontSize={compact ? '11.5' : '13.5'}
         fontWeight="600"
         fontFamily="Cormorant Garamond, Georgia, serif"
       >
@@ -164,10 +164,10 @@ export function MandalaHeritageCrest({
       {line2 && (
         <text
           x="80"
-          y="94"
+          y="92"
           textAnchor="middle"
           fill="#E9C98E"
-          fontSize={compact ? '13' : '15'}
+          fontSize={compact ? '11.5' : '13.5'}
           fontWeight="600"
           fontFamily="Cormorant Garamond, Georgia, serif"
         >
@@ -279,7 +279,7 @@ export function KthEastJavaSeal({
 
 export function Ean13Barcode({ className = 'w-28 h-12' }: { className?: string }) {
   const bars = [2, 1, 2, 1, 3, 1, 1, 2, 1, 4, 1, 1, 2, 2, 1, 3, 1, 2, 1, 1, 2, 3, 1, 1, 2, 1, 3, 1, 2, 1, 1, 2];
-  let x = 6;
+  let x = 16.2;
   return (
     <svg viewBox="0 0 130 56" className={className} aria-label="Barcode 8997024192504">
       <rect x="0" y="0" width="130" height="56" rx="2" fill="#F7F2E8" />

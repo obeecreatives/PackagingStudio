@@ -24,13 +24,17 @@ export default defineConfig(() => {
         manifest: {
           id: '/',
           name: 'PackagingStudio — Studio Desain Kemasan',
-          short_name: 'PackagingStudio',
+          short_name: 'PkgStudio',
           description:
             'PackagingStudio: studio desain kemasan full print, mockup 3D, dieline, dan ekspor siap cetak untuk berbagai proyek klien.',
           theme_color: '#1A1412',
           background_color: '#F6F5F2',
           lang: 'id',
           display: 'standalone',
+          display_override: ['window-controls-overlay', 'standalone'],
+          orientation: 'any',
+          categories: ['design', 'productivity', 'utilities'],
+          prefer_related_applications: false,
           start_url: '/',
           scope: '/',
           icons: [
