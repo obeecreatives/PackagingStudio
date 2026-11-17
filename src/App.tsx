@@ -28,6 +28,7 @@ import {
 import { LiveMockupScene, MockupSceneMode } from './components/LiveMockupScene';
 import { DesignCritiqueSection } from './components/DesignCritiqueSection';
 import { DesignElementsKit } from './components/DesignElementsKit';
+import { PouchSizeGuideSection } from './components/PouchSizeGuideSection';
 import { PrintSpecsSection } from './components/PrintSpecsSection';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { MobileBottomNav } from './components/MobileBottomNav';
@@ -679,6 +680,16 @@ export default function App() {
 
         <DesignCritiqueSection config={config} />
         <DesignElementsKit config={config} onExport={handleExport} isExporting={isExporting} />
+        <PouchSizeGuideSection
+          config={config}
+          onApplyPreset={(shape, weight) => {
+            setConfig((prev) => ({
+              ...prev,
+              pouchShape: shape,
+              netWeight: weight,
+            }));
+          }}
+        />
         <PrintSpecsSection
           config={config}
           onExport={handleExport}

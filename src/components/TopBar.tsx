@@ -24,7 +24,7 @@ export function TopBar({
           PackagingStudio
         </a>
 
-        <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-[#5A4F48]">
+        <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-[13px] xl:text-sm font-medium text-[#5A4F48]">
           <a
             href="#mockup-studio"
             className="min-h-[44px] inline-flex items-center hover:text-[#1A1412] transition-colors whitespace-nowrap shrink-0"
@@ -35,11 +35,11 @@ export function TopBar({
             href="#full-print"
             className="min-h-[44px] inline-flex items-center hover:text-[#1A1412] transition-colors whitespace-nowrap shrink-0"
           >
-            Desain Full Print
+            Full Print
           </a>
           <a
             href="#analisis-revisi"
-            className="min-h-[44px] inline-flex items-center hover:text-[#1A1412] transition-colors whitespace-nowrap shrink-0"
+            className="hidden xl:inline-flex min-h-[44px] items-center hover:text-[#1A1412] transition-colors whitespace-nowrap shrink-0"
           >
             Analisis Revisi
           </a>
@@ -48,6 +48,12 @@ export function TopBar({
             className="min-h-[44px] inline-flex items-center hover:text-[#1A1412] transition-colors whitespace-nowrap shrink-0"
           >
             Kit Elemen
+          </a>
+          <a
+            href="#panduan-ukuran"
+            className="min-h-[44px] inline-flex items-center hover:text-[#1A1412] transition-colors whitespace-nowrap shrink-0"
+          >
+            Panduan Ukuran
           </a>
           <a
             href="#spesifikasi-cetak"
