@@ -192,12 +192,15 @@ export function FrontPanel({
   const isUploadedFinal = config.artworkSource === 'uploaded-final';
   const hasTextOverride = config.beanVariant !== 'robusta-100' || config.roastLevel !== 'traditional';
 
+  const uploadedFrontSrc =
+    config.netWeight === '100 gram' ? ORIGINAL_UPLOADS.revisedFront100 : ORIGINAL_UPLOADS.revisedFront250;
+
   if (isUploadedFinal && !backgroundOnly) {
     return (
       <div className="relative w-full h-full overflow-hidden select-none text-[#FAF5EB] bg-[#1A0F0A]">
         <img
-          src={ORIGINAL_UPLOADS.revisedFront}
-          alt="Desain Halaman Depan Arunika Kawi"
+          src={uploadedFrontSrc}
+          alt={`Desain Halaman Depan Arunika Kawi (${config.netWeight})`}
           decoding="async"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover object-center"
@@ -312,15 +315,9 @@ export function FrontPanel({
           </div>
         )}
 
-        {/* Dynamic weight override / copper band styling */}
-        {(config.netWeight !== '250 Gr' || isCopper) && (
-          <div
-            className={`absolute inset-x-0 bottom-0 h-[9.6%] flex items-center justify-center z-10 ${
-              isCopper
-                ? 'bg-[#20120C]/95 border-t border-[#E6B89A]/50 text-[#FAF5EB]'
-                : 'gold-foil-gradient text-[#140B07]'
-            }`}
-          >
+        {/* Copper band styling only (100 gram & 250 gram gold bands are already baked into master PNGs) */}
+        {isCopper && (
+          <div className="absolute inset-x-0 bottom-0 h-[11.2%] flex items-center justify-center z-10 bg-[#20120C]/95 border-t border-[#E6B89A]/50 text-[#FAF5EB]">
             <span
               className={`font-sans font-bold tabular-nums ${
                 compact ? 'text-[7.5px]' : 'text-[12px]'
@@ -725,8 +722,8 @@ export function SideGussetPanel({
         }`}
       >
         {!backgroundOnly && (
-          <span className={`font-sans font-bold tracking-[0.1em] uppercase tabular-nums ${compact ? 'text-[4.8px]' : 'text-[7px]'}`}>
-            JAWA TIMUR · {config.netWeight}
+          <span className={`font-sans font-bold tracking-[0.1em] uppercase ${compact ? 'text-[4.8px]' : 'text-[7px]'}`}>
+            JAWA TIMUR · INDONESIA
           </span>
         )}
       </div>
@@ -742,220 +739,79 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
   const isUploadedFinal = config.artworkSource === 'uploaded-final';
   const { batchCode, expiryLabel } = getWibBatchAndExpiry(12);
 
+  const isHeritage = config.pouchShape === 'tall-heritage';
+  const hasRearTextOverride = config.beanVariant !== 'robusta-100' || config.roastLevel !== 'traditional';
+
   if (isUploadedFinal && !backgroundOnly) {
     return (
-      <div className="relative w-full h-full overflow-hidden select-none text-[#FAF5EB] flex flex-col justify-between">
-        <NaturalArtworkLayers config={config} isBack />
+      <div className="relative w-full h-full overflow-hidden select-none text-[#FAF5EB] bg-[#1A0F0A]">
+        <img
+          src={ORIGINAL_UPLOADS.revisedRear}
+          alt="Desain Halaman Belakang Arunika Kawi"
+          decoding="async"
+          referrerPolicy="no-referrer"
+          className="w-full h-full object-cover object-center"
+        />
 
-        <div
-          className={`relative z-10 flex-1 flex flex-col justify-between overflow-hidden ${
-            compact ? 'pt-[9%] px-2 pb-1' : 'pt-[8%] px-4 pb-2.5'
-          }`}
-        >
-          {/* Top Crest & Brand Story matching Arunika_Kawi_rear */}
-          <div className="flex flex-col items-center text-center">
-            <div className={compact ? 'w-12' : 'w-24'}>
-              <RoastProfileCrest topText={roast.crestTop} bottomText={roast.crestBottom} className="w-full h-auto" />
-            </div>
+        {config.naturalMood === 'espresso-matte' && (
+          <div
+            className="absolute inset-x-0 top-0 h-[55%] pointer-events-none"
+            style={{
+              background:
+                'linear-gradient(to bottom, rgba(22,12,8,0.75) 0%, rgba(28,16,11,0.48) 55%, rgba(28,16,11,0) 100%)',
+            }}
+          />
+        )}
 
-            <h3
-              className={`font-sans font-bold tracking-[0.01em] text-[#C9A35E] leading-tight ${
-                compact ? 'mt-0.5 text-[7px]' : 'mt-1 text-[15px]'
-              }`}
-            >
-              Arunika Kawi Coffee
-            </h3>
+        {isHeritage && (
+          <div className="absolute inset-[3%] border border-[#D8B474]/45 pointer-events-none" />
+        )}
 
-            <p
-              className={`text-[#F4ECE0]/95 mx-auto max-w-[96%] ${
-                compact ? 'mt-0.5 text-[4px] leading-[1.28] line-clamp-4' : 'mt-1 text-[7.6px] leading-[1.36]'
-              }`}
-            >
-              Diolah secara tradisional (traditional roasting) oleh Kelompok Tani Hutan langsung dari lereng Gunung
-              Kawi, setiap seduhannya menghadirkan karakter{' '}
-              <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span> {roast.storyRoast} yang
-              langsung membangkitkan semangat begitu air panas disiramkan. Pas banget buat menemani momen santai maupun
-              kerja produktif Anda.
-            </p>
-
-            <p
-              className={`font-sans font-semibold tracking-[0.04em] uppercase text-[#FAF5EB] ${
-                compact ? 'mt-1 text-[4px]' : 'mt-1.5 text-[8px]'
-              }`}
-            >
-              KOMPOSISI {config.beanVariant === 'robusta-100' ? '100 % KOPI ROBUSTA' : variant.frontLabel.toUpperCase()}
-            </p>
-          </div>
-
-          {/* Complete Template Descriptions (Origin + Saran Penyajian + Catatan Rasa) */}
-          <div className={compact ? 'space-y-1 my-0.5' : 'space-y-1.5 my-1'}>
-            <div
-              className={`border-y border-[#C99C52]/25 grid grid-cols-3 gap-1 text-center ${
-                compact ? 'py-0.5' : 'py-1'
-              }`}
-            >
-              <div>
-                <p className={`text-[#D8B474] uppercase tracking-wider ${compact ? 'text-[3.5px]' : 'text-[6px]'}`}>
-                  Elevasi
-                </p>
-                <p className={`font-mono text-[#FAF5EB] tabular-nums truncate ${compact ? 'text-[3.8px]' : 'text-[7px]'}`}>
-                  {variant.altitude}
-                </p>
-              </div>
-              <div>
-                <p className={`text-[#D8B474] uppercase tracking-wider ${compact ? 'text-[3.5px]' : 'text-[6px]'}`}>
-                  Proses
-                </p>
-                <p className={`text-[#FAF5EB] truncate ${compact ? 'text-[3.8px]' : 'text-[7px]'}`}>
-                  {variant.process}
-                </p>
-              </div>
-              <div>
-                <p className={`text-[#D8B474] uppercase tracking-wider ${compact ? 'text-[3.5px]' : 'text-[6px]'}`}>
-                  Body
-                </p>
-                <p className={`font-mono text-[#FAF5EB] tabular-nums ${compact ? 'text-[3.8px]' : 'text-[7px]'}`}>
-                  {roast.bodyScore} / 5 Bold
-                </p>
-              </div>
-            </div>
-
-            <div className={`grid grid-cols-2 ${compact ? 'gap-1' : 'gap-2'}`}>
-              <div>
-                <p
-                  className={`font-sans font-semibold uppercase tracking-[0.12em] text-[#D8B474] ${
-                    compact ? 'text-[3.8px] mb-0.5' : 'text-[7px] mb-1'
-                  }`}
-                >
-                  Saran Penyajian
-                </p>
-                <div className={compact ? 'space-y-0.5' : 'space-y-1'}>
-                  <div className="flex items-start gap-0.5">
-                    <Coffee className={`${compact ? 'w-1.5 h-1.5' : 'w-2.5 h-2.5'} text-[#D8B474] shrink-0 mt-0.5`} />
-                    <div>
-                      <p className={`font-semibold text-[#FAF5EB] leading-tight ${compact ? 'text-[3.7px]' : 'text-[7px]'}`}>
-                        Tubruk Klasik
-                      </p>
-                      <p className={`text-[#CBBBA8] leading-tight ${compact ? 'text-[3.2px]' : 'text-[6px]'}`}>
-                        12g kopi · 180ml · 92°C
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-0.5">
-                    <Droplets className={`${compact ? 'w-1.5 h-1.5' : 'w-2.5 h-2.5'} text-[#D8B474] shrink-0 mt-0.5`} />
-                    <div>
-                      <p className={`font-semibold text-[#FAF5EB] leading-tight ${compact ? 'text-[3.7px]' : 'text-[7px]'}`}>
-                        Pour Over / V60
-                      </p>
-                      <p className={`text-[#CBBBA8] leading-tight ${compact ? 'text-[3.2px]' : 'text-[6px]'}`}>
-                        15g kopi · 225ml · 90°C
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-0.5">
-                    <Flame className={`${compact ? 'w-1.5 h-1.5' : 'w-2.5 h-2.5'} text-[#D8B474] shrink-0 mt-0.5`} />
-                    <div>
-                      <p className={`font-semibold text-[#FAF5EB] leading-tight ${compact ? 'text-[3.7px]' : 'text-[7px]'}`}>
-                        Espresso / Moka
-                      </p>
-                      <p className={`text-[#CBBBA8] leading-tight ${compact ? 'text-[3.2px]' : 'text-[6px]'}`}>
-                        18g halus · 36ml · 27 dtk
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <p
-                  className={`font-sans font-semibold uppercase tracking-[0.12em] text-[#D8B474] ${
-                    compact ? 'text-[3.8px] mb-0.5' : 'text-[7px] mb-1'
-                  }`}
-                >
-                  Catatan Rasa
-                </p>
-                <div className="space-y-0.5">
-                  {variant.notes.map((note) => (
-                    <div
-                      key={note}
-                      className={`border-b border-[#C99C52]/20 pb-0.5 text-[#F2E6D5] truncate ${
-                        compact ? 'text-[3.7px]' : 'text-[7px]'
-                      }`}
-                    >
-                      {note}
-                    </div>
-                  ))}
-                  <p className={`pt-0.5 text-[#CBBBA8] leading-tight truncate ${compact ? 'text-[3.3px]' : 'text-[6px]'}`}>
-                    Petik Merah · {config.netWeight}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Producer & Production Code Stamps matching Arunika_Kawi_rear */}
-          <div className={`border-t border-[#C99C52]/25 flex items-end justify-between gap-1.5 ${compact ? 'pt-1' : 'pt-1.5'}`}>
-            <div className="flex items-center gap-1.5 min-w-0">
-              {config.sealPlacement === 'back' && (
-                <KthEastJavaSeal
-                  variant="original-green"
-                  className={compact ? 'w-5 h-5 shrink-0' : 'w-10 h-10 shrink-0'}
-                />
-              )}
-              <div className="space-y-0.5 min-w-0">
-                <p className={`font-semibold text-[#C9A35E] leading-tight ${compact ? 'text-[4px]' : 'text-[8.5px]'}`}>
-                  Diproduksi Oleh
-                </p>
-                <p className={`font-semibold text-[#FAF5EB] leading-tight ${compact ? 'text-[3.4px]' : 'text-[6.8px]'}`}>
-                  KUPS Himatarian Blitar
-                  <br />
-                  Jawa Timur – INDONESIA
-                </p>
-                <p className={`font-semibold text-[#FAF5EB] ${compact ? 'text-[3.4px]' : 'text-[6.8px] pt-0.5'}`}>
-                  PIRT · {config.netWeight}
-                </p>
-              </div>
-            </div>
-
-            <div className="shrink-0 space-y-0.5 w-[35%]">
-              <div>
-                <p className={`font-medium text-[#FAF5EB] leading-tight truncate ${compact ? 'text-[3.3px]' : 'text-[6.5px]'}`}>
-                  Kode Produksi
-                </p>
-                <div className={`mt-0.5 bg-white w-full ${compact ? 'h-1.5' : 'h-3.5'}`} />
-              </div>
-              <div>
-                <p className={`font-medium text-[#FAF5EB] leading-tight truncate ${compact ? 'text-[3.3px]' : 'text-[6.5px]'}`}>
-                  Baik Digunakan Sebelum
-                </p>
-                <div className={`mt-0.5 bg-white w-full ${compact ? 'h-1.5' : 'h-3.5'}`} />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className={`relative z-10 w-full flex items-center justify-between ${
-            isCopper
-              ? 'h-[10%] bg-[#20120C] border-t border-[#E6B89A]/45 text-[#FAF5EB]'
-              : 'h-[10%] gold-foil-gradient border-t border-[#F7E8C6]/60 text-[#140B07]'
-          } ${compact ? 'px-2.5' : 'px-4'}`}
-        >
-          <span
-            className={`font-sans font-bold tracking-[0.06em] uppercase ${
-              compact ? 'text-[5.2px]' : 'text-[8.8px]'
-            }`}
+        {/* Dynamic Roast & Bean Variant Override on Rear when changed from default */}
+        {hasRearTextOverride && (
+          <div
+            className="absolute inset-x-[6%] top-[24%] h-[34%] flex flex-col items-center justify-center text-center pointer-events-none px-3 z-10"
+            style={{
+              background:
+                'radial-gradient(ellipse at center, rgba(28,16,11,0.98) 64%, rgba(28,16,11,0.88) 84%, transparent 100%)',
+            }}
           >
-            100 % KOPI ASLI INDONESIA
-          </span>
-          <span
-            className={`font-sans font-bold tabular-nums ${
-              compact ? 'text-[5.5px]' : 'text-[9.5px]'
-            }`}
-          >
-            {config.netWeight}
-          </span>
-        </div>
+            <p className={`text-[#F4ECE0] leading-relaxed ${compact ? 'text-[6.2px]' : 'text-[10.5px]'}`}>
+              Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari
+              lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter{' '}
+              <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span>{' '}
+              {roast.storyRoast}{' '}
+              <span className="font-semibold text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
+              <span className="font-semibold">harum dan nikmat</span>
+            </p>
+            <p
+              className={`mt-3 font-sans font-semibold tracking-[0.04em] uppercase text-[#FAF5EB] ${
+                compact ? 'text-[5.5px]' : 'text-[9px]'
+              }`}
+            >
+              KOMPOSISI {variant.frontLabel.toUpperCase()}
+            </p>
+          </div>
+        )}
+
+        {/* Hide green KTH seal on rear if toggled to front or hidden */}
+        {config.sealPlacement !== 'back' && (
+          <div
+            className="absolute left-[5.5%] bottom-[13.5%] w-[15%] h-[13.5%] pointer-events-none z-10"
+            style={{
+              background: 'radial-gradient(circle, rgba(22,12,8,0.99) 62%, rgba(22,12,8,0.92) 82%, transparent 100%)',
+            }}
+          />
+        )}
+
+        {/* Copper Rear Bottom Band ONLY (NO Net Weight on Rear) */}
+        {isCopper && (
+          <div className="absolute inset-x-0 bottom-0 h-[11.2%] flex items-center justify-center z-10 bg-[#20120C]/95 border-t border-[#E6B89A]/50 text-[#FAF5EB]">
+            <span className={`font-sans font-bold tracking-[0.06em] uppercase ${compact ? 'text-[6px]' : 'text-[10px]'}`}>
+              100 % KOPI ASLI INDONESIA
+            </span>
+          </div>
+        )}
       </div>
     );
   }
@@ -984,9 +840,8 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
               compact ? 'text-[5.5px]' : 'text-[8.5px]'
             }`}
           >
-            Dipetik dari perkebunan rakyat di lereng subur Gunung Kawi pada ketinggian {variant.altitude}.
-            Disangrai secara tradisional dalam batch kecil untuk menjaga kekentalan crema, aroma cokelat pekat,
-            dan karakter hangat khas kopi Robusta Jawa Timur.
+            Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan dari lereng Gunung Kawi (
+            {variant.altitude}) untuk menjaga aroma khas kopi Robusta Jawa Timur yang harum dan nikmat.
           </p>
         </div>
 
@@ -1106,21 +961,16 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
       )}
 
       <div
-        className={`relative z-10 w-full flex items-center justify-between ${
+        className={`relative z-10 w-full flex items-center justify-center ${
           isCopper
             ? 'h-[11%] bg-[#20120C] border-t border-[#E6B89A]/45 text-[#FAF5EB]'
             : 'h-[12%] gold-foil-gradient border-t border-[#F7E8C6]/60 text-[#1E130D]'
         } ${compact ? 'px-3' : 'px-5'}`}
       >
         {!backgroundOnly && (
-          <>
-            <span className={`font-sans font-semibold tracking-[0.06em] uppercase ${compact ? 'text-[5px]' : 'text-[8px]'}`}>
-              100% Kopi Asli Indonesia
-            </span>
-            <span className={`font-sans font-bold tabular-nums ${compact ? 'text-[6.5px]' : 'text-[10px]'}`}>
-              Isi Bersih : {config.netWeight}
-            </span>
-          </>
+          <span className={`font-sans font-bold tracking-[0.06em] uppercase ${compact ? 'text-[5.5px]' : 'text-[8.5px]'}`}>
+            100 % KOPI ASLI INDONESIA
+          </span>
         )}
       </div>
     </div>

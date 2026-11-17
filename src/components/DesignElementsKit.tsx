@@ -81,20 +81,28 @@ const COLOR_TOKENS: ColorToken[] = [
 
 const PHOTO_ASSETS = [
   {
-    id: 'revised-front',
-    title: 'Master Revisi Anda · Halaman Depan',
-    usage: 'Artwork final depan (ARUNIKA KAWI swash gold, biji kopi natural, Isi Bersih : 250 Gr)',
-    src: ORIGINAL_UPLOADS.revisedFront,
-    filename: 'arunika-kawi-master-depan.png',
-    dims: 'Master Upload',
+    id: 'revised-front-250',
+    title: 'Master Revisi Terbaru · Halaman Depan (250 gram)',
+    usage: 'Artwork final depan 250 gram (Traditional Roasted Coffee, 100 % Biji Kopi Robusta, Isi Bersih : 250 gram)',
+    src: ORIGINAL_UPLOADS.revisedFront250,
+    filename: 'arunika-kawi-master-depan-250gr.png',
+    dims: 'Master Upload · 250 gram',
+  },
+  {
+    id: 'revised-front-100',
+    title: 'Master Revisi Terbaru · Halaman Depan (100 gram)',
+    usage: 'Artwork final depan 100 gram (Traditional Roasted Coffee, 100 % Biji Kopi Robusta, Isi Bersih : 100 gram)',
+    src: ORIGINAL_UPLOADS.revisedFront100,
+    filename: 'arunika-kawi-master-depan-100gr.png',
+    dims: 'Master Upload · 100 gram',
   },
   {
     id: 'revised-rear',
-    title: 'Master Revisi Anda · Halaman Belakang',
-    usage: 'Artwork final belakang (TRADITIONAL ROAST, KUPS Himatarian Blitar, Kode Produksi)',
+    title: 'Master Revisi Terbaru · Halaman Belakang',
+    usage: 'Artwork final belakang (Goreng Kreweng, KOMPOSISI 100 % BIJI KOPI ROBUSTA, kotak PIRT, tanpa berat bersih)',
     src: ORIGINAL_UPLOADS.revisedRear,
     filename: 'arunika-kawi-master-belakang.png',
-    dims: 'Master Upload',
+    dims: 'Master Upload · Belakang',
   },
   {
     id: 'beans-cluster',
@@ -259,16 +267,16 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
 
   const fullCopyText = [
     `JUDUL MEREK: ARUNIKA KAWI`,
-    `SUB-JUDUL: COFFE BEAN · EST 2024`,
+    `SUB-JUDUL: COFFEE BEAN · EST. 2024`,
     `TAGLINE: ${roast.subtitle}`,
     `VARIAN: ${variant.frontLabel}`,
-    `BERAT & UKURAN: Isi Bersih : ${config.netWeight} (${weightSpecs.dimensions})`,
+    `BERAT BERSIH (DEPAN SAJA): Isi Bersih : ${config.netWeight} (${weightSpecs.dimensions})`,
     ``,
     `JUDUL BELAKANG: Arunika Kawi Coffee (${roast.crestTop} ${roast.crestBottom})`,
     `CERITA PANEL BELAKANG:`,
-    `Diolah secara tradisional (traditional roasting) oleh Kelompok Tani Hutan langsung dari lereng Gunung Kawi, setiap seduhannya menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast} yang langsung membangkitkan semangat begitu air panas disiramkan. Pas banget buat menemani momen santai maupun kerja produktif Anda.`,
+    `Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast} Arunika Kawi Coffee harum dan nikmat`,
     ``,
-    `KOMPOSISI: ${config.beanVariant === 'robusta-100' ? '100 % KOPI ROBUSTA' : variant.frontLabel.toUpperCase()}`,
+    `KOMPOSISI: ${config.beanVariant === 'robusta-100' ? '100 % BIJI KOPI ROBUSTA' : variant.frontLabel.toUpperCase()}`,
     `ELEVASI & PROSES: ${variant.altitude} · ${variant.process} · Panen Petik Merah Selektif`,
     ``,
     `SARAN PENYAJIAN:`,
@@ -277,9 +285,9 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
     `- Espresso / Moka: 18g halus · 36ml · 27 dtk`,
     ``,
     `CATATAN RASA: ${variant.notes.join(', ')}`,
-    `DIPRODUKSI OLEH: KUPS Himatarian Blitar, Jawa Timur – INDONESIA (PIRT · ${config.netWeight})`,
+    `DIPRODUKSI OLEH: KUPS Himatarian Blitar, Jawa Timur – INDONESIA (Kotak PIRT)`,
     `KODE PRODUKSI / BAIK DIGUNAKAN SEBELUM: ${batchCode} · EXP ${expiryCompact} (WIB GMT+7 · ${wibDateLabel})`,
-    `PITA BAWAH BELAKANG: 100 % KOPI ASLI INDONESIA · ${config.netWeight}`,
+    `PITA BAWAH BELAKANG: 100 % KOPI ASLI INDONESIA (Tanpa Berat Bersih)`,
   ].join('\n');
 
   return (
@@ -513,7 +521,7 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
                       className="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[#1A1412] text-[#FAF5EB] hover:bg-[#31221B] rounded-md transition-colors cursor-pointer whitespace-nowrap shrink-0"
                     >
                       <Download className="w-3.5 h-3.5 text-[#D8B474]" />
-                      <span>Unduh JPG</span>
+                      <span>{asset.filename.endsWith('.png') ? 'Unduh PNG' : 'Unduh JPG'}</span>
                     </button>
                   </div>
                 </div>
@@ -589,7 +597,7 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
                     ARUNIKA KAWI
                   </p>
                   <p className="font-serif italic text-base text-[#574D47]">
-                    Traditional Roasting Coffee ({shapeMeta.fonts.tagline})
+                    {roast.subtitle} ({shapeMeta.fonts.tagline})
                   </p>
                 </div>
 
@@ -601,7 +609,7 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
                     COFFEE BEAN · EST. 2024
                   </p>
                   <p className="mt-1 font-sans text-sm text-[#574D47]">
-                    {variant.frontLabel} · Isi Bersih : {config.netWeight} ({weightSpecs.dimensions})
+                    {variant.frontLabel} · Depan: Isi Bersih : {config.netWeight} ({weightSpecs.dimensions})
                   </p>
                 </div>
 

@@ -49,7 +49,7 @@ export default function App() {
     roastLevel: 'traditional',
     naturalMood: 'kawi-beans',
     sealPlacement: 'back',
-    netWeight: '250 Gr',
+    netWeight: '250 gram',
     showPrintMarks: true,
     artworkSource: 'uploaded-final',
   });
@@ -547,9 +547,8 @@ export default function App() {
                     onChange={(e) => setConfig((prev) => ({ ...prev, netWeight: e.target.value as WeightOption }))}
                     className="flex-1 min-h-[44px] px-2.5 py-2 text-base md:text-xs font-medium bg-white border border-[#1A1412]/15 rounded-md text-[#1A1412]"
                   >
-                    <option value="250 Gr">250 Gr</option>
-                    <option value="500 Gr">500 Gr</option>
-                    <option value="100 Gr">100 Gr</option>
+                    <option value="250 gram">250 gram</option>
+                    <option value="100 gram">100 gram</option>
                   </select>
                   <button
                     type="button"

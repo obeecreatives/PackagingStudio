@@ -259,12 +259,17 @@ export async function renderAndDownloadPrintSheet(
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  const [beansImg, mistImg, cherriesImg, revisedFrontImg] = await Promise.all([
+  const [beansImg, mistImg, cherriesImg, revisedFrontImg, revisedRearImg] = await Promise.all([
     loadImage(GENERATED_ASSETS.beansCluster).catch(() => null),
     loadImage(GENERATED_ASSETS.kawiMist).catch(() => null),
     loadImage(GENERATED_ASSETS.coffeeCherries).catch(() => null),
     config.artworkSource === 'uploaded-final' && !isBackgroundOnly
-      ? loadImage(ORIGINAL_UPLOADS.revisedFront).catch(() => null)
+      ? loadImage(
+          config.netWeight === '100 gram' ? ORIGINAL_UPLOADS.revisedFront100 : ORIGINAL_UPLOADS.revisedFront250
+        ).catch(() => null)
+      : Promise.resolve(null),
+    config.artworkSource === 'uploaded-final' && !isBackgroundOnly
+      ? loadImage(ORIGINAL_UPLOADS.revisedRear).catch(() => null)
       : Promise.resolve(null),
   ]);
 
@@ -463,21 +468,15 @@ export async function renderAndDownloadPrintSheet(
         ctx.restore();
       }
 
-      if (config.netWeight !== '250 Gr' || isCopper) {
+      if (isCopper) {
         const bandH = ph * 0.096;
         const bandY = py + ph - bandH;
-        if (isCopper) {
-          ctx.fillStyle = 'rgba(32, 18, 12, 0.94)';
-          ctx.fillRect(px, bandY, pw, bandH);
-          ctx.strokeStyle = 'rgba(230, 184, 154, 0.5)';
-          ctx.lineWidth = 2;
-          ctx.strokeRect(px, bandY, pw, 2);
-          ctx.fillStyle = '#FAF5EB';
-        } else {
-          ctx.fillStyle = drawGoldGradient(ctx, px, bandY, pw, bandH);
-          ctx.fillRect(px, bandY, pw, bandH);
-          ctx.fillStyle = '#140B07';
-        }
+        ctx.fillStyle = 'rgba(32, 18, 12, 0.94)';
+        ctx.fillRect(px, bandY, pw, bandH);
+        ctx.strokeStyle = 'rgba(230, 184, 154, 0.5)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(px, bandY, pw, 2);
+        ctx.fillStyle = '#FAF5EB';
         ctx.textAlign = 'center';
         ctx.font = `700 ${Math.round(pw * 0.035)}px "Plus Jakarta Sans", sans-serif`;
         ctx.fillText(`Isi Bersih : ${config.netWeight}`, px + pw / 2, bandY + bandH * 0.62);
@@ -663,17 +662,85 @@ export async function renderAndDownloadPrintSheet(
     ctx.fillStyle = isCopper ? '#FAF5EB' : '#1E130D';
     ctx.textAlign = 'center';
     ctx.font = `700 ${Math.round(pw * 0.035)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText(`JAWA TIMUR · ${config.netWeight}`, cx, py + ph * 0.945);
+    ctx.fillText('JAWA TIMUR · INDONESIA', cx, py + ph * 0.945);
   };
 
   const drawBackContent = (px: number, py: number, pw: number, ph: number) => {
+    const hasTextOverride = config.beanVariant !== 'robusta-100' || config.roastLevel !== 'traditional';
+
+    if (config.artworkSource === 'uploaded-final' && !isBackgroundOnly && revisedRearImg) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(px, py, pw, ph);
+      ctx.clip();
+      drawCoverImage(ctx, revisedRearImg, px, py, pw, ph, 'center');
+
+      if (config.naturalMood === 'espresso-matte') {
+        const darkOverlay = ctx.createLinearGradient(px, py, px, py + ph * 0.5);
+        darkOverlay.addColorStop(0, 'rgba(22, 12, 8, 0.72)');
+        darkOverlay.addColorStop(0.55, 'rgba(28, 16, 11, 0.45)');
+        darkOverlay.addColorStop(1, 'rgba(28, 16, 11, 0)');
+        ctx.fillStyle = darkOverlay;
+        ctx.fillRect(px, py, pw, ph * 0.5);
+      }
+
+      if (isHeritage) {
+        ctx.strokeStyle = 'rgba(216, 180, 116, 0.45)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(px + pw * 0.03, py + ph * 0.03, pw * 0.94, ph * 0.94);
+      }
+
+      if (config.sealPlacement !== 'back') {
+        ctx.fillStyle = '#1E120C';
+        ctx.fillRect(px + pw * 0.06, py + ph * 0.74, pw * 0.14, ph * 0.12);
+      }
+
+      if (hasTextOverride) {
+        ctx.fillStyle = 'rgba(28, 16, 11, 0.94)';
+        ctx.fillRect(px + pw * 0.06, py + ph * 0.245, pw * 0.88, ph * 0.34);
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#FAF5EB';
+        ctx.font = `400 ${Math.round(pw * 0.024)}px "Plus Jakarta Sans", sans-serif`;
+        ctx.fillText('Diolah secara tradisional (Goreng Kreweng) oleh Kelompok', px + pw / 2, py + ph * 0.305);
+        ctx.fillText('Tani Hutan, dipetik langsung dari lereng Gunung Kawi.', px + pw / 2, py + ph * 0.34);
+        ctx.fillStyle = '#C9A35E';
+        ctx.font = `600 ${Math.round(pw * 0.024)}px "Plus Jakarta Sans", sans-serif`;
+        ctx.fillText(variant.storyCharacter, px + pw / 2, py + ph * 0.375);
+        ctx.fillStyle = '#FAF5EB';
+        ctx.font = `400 ${Math.round(pw * 0.024)}px "Plus Jakarta Sans", sans-serif`;
+        ctx.fillText(roast.storyRoast, px + pw / 2, py + ph * 0.41);
+        ctx.fillStyle = '#C9A35E';
+        ctx.font = `700 ${Math.round(pw * 0.025)}px "Plus Jakarta Sans", sans-serif`;
+        ctx.fillText('Arunika Kawi Coffee harum dan nikmat', px + pw / 2, py + ph * 0.455);
+        ctx.fillStyle = '#FAF5EB';
+        ctx.font = `700 ${Math.round(pw * 0.024)}px "Plus Jakarta Sans", sans-serif`;
+        ctx.fillText(`KOMPOSISI ${variant.frontLabel.toUpperCase()}`, px + pw / 2, py + ph * 0.545);
+      }
+
+      if (isCopper) {
+        const bandH = ph * 0.118;
+        const bandY = py + ph - bandH;
+        ctx.fillStyle = 'rgba(32, 18, 12, 0.94)';
+        ctx.fillRect(px, bandY, pw, bandH);
+        ctx.strokeStyle = 'rgba(230, 184, 154, 0.5)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(px, bandY, pw, 2);
+        ctx.fillStyle = '#FAF5EB';
+        ctx.textAlign = 'center';
+        ctx.font = `700 ${Math.round(pw * 0.032)}px "Plus Jakarta Sans", sans-serif`;
+        ctx.fillText('100 % KOPI ASLI INDONESIA', px + pw / 2, bandY + bandH * 0.62);
+      }
+
+      ctx.restore();
+      return;
+    }
+
     drawPanelBase(px, py, pw, ph, true);
     if (isBackgroundOnly) return;
 
     const cx = px + pw / 2;
 
     if (config.artworkSource === 'uploaded-final') {
-      // Top Crest matching Arunika_Kawi_rear
       const cw = pw * 0.28;
       const ch = cw * 0.56;
       const cy = py + ph * 0.11;
@@ -702,17 +769,17 @@ export async function renderAndDownloadPrintSheet(
       ctx.fillStyle = '#F4ECE0';
       ctx.font = `400 ${Math.round(pw * 0.021)}px "Plus Jakarta Sans", sans-serif`;
       const lines = [
-        'Diolah secara tradisional (traditional roasting) oleh',
-        'Kelompok Tani Hutan langsung dari lereng Gunung Kawi,',
-        `menghadirkan ${variant.storyCharacter}`,
-        `${roast.storyRoast} untuk menemani hari Anda.`,
+        'Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan,',
+        'dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan',
+        `karakter ${variant.storyCharacter}`,
+        `${roast.storyRoast} Arunika Kawi Coffee harum dan nikmat`,
       ];
       lines.forEach((line, i) => ctx.fillText(line, cx, py + ph * (0.24 + i * 0.029)));
 
       ctx.fillStyle = '#FAF5EB';
       ctx.font = `700 ${Math.round(pw * 0.023)}px "Plus Jakarta Sans", sans-serif`;
       ctx.fillText(
-        `KOMPOSISI ${config.beanVariant === 'robusta-100' ? '100 % KOPI ROBUSTA' : variant.frontLabel.toUpperCase()}`,
+        `KOMPOSISI ${config.beanVariant === 'robusta-100' ? '100 % BIJI KOPI ROBUSTA' : variant.frontLabel.toUpperCase()}`,
         cx,
         py + ph * 0.405
       );
@@ -743,7 +810,7 @@ export async function renderAndDownloadPrintSheet(
       ctx.fillStyle = '#CBBBA8';
       ctx.font = `400 ${Math.round(pw * 0.017)}px "Plus Jakarta Sans", sans-serif`;
       ctx.fillText(
-        `Elevasi: ${variant.altitude} · ${variant.process} · ${config.netWeight}`,
+        `Elevasi: ${variant.altitude} · ${variant.process}`,
         px + pw * 0.08,
         py + ph * 0.645
       );
@@ -762,7 +829,7 @@ export async function renderAndDownloadPrintSheet(
       ctx.font = `600 ${Math.round(pw * 0.019)}px "Plus Jakarta Sans", sans-serif`;
       ctx.fillText('KUPS Himatarian Blitar', prodX, py + ph * 0.768);
       ctx.fillText('Jawa Timur – INDONESIA', prodX, py + ph * 0.796);
-      ctx.fillText(`PIRT · ${config.netWeight}`, prodX, py + ph * 0.826);
+      ctx.fillText('PIRT', prodX, py + ph * 0.826);
 
       const boxX = px + pw * 0.61;
       const boxW = pw * 0.31;
@@ -779,11 +846,9 @@ export async function renderAndDownloadPrintSheet(
 
       const bandCenterY = py + ph * 0.945;
       ctx.fillStyle = isCopper ? '#FAF5EB' : '#140B07';
-      ctx.textAlign = 'left';
-      ctx.font = `700 ${Math.round(pw * 0.022)}px "Plus Jakarta Sans", sans-serif`;
-      ctx.fillText('100 % KOPI ASLI INDONESIA', px + pw * 0.06, bandCenterY);
-      ctx.textAlign = 'right';
-      ctx.fillText(config.netWeight, px + pw * 0.94, bandCenterY);
+      ctx.textAlign = 'center';
+      ctx.font = `700 ${Math.round(pw * 0.026)}px "Plus Jakarta Sans", sans-serif`;
+      ctx.fillText('100 % KOPI ASLI INDONESIA', cx, bandCenterY);
       return;
     }
 
@@ -794,13 +859,13 @@ export async function renderAndDownloadPrintSheet(
 
     ctx.fillStyle = '#FAF5EB';
     ctx.font = `600 ${Math.round(pw * 0.048)}px "Cormorant Garamond", Georgia, serif`;
-    ctx.fillText('Cahaya Pagi dalam Setiap Seduhan', cx, py + ph * 0.168);
+    ctx.fillText('Arunika Kawi Coffee', cx, py + ph * 0.168);
 
     ctx.fillStyle = '#E0D2C0';
-    ctx.font = `400 ${Math.round(pw * 0.022)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText(`Dipetik dari lereng Gunung Kawi pada ketinggian ${variant.altitude}.`, cx, py + ph * 0.215);
-    ctx.fillText('Disangrai secara tradisional untuk menjaga kekentalan crema', cx, py + ph * 0.24);
-    ctx.fillText('dan karakter hangat khas kopi Robusta Jawa Timur.', cx, py + ph * 0.265);
+    ctx.font = `400 ${Math.round(pw * 0.021)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText(`Diolah secara tradisional (Goreng Kreweng) oleh KTH Gunung Kawi (${variant.altitude}).`, cx, py + ph * 0.215);
+    ctx.fillText(`Menghadirkan ${variant.storyCharacter} ${roast.storyRoast}`, cx, py + ph * 0.24);
+    ctx.fillText('Arunika Kawi Coffee harum dan nikmat.', cx, py + ph * 0.265);
 
     ctx.strokeStyle = 'rgba(201, 156, 82, 0.45)';
     ctx.lineWidth = 1.5;
@@ -853,12 +918,9 @@ export async function renderAndDownloadPrintSheet(
 
     const bandCenterY = py + ph * 0.945;
     ctx.fillStyle = isCopper ? '#FAF5EB' : '#1E130D';
-    ctx.textAlign = 'left';
-    ctx.font = `600 ${Math.round(pw * 0.02)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('100% KOPI ASLI INDONESIA', px + pw * 0.06, bandCenterY);
-    ctx.textAlign = 'right';
+    ctx.textAlign = 'center';
     ctx.font = `700 ${Math.round(pw * 0.025)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText(`Isi Bersih : ${config.netWeight}`, px + pw * 0.94, bandCenterY);
+    ctx.fillText('100 % KOPI ASLI INDONESIA', cx, bandCenterY);
   };
 
   if (baseScope === 'full-dieline') {

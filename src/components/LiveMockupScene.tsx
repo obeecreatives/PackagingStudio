@@ -25,6 +25,8 @@ interface PhotoOverlaySpec {
   weightBox: { left: string; top: string; width: string; height: string; skew?: string };
   subtitleBox: { left: string; top: string; width: string; height: string; skew?: string };
   frontSealPos: { left: string; top: string };
+  rearPirtBox: { left: string; top: string; width: string; height: string; skew?: string };
+  rearStoryBox?: { left: string; top: string; width: string; height: string; skew?: string };
 }
 
 const NATURAL_PHOTO_SPECS: Record<PouchShapeId, PhotoOverlaySpec> = {
@@ -32,26 +34,32 @@ const NATURAL_PHOTO_SPECS: Record<PouchShapeId, PhotoOverlaySpec> = {
     weightBox: { left: '15%', top: '76.5%', width: '31%', height: '4.6%' },
     subtitleBox: { left: '13%', top: '52.6%', width: '35%', height: '6.6%' },
     frontSealPos: { left: '41%', top: '69.5%' },
+    rearPirtBox: { left: '57.3%', top: '71.8%', width: '10.5%', height: '1.7%', skew: 'skewY(3deg)' },
   },
   'doypack-valve': {
     weightBox: { left: '17%', top: '74.3%', width: '30%', height: '4.4%' },
     subtitleBox: { left: '14%', top: '56.4%', width: '36%', height: '6.4%' },
     frontSealPos: { left: '40%', top: '67.5%' },
+    rearPirtBox: { left: '61%', top: '74.3%', width: '12%', height: '1.7%' },
+    rearStoryBox: { left: '54.8%', top: '45.8%', width: '33%', height: '16%' },
   },
   'tall-heritage': {
     weightBox: { left: '17%', top: '83.1%', width: '30%', height: '4.6%' },
     subtitleBox: { left: '15%', top: '52.2%', width: '34%', height: '6.6%' },
     frontSealPos: { left: '41%', top: '75.5%' },
+    rearPirtBox: { left: '64.3%', top: '77.5%', width: '10.5%', height: '1.7%', skew: 'skewY(-3deg)' },
   },
   'tall-botanical': {
     weightBox: { left: '18.5%', top: '81.9%', width: '31%', height: '4.5%', skew: 'skewY(-2.4deg)' },
     subtitleBox: { left: '16.5%', top: '50.8%', width: '35%', height: '6.5%', skew: 'skewY(-1.5deg)' },
     frontSealPos: { left: '43%', top: '74.2%' },
+    rearPirtBox: { left: '66.7%', top: '74.2%', width: '11%', height: '1.7%', skew: 'skewY(-2deg)' },
   },
   'tall-copper': {
     weightBox: { left: '22%', top: '81.6%', width: '30%', height: '4.5%', skew: 'skewY(-3.6deg)' },
     subtitleBox: { left: '20%', top: '53.4%', width: '34%', height: '6.5%', skew: 'skewY(-2.2deg)' },
     frontSealPos: { left: '44%', top: '73.5%' },
+    rearPirtBox: { left: '64.5%', top: '74.3%', width: '11%', height: '1.7%', skew: 'skewY(-3deg)' },
   },
 };
 
@@ -85,11 +93,12 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
   const isCompact = size !== 'hero';
   const isStudio = scene === 'studio-front' || scene === 'studio-rear';
 
-  const hasWeightOverride = config.netWeight !== '250 Gr';
-  const hasTextOverride = config.beanVariant !== 'robusta-100' || config.roastLevel !== 'traditional';
   const hasMoodOverride = config.naturalMood !== 'kawi-beans';
+  const rearCompositionText =
+    config.beanVariant === 'robusta-100'
+      ? 'KOMPOSISI 100 % BIJI KOPI ROBUSTA'
+      : `KOMPOSISI ${variant.frontLabel.toUpperCase()}`;
 
-  // Use photorealistic mockups whenever artworkSource is 'uploaded-final' & not backgroundOnly
   const usePhotorealisticNatural =
     !backgroundOnly && config.artworkSource === 'uploaded-final' && scene === 'natural-kawi';
   const usePhotorealisticDoypackStudio =
@@ -111,50 +120,86 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
             className="w-full h-full object-contain"
           />
 
-          {showFront && hasTextOverride && (
-            <div
-              className="absolute flex flex-col items-center justify-center text-center pointer-events-none px-2"
-              style={{
-                left: '27%',
-                top: '51.5%',
-                width: '46%',
-                height: '8.5%',
-                background:
-                  'radial-gradient(ellipse at center, rgba(28,16,11,0.97) 60%, rgba(28,16,11,0.88) 82%, transparent 100%)',
-              }}
-            >
-              <p className="font-sans font-semibold text-[#FAF5EB] leading-tight text-[10px] sm:text-[13px] truncate max-w-full">
-                {roast.subtitle}
-              </p>
-              <p className="font-sans font-semibold text-[#FAF5EB] leading-tight text-[10px] sm:text-[13px] truncate max-w-full">
-                {variant.frontLabel}
-              </p>
-            </div>
+          {/* Front Studio: Updated Roasted Coffee Subtitle + Weight (100 gram / 250 gram) */}
+          {showFront && (
+            <>
+              <div
+                className="absolute flex flex-col items-center justify-center text-center pointer-events-none px-2"
+                style={{
+                  left: '27%',
+                  top: '51.5%',
+                  width: '46%',
+                  height: '8.5%',
+                  background:
+                    'radial-gradient(ellipse at center, rgba(28,16,11,0.97) 60%, rgba(28,16,11,0.88) 82%, transparent 100%)',
+                }}
+              >
+                <p className="font-sans font-semibold text-[#FAF5EB] leading-tight text-[10px] sm:text-[13px] truncate max-w-full">
+                  {roast.subtitle}
+                </p>
+                <p className="font-sans font-semibold text-[#FAF5EB] leading-tight text-[10px] sm:text-[13px] truncate max-w-full">
+                  {variant.frontLabel}
+                </p>
+              </div>
+
+              <div
+                className="absolute flex items-center justify-center pointer-events-none"
+                style={{
+                  left: '33%',
+                  top: '86.4%',
+                  width: '34%',
+                  height: '5.6%',
+                  background: 'linear-gradient(105deg, #D5B26E 0%, #E7CE97 50%, #BF934B 100%)',
+                  maskImage: 'linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%)',
+                  WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%)',
+                }}
+              >
+                <span className="font-sans font-bold text-[#140B07] text-[10px] sm:text-[13px] tabular-nums whitespace-nowrap">
+                  Isi Bersih : {config.netWeight}
+                </span>
+              </div>
+
+              {config.sealPlacement === 'front' && (
+                <div className="absolute right-[26%] bottom-[16%] pointer-events-none">
+                  <KthEastJavaSeal variant="original-green" className="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-md" />
+                </div>
+              )}
+            </>
           )}
 
-          {showFront && hasWeightOverride && (
-            <div
-              className="absolute flex items-center justify-center pointer-events-none"
-              style={{
-                left: '33%',
-                top: '86.4%',
-                width: '34%',
-                height: '5.6%',
-                background: 'linear-gradient(105deg, #D5B26E 0%, #E7CE97 50%, #BF934B 100%)',
-                maskImage: 'linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%)',
-                WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%)',
-              }}
-            >
-              <span className="font-sans font-bold text-[#140B07] text-[10px] sm:text-[13px] tabular-nums whitespace-nowrap">
-                Isi Bersih : {config.netWeight}
-              </span>
-            </div>
-          )}
+          {/* Rear Studio: Updated Goreng Kreweng Story, Komposisi & White PIRT Box (NO Weight on Rear) */}
+          {!showFront && (
+            <>
+              <div
+                className="absolute flex flex-col items-center justify-center text-center pointer-events-none px-3"
+                style={{
+                  left: '27.5%',
+                  top: '30.5%',
+                  width: '45%',
+                  height: '28%',
+                  background:
+                    'radial-gradient(ellipse at center, rgba(31,19,14,0.97) 64%, rgba(31,19,14,0.88) 84%, transparent 100%)',
+                }}
+              >
+                <p className="font-sans text-[8.5px] sm:text-[10.5px] text-[#FAF5EB] leading-[1.35]">
+                  Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari
+                  lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter{' '}
+                  <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span>{' '}
+                  {roast.storyRoast}{' '}
+                  <span className="font-semibold text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
+                  <span className="font-semibold">harum dan nikmat</span>
+                </p>
+                <p className="mt-2 sm:mt-3 font-sans font-semibold text-[7.5px] sm:text-[9.5px] tracking-[0.04em] text-[#FAF5EB]">
+                  {rearCompositionText}
+                </p>
+              </div>
 
-          {showFront && config.sealPlacement === 'front' && (
-            <div className="absolute right-[26%] bottom-[16%] pointer-events-none">
-              <KthEastJavaSeal variant="original-green" className="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-md" />
-            </div>
+              {/* White PIRT stamp box matching Arunika_Kawi_rear_7407fb99.png */}
+              <div
+                className="absolute bg-white pointer-events-none"
+                style={{ left: '34.5%', top: '80.6%', width: '16.5%', height: '2.4%' }}
+              />
+            </>
           )}
         </div>
       </div>
@@ -198,63 +243,97 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
           />
         )}
 
-        {/* Dynamic Roast & Bean Variant Replacement over Front Pouch Subtitle */}
-        {hasTextOverride && (
+        {/* Front Pouch: Updated "Traditional Roasted Coffee / 100 % Biji Kopi Robusta" */}
+        <div
+          className="absolute flex flex-col items-center justify-center text-center pointer-events-none px-1"
+          style={{
+            left: spec.subtitleBox.left,
+            top: spec.subtitleBox.top,
+            width: spec.subtitleBox.width,
+            height: spec.subtitleBox.height,
+            transform: spec.subtitleBox.skew,
+            background:
+              'radial-gradient(ellipse at center, rgba(26,15,10,0.97) 62%, rgba(26,15,10,0.86) 84%, transparent 100%)',
+          }}
+        >
+          <p
+            className={`font-sans font-semibold text-[#FAF5EB] leading-[1.15] truncate max-w-full ${
+              size === 'hero' ? 'text-[9px] sm:text-[11px]' : 'text-[5.2px] sm:text-[6.2px]'
+            }`}
+          >
+            {roast.subtitle}
+          </p>
+          <p
+            className={`font-sans font-semibold text-[#FAF5EB] leading-[1.15] truncate max-w-full ${
+              size === 'hero' ? 'text-[9px] sm:text-[11px]' : 'text-[5.2px] sm:text-[6.2px]'
+            }`}
+          >
+            {variant.frontLabel}
+          </p>
+        </div>
+
+        {/* Front Pouch ONLY: Net Weight ("Isi Bersih : 100 gram" or "Isi Bersih : 250 gram") */}
+        <div
+          className="absolute flex items-center justify-center pointer-events-none"
+          style={{
+            left: spec.weightBox.left,
+            top: spec.weightBox.top,
+            width: spec.weightBox.width,
+            height: spec.weightBox.height,
+            transform: spec.weightBox.skew,
+            background: 'linear-gradient(105deg, #D5B26E 0%, #E7CE97 50%, #BF934B 100%)',
+            maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
+          }}
+        >
+          <span
+            className={`font-sans font-bold text-[#140B07] tabular-nums whitespace-nowrap ${
+              size === 'hero' ? 'text-[9px] sm:text-[11px]' : 'text-[5.2px] sm:text-[6.4px]'
+            }`}
+          >
+            Isi Bersih : {config.netWeight}
+          </span>
+        </div>
+
+        {/* Rear Pouch (Straight-On Doypack): Updated Goreng Kreweng Copy + Komposisi */}
+        {spec.rearStoryBox && size === 'hero' && (
           <div
-            className="absolute flex flex-col items-center justify-center text-center pointer-events-none px-1"
+            className="absolute flex flex-col items-center justify-center text-center pointer-events-none px-1.5"
             style={{
-              left: spec.subtitleBox.left,
-              top: spec.subtitleBox.top,
-              width: spec.subtitleBox.width,
-              height: spec.subtitleBox.height,
-              transform: spec.subtitleBox.skew,
+              left: spec.rearStoryBox.left,
+              top: spec.rearStoryBox.top,
+              width: spec.rearStoryBox.width,
+              height: spec.rearStoryBox.height,
+              transform: spec.rearStoryBox.skew,
               background:
-                'radial-gradient(ellipse at center, rgba(26,15,10,0.96) 62%, rgba(26,15,10,0.84) 84%, transparent 100%)',
+                'radial-gradient(ellipse at center, rgba(28,17,12,0.97) 64%, rgba(28,17,12,0.88) 84%, transparent 100%)',
             }}
           >
-            <p
-              className={`font-sans font-semibold text-[#FAF5EB] leading-[1.15] truncate max-w-full ${
-                size === 'hero' ? 'text-[9px] sm:text-[11px]' : 'text-[5.5px] sm:text-[6.5px]'
-              }`}
-            >
-              {roast.subtitle}
+            <p className="font-sans text-[5.8px] sm:text-[6.5px] text-[#FAF5EB] leading-[1.3]">
+              Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari lereng
+              Gunung Kawi. Menghadirkan <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span>{' '}
+              <span className="font-semibold text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
+              <span className="font-semibold">harum dan nikmat</span>
             </p>
-            <p
-              className={`font-sans font-semibold text-[#FAF5EB] leading-[1.15] truncate max-w-full ${
-                size === 'hero' ? 'text-[9px] sm:text-[11px]' : 'text-[5.5px] sm:text-[6.5px]'
-              }`}
-            >
-              {variant.frontLabel}
+            <p className="mt-1.5 font-sans font-semibold text-[4.8px] sm:text-[5.6px] tracking-[0.03em] text-[#FAF5EB] truncate max-w-full">
+              {rearCompositionText}
             </p>
           </div>
         )}
 
-        {/* Dynamic Net Weight Replacement directly on the Pouch Gold Foil Band */}
-        {hasWeightOverride && (
-          <div
-            className="absolute flex items-center justify-center pointer-events-none"
-            style={{
-              left: spec.weightBox.left,
-              top: spec.weightBox.top,
-              width: spec.weightBox.width,
-              height: spec.weightBox.height,
-              transform: spec.weightBox.skew,
-              background: 'linear-gradient(105deg, #D5B26E 0%, #E7CE97 50%, #BF934B 100%)',
-              maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
-              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
-            }}
-          >
-            <span
-              className={`font-sans font-bold text-[#140B07] tabular-nums whitespace-nowrap ${
-                size === 'hero' ? 'text-[9px] sm:text-[11.5px]' : 'text-[5.5px] sm:text-[6.8px]'
-              }`}
-            >
-              Isi Bersih : {config.netWeight}
-            </span>
-          </div>
-        )}
+        {/* Rear Pouch: White PIRT stamp box matching latest Arunika_Kawi_rear */}
+        <div
+          className="absolute bg-white/95 pointer-events-none"
+          style={{
+            left: spec.rearPirtBox.left,
+            top: spec.rearPirtBox.top,
+            width: spec.rearPirtBox.width,
+            height: spec.rearPirtBox.height,
+            transform: spec.rearPirtBox.skew,
+          }}
+        />
 
-        {/* Dynamic Front KTH Seal if user sets sealPlacement === 'front' */}
+        {/* Dynamic Front KTH Seal if user toggles sealPlacement === 'front' */}
         {config.sealPlacement === 'front' && (
           <div
             className="absolute pointer-events-none"
@@ -267,14 +346,14 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
           </div>
         )}
 
-        {/* Crisp corner badge showing synced non-default net weight & dimensions */}
-        {hasWeightOverride && (
+        {/* Crisp corner indicator showing active Front Variant & Dimension */}
+        {config.netWeight === '100 gram' && (
           <div
             className={`absolute top-2.5 left-2.5 z-10 pointer-events-none rounded bg-[#1A1412]/88 border border-[#D8B474]/45 text-[#FAF5EB] font-mono tabular-nums ${
               size === 'hero' ? 'px-2.5 py-1 text-[11px]' : 'px-1.5 py-0.5 text-[9px]'
             }`}
           >
-            {config.netWeight} · {weightSpecs.dimensions.split(' (')[0]}
+            100 gram · {weightSpecs.dimensions.split(' (')[0]}
           </div>
         )}
       </div>
@@ -285,8 +364,7 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
   // 1) backgroundOnly === true ("Lihat Background Saja")
   // 2) artworkSource === 'studio-custom' ("Artwork: Template Dinamis")
   // 3) studio-front / studio-rear on non-doypack shapes
-  const scaleFactor =
-    config.netWeight === '100 Gr' ? 0.87 : config.netWeight === '500 Gr' ? 1.06 : 1;
+  const scaleFactor = config.netWeight === '100 gram' ? 0.9 : 1;
 
   if (isStudio) {
     const showFront = scene === 'studio-front';
@@ -486,7 +564,6 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
             className="relative flex items-end justify-center gap-[3.5%] w-full max-w-[96%]"
             style={{ perspective: '1100px' }}
           >
-            {/* Left: Front + 3D Right Side Gusset with locked equal height */}
             <div
               className={`relative flex items-stretch ${
                 tall ? 'w-[44%] aspect-[128/240]' : 'w-[48%] aspect-[162/210]'
@@ -503,7 +580,6 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
               </div>
             </div>
 
-            {/* Right: 3D Left Side Gusset + Back with locked equal height */}
             <div
               className={`relative flex items-stretch ${
                 tall ? 'w-[44%] aspect-[128/240]' : 'w-[48%] aspect-[162/210]'

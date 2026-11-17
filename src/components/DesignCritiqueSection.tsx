@@ -69,10 +69,9 @@ export function DesignCritiqueSection({ config }: { config: PackagingConfig }) {
   const activeSource =
     selectedRef === 'revised-final'
       ? {
-          src: ORIGINAL_UPLOADS.revisedFront,
-          title: 'Artwork Revisi Anda (Depan & Belakang)',
-          caption:
-            'Desain final Anda: swash gold ARUNIKA KAWI, TRADITIONAL ROAST, narasi KTH Gunung Kawi, KUPS Himatarian Blitar, PIRT, dan template deskripsi belakang.',
+          src: config.netWeight === '100 gram' ? ORIGINAL_UPLOADS.revisedFront100 : ORIGINAL_UPLOADS.revisedFront250,
+          title: `Artwork Revisi Terbaru · Depan (${config.netWeight})`,
+          caption: `Desain final terbaru Anda (${config.netWeight}): Traditional Roasted Coffee, 100 % Biji Kopi Robusta, Isi Bersih : ${config.netWeight} tampil khusus di halaman depan, narasi Goreng Kreweng, KOMPOSISI 100 % BIJI KOPI ROBUSTA, dan kotak PIRT baru di belakang.`,
           afterTitle: `Implementasi Live · ${activeShapeMeta.code} (${config.netWeight})`,
           afterCaption: getDynamicShapeDescription(config.pouchShape, config),
         }

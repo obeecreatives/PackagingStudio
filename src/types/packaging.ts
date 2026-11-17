@@ -9,7 +9,7 @@ export type BeanVariantId = 'robusta-100' | 'robusta-honey' | 'robusta-peaberry'
 export type RoastLevelId = 'traditional' | 'medium-dark' | 'bold-espresso';
 export type NaturalMoodId = 'kawi-beans' | 'cherries-beans' | 'espresso-matte';
 export type SealPlacement = 'back' | 'front' | 'hidden';
-export type WeightOption = '250 Gr' | '500 Gr' | '100 Gr';
+export type WeightOption = '100 gram' | '250 gram';
 export type PrintViewMode = 'compare' | 'dieline' | 'front' | 'back-gusset' | 'pouch-3d';
 export type ArtworkSourceMode = 'uploaded-final' | 'studio-custom';
 
@@ -145,7 +145,7 @@ export function getWeightSpecs(shape: PouchShapeId, weight: WeightOption): Weigh
   const tall = isTallGusset(shape);
   const isDoypack = shape === 'doypack-valve';
 
-  if (weight === '100 Gr') {
+  if (weight === '100 gram') {
     if (isDoypack) {
       return {
         dimensions: '120 × 185 mm (+ 32 mm Alas)',
@@ -161,7 +161,7 @@ export function getWeightSpecs(shape: PouchShapeId, weight: WeightOption): Weigh
         panelHmm: 185,
         gussetWmm: 0,
         bottomMm: 32,
-        visualScale: 0.87,
+        visualScale: 0.9,
       };
     }
     if (tall) {
@@ -179,7 +179,7 @@ export function getWeightSpecs(shape: PouchShapeId, weight: WeightOption): Weigh
         panelHmm: 195,
         gussetWmm: 50,
         bottomMm: 50,
-        visualScale: 0.87,
+        visualScale: 0.9,
       };
     }
     return {
@@ -196,66 +196,11 @@ export function getWeightSpecs(shape: PouchShapeId, weight: WeightOption): Weigh
       panelHmm: 170,
       gussetWmm: 55,
       bottomMm: 55,
-      visualScale: 0.87,
+      visualScale: 0.9,
     };
   }
 
-  if (weight === '500 Gr') {
-    if (isDoypack) {
-      return {
-        dimensions: '180 × 265 mm (+ 48 mm Alas)',
-        frontDim: '180 × 265 mm',
-        gussetDim: '48 mm (Alas Bawah)',
-        unwrapDim: '180 × 265 mm (Depan & Belakang)',
-        bottomFold: '48 mm',
-        cornerRadius: 'R-12 mm',
-        sealWidth: '10 mm',
-        valveDist: '74 mm',
-        servings: '± 33 – 40 Sajian Seduh',
-        frontWmm: 180,
-        panelHmm: 265,
-        gussetWmm: 0,
-        bottomMm: 48,
-        visualScale: 1.06,
-      };
-    }
-    if (tall) {
-      return {
-        dimensions: '120 × 290 × 75 mm',
-        frontDim: '120 × 290 mm',
-        gussetDim: '75 × 290 mm',
-        unwrapDim: '390 × 290 mm (+ 3 mm Bleed Keliling)',
-        bottomFold: '75 mm',
-        cornerRadius: 'R-4 mm',
-        sealWidth: '6 mm',
-        valveDist: '64 mm',
-        servings: '± 33 – 40 Sajian Seduh',
-        frontWmm: 120,
-        panelHmm: 290,
-        gussetWmm: 75,
-        bottomMm: 75,
-        visualScale: 1.06,
-      };
-    }
-    return {
-      dimensions: '155 × 255 × 85 mm',
-      frontDim: '155 × 255 mm',
-      gussetDim: '85 × 255 mm',
-      unwrapDim: '480 × 255 mm (+ 3 mm Bleed Keliling)',
-      bottomFold: '85 mm',
-      cornerRadius: 'R-4 mm',
-      sealWidth: '6 mm',
-      valveDist: '62 mm',
-      servings: '± 33 – 40 Sajian Seduh',
-      frontWmm: 155,
-      panelHmm: 255,
-      gussetWmm: 85,
-      bottomMm: 85,
-      visualScale: 1.06,
-    };
-  }
-
-  // Default 250 Gr
+  // Default 250 gram
   if (isDoypack) {
     return {
       dimensions: '150 × 220 mm (+ 40 mm Alas)',
@@ -323,12 +268,12 @@ export const BEAN_VARIANTS: Record<
   }
 > = {
   'robusta-100': {
-    label: '100 % Robusta Bean',
-    frontLabel: '100 % Robusta Bean',
+    label: '100 % Biji Kopi Robusta',
+    frontLabel: '100 % Biji Kopi Robusta',
     originLine: 'Lereng Gunung Kawi · Jawa Timur',
     notes: ['Dark Chocolate', 'Roasted Hazelnut', 'Spiced Caramel'],
     altitude: '1.100 – 1.400 MDPL',
-    process: 'Natural & Traditional Dry Hull',
+    process: 'Natural & Goreng Kreweng Tradisional',
     storyCharacter: 'rasa kopi robusta yang autentik.',
   },
   'robusta-honey': {
@@ -365,14 +310,14 @@ export const ROAST_LEVELS: Record<
   }
 > = {
   traditional: {
-    label: 'Traditional Roast',
+    label: 'Traditional Roasted',
     crestTop: 'TRADITIONAL',
     crestBottom: 'ROAST',
-    subtitle: 'Traditional Roasting Coffee',
+    subtitle: 'Traditional Roasted Coffee',
     bodyScore: 5,
     bitternessScore: 4,
     aromaScore: 4,
-    storyRoast: 'Proses sangrai tradisionalnya menciptakan aroma khas',
+    storyRoast: 'Proses sangrai tradisionalnya menghasilkan aroma khas',
   },
   'medium-dark': {
     label: 'Medium-Dark Roast',
@@ -446,8 +391,10 @@ export const GENERATED_ASSETS = {
 };
 
 export const ORIGINAL_UPLOADS = {
-  revisedFront: '/assets/aistudio/Arunika_Kawi_Front_5746d0e7.png',
-  revisedRear: '/assets/aistudio/Arunika_Kawi_rear_d422cdc0.png',
+  revisedFront100: '/assets/aistudio/Arunika_Kawi_Front_35d762ba.png',
+  revisedFront250: '/assets/aistudio/Arunika_Kawi_Front_250_gr_64a3fb30.png',
+  revisedFront: '/assets/aistudio/Arunika_Kawi_Front_250_gr_64a3fb30.png',
+  revisedRear: '/assets/aistudio/Arunika_Kawi_rear_7407fb99.png',
   draftWithSeal: '/assets/aistudio/1_a10913ea.png',
   draftClean: '/assets/aistudio/2_adb214b7.png',
   referenceMockup: '/assets/aistudio/5_815d0c47.png',
