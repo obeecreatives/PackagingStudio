@@ -29,6 +29,7 @@ export default defineConfig(() => {
             'PackagingStudio: studio desain kemasan full print, mockup 3D, dieline, dan ekspor siap cetak untuk berbagai proyek klien.',
           theme_color: '#1A1412',
           background_color: '#F6F5F2',
+          lang: 'id',
           display: 'standalone',
           start_url: '/',
           scope: '/',

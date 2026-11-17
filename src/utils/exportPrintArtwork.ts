@@ -7,6 +7,7 @@ import {
   PackagingConfig,
   ROAST_LEVELS,
 } from '../types/packaging';
+import { getWibDateKey } from './dateUtils';
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -913,7 +914,8 @@ export async function renderAndDownloadPrintSheet(
       : baseScope === 'front-only'
         ? 'PanelDepan'
         : 'PanelBelakang';
-  link.download = `Arunika-Kawi-${config.pouchShape}-${suffix}-${config.netWeight.replace(/\s+/g, '')}.png`;
+  const wibDate = getWibDateKey();
+  link.download = `PackagingStudio-${config.pouchShape}-${suffix}-${config.netWeight.replace(/\s+/g, '')}-${wibDate}.png`;
   link.href = dataUrl;
   document.body.appendChild(link);
   link.click();

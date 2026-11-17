@@ -17,6 +17,7 @@ import {
   MandalaHeritageCrest,
   RoastProfileCrest,
 } from './BrandCrests';
+import { getWibBatchAndExpiry } from '../utils/dateUtils';
 
 interface PanelProps {
   config: PackagingConfig;
@@ -739,6 +740,7 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
   const isDoypack = config.pouchShape === 'doypack-valve';
   const isCopper = config.pouchShape === 'tall-copper';
   const isUploadedFinal = config.artworkSource === 'uploaded-final';
+  const { batchCode, expiryLabel } = getWibBatchAndExpiry(12);
 
   if (isUploadedFinal && !backgroundOnly) {
     return (
@@ -1092,8 +1094,8 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
                 <br />
                 Jawa Timur — Indonesia
               </p>
-              <p className={`font-mono text-[#B7A693] pt-0.5 ${compact ? 'text-[4px]' : 'text-[6.5px]'}`}>
-                EXP: 12 / 2027 · BATCH AK-24
+              <p className={`font-mono text-[#B7A693] pt-0.5 tabular-nums ${compact ? 'text-[4px]' : 'text-[6.5px]'}`}>
+                EXP: {expiryLabel} · BATCH {batchCode}
               </p>
             </div>
           </div>

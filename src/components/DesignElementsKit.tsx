@@ -24,6 +24,7 @@ import {
   downloadSvgAsPng,
   downloadSvgElement,
 } from '../utils/exportSingleElement';
+import { getWibBatchAndExpiry, getWibFormattedDate } from '../utils/dateUtils';
 
 interface ColorToken {
   name: string;
@@ -243,6 +244,8 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
   const roast = ROAST_LEVELS[config.roastLevel];
   const shapeMeta = POUCH_SHAPES[config.pouchShape];
   const weightSpecs = getWeightSpecs(config.pouchShape, config.netWeight);
+  const { batchCode, expiryCompact } = getWibBatchAndExpiry(12);
+  const wibDateLabel = getWibFormattedDate();
 
   const handleCopy = async (id: string, text: string) => {
     try {
@@ -275,7 +278,7 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
     ``,
     `CATATAN RASA: ${variant.notes.join(', ')}`,
     `DIPRODUKSI OLEH: KUPS Himatarian Blitar, Jawa Timur – INDONESIA (PIRT · ${config.netWeight})`,
-    `KODE PRODUKSI / BAIK DIGUNAKAN SEBELUM: [Kolom Stamp Putih]`,
+    `KODE PRODUKSI / BAIK DIGUNAKAN SEBELUM: ${batchCode} · EXP ${expiryCompact} (WIB GMT+7 · ${wibDateLabel})`,
     `PITA BAWAH BELAKANG: 100 % KOPI ASLI INDONESIA · ${config.netWeight}`,
   ].join('\n');
 
@@ -607,7 +610,7 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
                     Data Teknis &amp; Barcode · {shapeMeta.fonts.mono}
                   </p>
                   <p className="mt-1 font-mono text-xs text-[#1A1412] tabular-nums">
-                    8 997024 192504 · {variant.altitude} · {config.netWeight} · EXP 12/2027
+                    8 997024 192504 · {variant.altitude} · {config.netWeight} · EXP {expiryCompact} (WIB)
                   </p>
                 </div>
               </div>

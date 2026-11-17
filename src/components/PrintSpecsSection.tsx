@@ -9,6 +9,7 @@ import {
   POUCH_SHAPES,
   ROAST_LEVELS,
 } from '../types/packaging';
+import { getWibFormattedDateTime } from '../utils/dateUtils';
 import { ExportScope } from '../utils/exportPrintArtwork';
 
 interface PrintSpecsSectionProps {
@@ -75,10 +76,13 @@ export function PrintSpecsSection({ config, onExport, isExporting }: PrintSpecsS
           { label: 'Finishing & Profil Warna', value: 'Matte Velvet Film + Spot Gold Foil (Pantone 871 C)' },
         ];
 
+  const wibSpecTimestamp = React.useMemo(() => getWibFormattedDateTime(), []);
+
   const fullSpecs = [
     ...specs,
     { label: 'Font Display & Tagline', value: shapeMeta.fonts.display },
     { label: 'Font Sub-Judul & Teknis', value: `${shapeMeta.fonts.body} · ${shapeMeta.fonts.mono}` },
+    { label: 'Tanggal & Zona Waktu Cetak', value: wibSpecTimestamp },
   ];
 
   return (
