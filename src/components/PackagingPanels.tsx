@@ -271,10 +271,14 @@ export function FrontPanel({
         {/* Dynamic Roast & Bean Variant Replacement when changed from default */}
         {hasTextOverride && (
           <div
-            className="absolute inset-x-[6%] top-[47.8%] h-[11.5%] flex flex-col items-center justify-center text-center pointer-events-none z-10 px-2"
+            className="absolute inset-x-[10%] top-[48.2%] h-[10.8%] flex flex-col items-center justify-center text-center pointer-events-none z-10 px-2"
             style={{
               background:
-                'radial-gradient(ellipse at center, rgba(28,16,11,0.97) 58%, rgba(28,16,11,0.88) 78%, rgba(28,16,11,0) 100%)',
+                'linear-gradient(90deg, rgba(40,25,18,0.97) 0%, rgba(28,16,11,0.98) 50%, rgba(24,14,9,0.97) 100%)',
+              maskImage:
+                'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 56%, rgba(0,0,0,0.85) 75%, rgba(0,0,0,0) 100%)',
+              WebkitMaskImage:
+                'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 56%, rgba(0,0,0,0.85) 75%, rgba(0,0,0,0) 100%)',
             }}
           >
             <p
@@ -770,10 +774,14 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
         {/* Dynamic Roast & Bean Variant Override on Rear when changed from default */}
         {hasRearTextOverride && (
           <div
-            className="absolute inset-x-[6%] top-[24%] h-[34%] flex flex-col items-center justify-center text-center pointer-events-none px-3 z-10"
+            className="absolute inset-x-[8%] top-[24.5%] h-[33%] flex flex-col items-center justify-center text-center pointer-events-none px-3 z-10"
             style={{
               background:
-                'radial-gradient(ellipse at center, rgba(28,16,11,0.98) 64%, rgba(28,16,11,0.88) 84%, transparent 100%)',
+                'linear-gradient(90deg, rgba(40,25,18,0.97) 0%, rgba(28,16,11,0.98) 50%, rgba(24,14,9,0.97) 100%)',
+              maskImage:
+                'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 56%, rgba(0,0,0,0.85) 75%, rgba(0,0,0,0) 100%)',
+              WebkitMaskImage:
+                'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 56%, rgba(0,0,0,0.85) 75%, rgba(0,0,0,0) 100%)',
             }}
           >
             <p className={`text-[#F4ECE0] leading-relaxed ${compact ? 'text-[6.2px]' : 'text-[10.5px]'}`}>
