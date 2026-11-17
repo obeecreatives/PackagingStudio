@@ -33,6 +33,7 @@ import { PWAInstallButton } from './components/PWAInstallButton';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { ExportScope, renderAndDownloadPrintSheet } from './utils/exportPrintArtwork';
+import { exportSelectedDesignPdf } from './utils/exportPdfDossier';
 
 const ALL_ALTERNATIVE_IDS: PouchShapeId[] = [
   'box-gusset',
@@ -58,6 +59,7 @@ export default function App() {
   const [heroScene, setHeroScene] = useState<MockupSceneMode>('natural-kawi');
   const [previewBgOnly, setPreviewBgOnly] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
   const isOnline = useOnlineStatus();
 
   const handleExport = async (scope: ExportScope = 'full-dieline') => {
@@ -66,6 +68,15 @@ export default function App() {
       await renderAndDownloadPrintSheet(config, scope);
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleExportPdf = async () => {
+    setIsExportingPdf(true);
+    try {
+      await exportSelectedDesignPdf(config);
+    } finally {
+      setIsExportingPdf(false);
     }
   };
 
@@ -80,7 +91,12 @@ export default function App() {
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-[#F6F5F2] text-[#1A1412]">
-      <TopBar onDownloadClick={() => handleExport('full-dieline')} isExporting={isExporting} />
+      <TopBar
+        onDownloadClick={() => handleExport('full-dieline')}
+        isExporting={isExporting}
+        onExportPdfClick={handleExportPdf}
+        isExportingPdf={isExportingPdf}
+      />
 
       {!isOnline && (
         <div className="bg-[#2B1D16] text-[#FAF5EB] px-4 py-2 text-center text-xs font-medium">
@@ -144,15 +160,23 @@ export default function App() {
                   <div className="mt-7 flex flex-wrap items-center gap-3">
                     <button
                       type="button"
+                      disabled={isExportingPdf}
+                      onClick={handleExportPdf}
+                      className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 text-sm font-semibold text-[#FAF5EB] bg-[#8A6429] hover:bg-[#73511D] disabled:opacity-60 rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                    >
+                      {isExportingPdf ? 'Menyusun PDF...' : 'Ekspor Dossier PDF (00–04)'}
+                    </button>
+                    <button
+                      type="button"
                       disabled={isExporting}
                       onClick={() => handleExport('bg-full-dieline')}
-                      className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 text-sm font-semibold text-[#FAF5EB] bg-[#8A6429] hover:bg-[#73511D] disabled:opacity-60 rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                      className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 text-sm font-semibold text-[#FAF5EB] bg-[#1A1412] hover:bg-[#31221B] disabled:opacity-60 rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer"
                     >
                       Unduh Background Saja (PNG)
                     </button>
                     <a
                       href="#semua-alternatif"
-                      className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 text-sm font-semibold text-[#FAF5EB] bg-[#1A1412] hover:bg-[#31221B] rounded-md transition-colors whitespace-nowrap shrink-0"
+                      className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 text-sm font-semibold text-[#1A1412] bg-[#EFECE6] hover:bg-[#E5E0D7] border border-[#1A1412]/15 rounded-md transition-colors whitespace-nowrap shrink-0"
                     >
                       Bandingkan Semua 5 Alternatif
                     </a>
@@ -672,7 +696,13 @@ export default function App() {
 
         <DesignCritiqueSection config={config} />
         <DesignElementsKit config={config} onExport={handleExport} isExporting={isExporting} />
-        <PrintSpecsSection config={config} onExport={handleExport} isExporting={isExporting} />
+        <PrintSpecsSection
+          config={config}
+          onExport={handleExport}
+          isExporting={isExporting}
+          onExportPdf={handleExportPdf}
+          isExportingPdf={isExportingPdf}
+        />
       </main>
 
       <footer className="border-t border-[#1A1412]/10 pt-8 pb-[calc(5.25rem+env(safe-area-inset-bottom))] md:pb-8 bg-[#F6F5F2]">

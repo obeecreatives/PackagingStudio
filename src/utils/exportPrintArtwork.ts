@@ -9,7 +9,7 @@ import {
 } from '../types/packaging';
 import { getWibDateKey } from './dateUtils';
 
-function loadImage(src: string): Promise<HTMLImageElement> {
+export function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -223,10 +223,19 @@ export type ExportScope =
   | 'bg-front-only'
   | 'bg-back-only';
 
-export async function renderAndDownloadPrintSheet(
+export interface RenderedPrintSheet {
+  canvas: HTMLCanvasElement;
+  widthMm: number;
+  heightMm: number;
+  isBackgroundOnly: boolean;
+  baseScope: 'full-dieline' | 'front-only' | 'back-only';
+}
+
+export async function renderPrintSheetCanvas(
   config: PackagingConfig,
-  scope: ExportScope = 'full-dieline'
-): Promise<void> {
+  scope: ExportScope = 'full-dieline',
+  scale = 8
+): Promise<RenderedPrintSheet | null> {
   const isBackgroundOnly = scope.startsWith('bg-');
   const baseScope = (isBackgroundOnly ? scope.replace('bg-', '') : scope) as
     | 'full-dieline'
@@ -238,7 +247,6 @@ export async function renderAndDownloadPrintSheet(
   const isHeritage = config.pouchShape === 'tall-heritage';
   const isCopper = config.pouchShape === 'tall-copper';
   const weightSpecs = getWeightSpecs(config.pouchShape, config.netWeight);
-  const scale = 8;
   const bleedPx = 3 * scale;
 
   const panelH = weightSpecs.panelHmm * scale;
@@ -257,7 +265,7 @@ export async function renderAndDownloadPrintSheet(
   canvas.width = contentW + bleedPx * 2;
   canvas.height = panelH + bleedPx * 2;
   const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  if (!ctx) return null;
 
   const [beansImg, mistImg, cherriesImg, revisedFrontImg, revisedRearImg] = await Promise.all([
     loadImage(GENERATED_ASSETS.beansCluster).catch(() => null),
@@ -963,6 +971,23 @@ export async function renderAndDownloadPrintSheet(
     });
   }
 
+  return {
+    canvas,
+    widthMm: Math.round(canvas.width / scale),
+    heightMm: Math.round(canvas.height / scale),
+    isBackgroundOnly,
+    baseScope,
+  };
+}
+
+export async function renderAndDownloadPrintSheet(
+  config: PackagingConfig,
+  scope: ExportScope = 'full-dieline'
+): Promise<void> {
+  const rendered = await renderPrintSheetCanvas(config, scope, 8);
+  if (!rendered) return;
+
+  const { canvas, isBackgroundOnly, baseScope } = rendered;
   const dataUrl = canvas.toDataURL('image/png');
   const link = document.createElement('a');
   const suffix = isBackgroundOnly

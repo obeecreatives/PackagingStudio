@@ -10,13 +10,12 @@ import {
 } from './BrandCrests';
 import {
   BEAN_VARIANTS,
-  GENERATED_ASSETS,
   getWeightSpecs,
-  ORIGINAL_UPLOADS,
   PackagingConfig,
   POUCH_SHAPES,
   ROAST_LEVELS,
 } from '../types/packaging';
+import { COLOR_TOKENS, PHOTO_ASSETS } from '../data/packagingSpecs';
 import { BackPanel, FrontPanel } from './PackagingPanels';
 import { ExportScope } from '../utils/exportPrintArtwork';
 import {
@@ -25,158 +24,6 @@ import {
   downloadSvgElement,
 } from '../utils/exportSingleElement';
 import { getWibBatchAndExpiry, getWibFormattedDate } from '../utils/dateUtils';
-
-interface ColorToken {
-  name: string;
-  role: string;
-  hex: string;
-  cmyk: string;
-  finish: string;
-}
-
-const COLOR_TOKENS: ColorToken[] = [
-  {
-    name: 'Deep Espresso Matte',
-    role: 'Kanvas Dasar Kemasan',
-    hex: '#1C100B',
-    cmyk: 'C45 M72 Y78 K82',
-    finish: 'Matte Velvet Film',
-  },
-  {
-    name: 'Roast Umber Highlight',
-    role: 'Gradasi Pencahayaan Atas',
-    hex: '#2B1912',
-    cmyk: 'C40 M68 Y74 K68',
-    finish: 'Matte Velvet Film',
-  },
-  {
-    name: 'Champagne Gold Foil',
-    role: 'Pita Bawah, Emblem & Garis',
-    hex: '#D6B373',
-    cmyk: 'C15 M28 Y62 K4',
-    finish: 'Spot Gold Foil (Pantone 871 C)',
-  },
-  {
-    name: 'Antique Bronze Shadow',
-    role: 'Gradasi Gelap Foil Emas',
-    hex: '#8C6429',
-    cmyk: 'C28 M52 Y84 K28',
-    finish: 'Spot Gold Foil',
-  },
-  {
-    name: 'Warm Ivory Parchment',
-    role: 'Tipografi Utama & Teks Belakang',
-    hex: '#FAF5EB',
-    cmyk: 'C2 M3 Y8 K0',
-    finish: 'Opaque White / Ivory Ink',
-  },
-  {
-    name: 'Copper Terracotta Sash',
-    role: 'Bidang Diagonal Alternatif 05',
-    hex: '#9C4F2B',
-    cmyk: 'C20 M72 Y86 K18',
-    finish: 'Metallic Copper / Satin Ink',
-  },
-];
-
-const PHOTO_ASSETS = [
-  {
-    id: 'revised-front-250',
-    title: 'Master Revisi Terbaru · Halaman Depan (250 gram)',
-    usage: 'Artwork final depan 250 gram (Traditional Roasted Coffee, 100 % Biji Kopi Robusta, Isi Bersih : 250 gram)',
-    src: ORIGINAL_UPLOADS.revisedFront250,
-    filename: 'arunika-kawi-master-depan-250gr.png',
-    dims: 'Master Upload · 250 gram',
-  },
-  {
-    id: 'revised-front-100',
-    title: 'Master Revisi Terbaru · Halaman Depan (100 gram)',
-    usage: 'Artwork final depan 100 gram (Traditional Roasted Coffee, 100 % Biji Kopi Robusta, Isi Bersih : 100 gram)',
-    src: ORIGINAL_UPLOADS.revisedFront100,
-    filename: 'arunika-kawi-master-depan-100gr.png',
-    dims: 'Master Upload · 100 gram',
-  },
-  {
-    id: 'revised-rear',
-    title: 'Master Revisi Terbaru · Halaman Belakang',
-    usage: 'Artwork final belakang (Goreng Kreweng, KOMPOSISI 100 % BIJI KOPI ROBUSTA, kotak PIRT, tanpa berat bersih)',
-    src: ORIGINAL_UPLOADS.revisedRear,
-    filename: 'arunika-kawi-master-belakang.png',
-    dims: 'Master Upload · Belakang',
-  },
-  {
-    id: 'beans-cluster',
-    title: 'Foto Klaster Biji Kopi Robusta',
-    usage: 'Elemen utama bagian bawah panel depan & gusset samping',
-    src: GENERATED_ASSETS.beansCluster,
-    filename: 'arunika-elemen-biji-kopi-robusta.jpg',
-    dims: '1400 × 1050 px',
-  },
-  {
-    id: 'kawi-mist',
-    title: 'Foto Lanskap Fajar Gunung Kawi',
-    usage: 'Atmosfer kabut pagi ("Arunika") pada latar atas kemasan',
-    src: GENERATED_ASSETS.kawiMist,
-    filename: 'arunika-elemen-kabut-gunung-kawi.jpg',
-    dims: '1600 × 900 px',
-  },
-  {
-    id: 'mockup-box',
-    title: 'Mockup Final · Versi 01 Box Pouch',
-    usage: 'Presentasi Box Pouch Gusset (Depan & Belakang) di atas travertine',
-    src: GENERATED_ASSETS.pouchMockup,
-    filename: 'arunika-mockup-01-box-pouch.jpg',
-    dims: 'High-Res Studio',
-  },
-  {
-    id: 'mockup-doypack-studio',
-    title: 'Mockup Final · Alternatif 02 Doypack Depan',
-    usage: 'Mockup lurus latar putih persis bentuk contoh Doypack + katup udara tengah',
-    src: GENERATED_ASSETS.doypackStudio,
-    filename: 'arunika-mockup-02a-doypack-depan.jpg',
-    dims: 'High-Res Studio',
-  },
-  {
-    id: 'mockup-doypack-studio-rear',
-    title: 'Mockup Final · Alternatif 02 Doypack Belakang',
-    usage: 'Mockup lurus latar putih sisi belakang Doypack tanpa katup udara',
-    src: GENERATED_ASSETS.doypackStudioRear,
-    filename: 'arunika-mockup-02b-doypack-belakang.jpg',
-    dims: 'High-Res Studio',
-  },
-  {
-    id: 'mockup-doypack-natural',
-    title: 'Mockup Final · Alternatif 02 Doypack Natural',
-    usage: 'Mockup persis bentuk contoh Doypack (Depan & Belakang) di atas batu vulkanik, travertine & fajar Gunung Kawi',
-    src: GENERATED_ASSETS.doypackNatural,
-    filename: 'arunika-mockup-02c-doypack-natural.jpg',
-    dims: 'High-Res Studio',
-  },
-  {
-    id: 'mockup-tall-heritage',
-    title: 'Mockup Final · Alternatif 03 Tall Classic Border',
-    usage: 'Foto tall gusset (Depan & Belakang) dengan bingkai garis emas tipis',
-    src: GENERATED_ASSETS.tallHeritage,
-    filename: 'arunika-mockup-03-tall-classic.jpg',
-    dims: 'High-Res Studio',
-  },
-  {
-    id: 'mockup-tall-botanical',
-    title: 'Mockup Final · Alternatif 04 Tall Botanical',
-    usage: 'Foto tall gusset dengan ilustrasi botani daun & ceri kopi foil emas',
-    src: GENERATED_ASSETS.tallBotanical,
-    filename: 'arunika-mockup-04-tall-botanical.jpg',
-    dims: 'High-Res Studio',
-  },
-  {
-    id: 'mockup-tall-copper',
-    title: 'Mockup Final · Alternatif 05 Tall Copper',
-    usage: 'Foto tall gusset dengan garis emas vertikal & bidang diagonal tembaga',
-    src: GENERATED_ASSETS.tallCopper,
-    filename: 'arunika-mockup-05-tall-copper.jpg',
-    dims: 'High-Res Studio',
-  },
-];
 
 function VectorElementCard({
   title,
@@ -201,6 +48,7 @@ function VectorElementCard({
     <div className="bg-[#EFECE6] rounded-xl border border-[#1A1412]/10 overflow-hidden flex flex-col">
       <div
         ref={containerRef}
+        data-vector-slug={fileSlug}
         className="h-44 bg-[#18100C] flex items-center justify-center p-5 border-b border-[#1A1412]/10"
       >
         {children}

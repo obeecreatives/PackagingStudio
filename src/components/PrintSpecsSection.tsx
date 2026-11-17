@@ -1,89 +1,36 @@
 import React from 'react';
-import { Download } from 'lucide-react';
+import { Download, FileText } from 'lucide-react';
 import {
   BEAN_VARIANTS,
   getWeightSpecs,
-  isTallGusset,
-  NATURAL_MOODS,
   PackagingConfig,
   POUCH_SHAPES,
   ROAST_LEVELS,
 } from '../types/packaging';
-import { getWibFormattedDateTime } from '../utils/dateUtils';
+import { getPrintSpecificationRows } from '../data/packagingSpecs';
 import { ExportScope } from '../utils/exportPrintArtwork';
 
 interface PrintSpecsSectionProps {
   config: PackagingConfig;
   onExport: (scope: ExportScope) => void;
   isExporting: boolean;
+  onExportPdf: () => void;
+  isExportingPdf: boolean;
 }
 
-export function PrintSpecsSection({ config, onExport, isExporting }: PrintSpecsSectionProps) {
-  const isDoypack = config.pouchShape === 'doypack-valve';
-  const tall = isTallGusset(config.pouchShape);
+export function PrintSpecsSection({
+  config,
+  onExport,
+  isExporting,
+  onExportPdf,
+  isExportingPdf,
+}: PrintSpecsSectionProps) {
   const shapeMeta = POUCH_SHAPES[config.pouchShape];
   const weightSpecs = getWeightSpecs(config.pouchShape, config.netWeight);
   const variant = BEAN_VARIANTS[config.beanVariant];
   const roast = ROAST_LEVELS[config.roastLevel];
-  const mood = NATURAL_MOODS[config.naturalMood];
 
-  const sealPositionLabel =
-    config.sealPlacement === 'back'
-      ? 'Panel Belakang (Bawah Kiri Dekat Produsen)'
-      : config.sealPlacement === 'front'
-        ? 'Panel Depan (Pojok Kanan Bawah)'
-        : 'Disembunyikan (Tata Letak Bersih)';
-
-  const specs = isDoypack
-    ? [
-        { label: 'Model Kemasan', value: 'Stand-Up Doypack + One-Way Degassing Valve & Zipper' },
-        { label: 'Berat Bersih & Estimasi Sajian', value: `${config.netWeight} (${weightSpecs.servings})` },
-        { label: 'Dimensi Panel Depan & Belakang', value: `${weightSpecs.frontDim} (Sudut ${weightSpecs.cornerRadius})` },
-        { label: 'Lipatan Alas Bawah (W-Gusset)', value: `${weightSpecs.bottomFold} (Expanded Bottom Fold)` },
-        { label: 'Margin Heat-Seal Kiri & Kanan', value: `${weightSpecs.sealWidth} Keliling + Tear Notch 22 mm dari Atas` },
-        { label: 'Posisi Katup Udara (Valve)', value: `Center Atas · ${weightSpecs.valveDist} dari Tepi Atas (Ø 22 mm)` },
-        { label: 'Varian Biji & Profil Sangrai', value: `${variant.frontLabel} · ${roast.label}` },
-        { label: 'Komposisi Latar & Stempel KTH', value: `${mood.label} · ${sealPositionLabel}` },
-        { label: 'Material & Finishing Mewah', value: 'Matte Velvet Film + Hot-Foil Champagne Gold (Pantone 871 C)' },
-      ]
-    : tall
-      ? [
-          { label: 'Model Kemasan', value: `Tall Flat-Bottom Gusset Bag (${shapeMeta.shortLabel})` },
-          { label: 'Berat Bersih & Estimasi Sajian', value: `${config.netWeight} (${weightSpecs.servings})` },
-          { label: 'Dimensi Panel Depan & Belakang', value: weightSpecs.frontDim },
-          { label: 'Dimensi Gusset Kiri & Kanan', value: weightSpecs.gussetDim },
-          { label: 'Total Lebar Unwrap Full Print', value: weightSpecs.unwrapDim },
-          { label: 'Zona Aman Teks (Safe Zone)', value: `${weightSpecs.sealWidth} dari garis potong · 18 mm area zipper atas` },
-          { label: 'Varian Biji & Profil Sangrai', value: `${variant.frontLabel} · ${roast.label}` },
-          { label: 'Komposisi Latar & Stempel KTH', value: `${mood.label} · ${sealPositionLabel}` },
-          {
-            label: 'Finishing Mewah (Spot)',
-            value:
-              config.pouchShape === 'tall-copper'
-                ? 'Metallic Copper Ink + Spot Gold Pinstripe & Botanical Foil'
-                : 'Hot-Foil Stamping Champagne Gold (Ornamen & Emblem)',
-          },
-        ]
-      : [
-          { label: 'Model Kemasan', value: 'Standing Pouch Flat-Bottom / Side Gusset + Zipper' },
-          { label: 'Berat Bersih & Estimasi Sajian', value: `${config.netWeight} (${weightSpecs.servings})` },
-          { label: 'Dimensi Panel Depan & Belakang', value: weightSpecs.frontDim },
-          { label: 'Dimensi Gusset Kiri & Kanan', value: weightSpecs.gussetDim },
-          { label: 'Total Lebar Unwrap Full Print', value: weightSpecs.unwrapDim },
-          { label: 'Zona Aman Teks (Safe Zone)', value: `${weightSpecs.sealWidth} dari garis potong · 18 mm area zipper atas` },
-          { label: 'Varian Biji & Profil Sangrai', value: `${variant.frontLabel} · ${roast.label}` },
-          { label: 'Komposisi Latar & Stempel KTH', value: `${mood.label} · ${sealPositionLabel}` },
-          { label: 'Finishing & Profil Warna', value: 'Matte Velvet Film + Spot Gold Foil (Pantone 871 C)' },
-        ];
-
-  const wibSpecTimestamp = React.useMemo(() => getWibFormattedDateTime(), []);
-
-  const fullSpecs = [
-    ...specs,
-    { label: 'Font Display & Tagline', value: shapeMeta.fonts.display },
-    { label: 'Font Sub-Judul & Teknis', value: `${shapeMeta.fonts.body} · ${shapeMeta.fonts.mono}` },
-    { label: 'Tanggal & Zona Waktu Cetak', value: wibSpecTimestamp },
-  ];
+  const fullSpecs = React.useMemo(() => getPrintSpecificationRows(config), [config]);
 
   return (
     <section id="spesifikasi-cetak" className="py-20 border-t border-[#1A1412]/10">
@@ -105,8 +52,28 @@ export function PrintSpecsSection({ config, onExport, isExporting }: PrintSpecsS
               · {variant.frontLabel} · {roast.label}.
             </p>
 
-            {/* Full Print With Text & Logo */}
+            {/* Dossier PDF Lengkap (00 - 04) */}
             <div className="mt-7 space-y-2.5">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8A6429]">
+                Ekspor Dokumen Dossier PDF Lengkap (Bagian 00 – 04)
+              </p>
+              <button
+                type="button"
+                disabled={isExportingPdf}
+                onClick={onExportPdf}
+                className="w-full min-h-[44px] flex items-center justify-between px-5 py-3 bg-[#8A6429] text-[#FAF5EB] hover:bg-[#73511D] disabled:opacity-60 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+              >
+                <span className="text-sm font-semibold truncate pr-2">
+                  {isExportingPdf
+                    ? 'Menyusun PDF Dossier...'
+                    : `Ekspor PDF Lengkap (${shapeMeta.shortLabel} · ${config.netWeight})`}
+                </span>
+                <FileText className="w-4 h-4 text-[#FAF5EB] shrink-0" />
+              </button>
+            </div>
+
+            {/* Full Print With Text & Logo */}
+            <div className="mt-6 pt-5 border-t border-[#1A1412]/10 space-y-2.5">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#574D47]">
                 Desain Lengkap ({config.netWeight} · Dengan Teks &amp; Logo)
               </p>
