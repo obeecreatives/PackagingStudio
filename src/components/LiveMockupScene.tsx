@@ -221,10 +221,10 @@ const NATURAL_PHOTO_SPECS: Record<PouchShapeId, PhotoOverlaySpec> = {
 };
 
 const FEATHERED_PATCH_MASK =
-  'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 66%, rgba(0,0,0,0.88) 84%, rgba(0,0,0,0) 100%)';
+  'radial-gradient(ellipse 50% 49% at 50% 50%, rgba(0,0,0,1) 76%, rgba(0,0,0,0.9) 90%, rgba(0,0,0,0) 100%)';
 
 const GOLD_BAND_FEATHER_MASK =
-  'linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 14%, rgba(0,0,0,1) 86%, rgba(0,0,0,0) 100%)';
+  'linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 12%, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 100%)';
 
 function getNaturalPhotoForShape(shape: PouchShapeId): string {
   switch (shape) {
@@ -271,89 +271,94 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
     return (
       <div
         className="relative w-full h-full overflow-hidden flex items-center justify-center bg-white"
+        style={{ containerType: 'size' }}
         aria-label={`${shapeMeta.code} ${showFront ? 'Tampak Depan' : 'Tampak Belakang'} (${config.netWeight})`}
       >
         <div
-          className="relative h-full max-w-full aspect-square flex items-center justify-center"
-          style={{ containerType: 'inline-size' }}
+          className="relative flex items-center justify-center"
+          style={{
+            width: 'min(100cqw, 100cqh)',
+            height: 'min(100cqw, 100cqh)',
+          }}
         >
-          <img
-            src={showFront ? GENERATED_ASSETS.doypackStudio : GENERATED_ASSETS.doypackStudioRear}
-            alt={`${shapeMeta.label} ${showFront ? 'Tampak Depan' : 'Tampak Belakang'}`}
-            decoding="async"
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-contain"
-          />
+          <div className="relative w-full h-full" style={{ containerType: 'inline-size' }}>
+            <img
+              src={showFront ? GENERATED_ASSETS.doypackStudio : GENERATED_ASSETS.doypackStudioRear}
+              alt={`${shapeMeta.label} ${showFront ? 'Tampak Depan' : 'Tampak Belakang'}`}
+              decoding="async"
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-contain"
+            />
 
-          {/* Front Studio: Unmasked text over feathered warm-brown & gold backdrops */}
-          {showFront && (
-            <>
-              <div
-                className="absolute flex flex-col items-center justify-center text-center pointer-events-none px-1"
-                style={{
-                  left: '29.5%',
-                  top: '51.4%',
-                  width: '41.0%',
-                  height: '7.8%',
-                }}
-              >
+            {/* Front Studio: Unmasked text over feathered warm-brown & gold backdrops */}
+            {showFront && (
+              <>
                 <div
-                  aria-hidden="true"
-                  className="absolute inset-0"
+                  className="absolute flex flex-col items-center justify-center text-center pointer-events-none px-1"
                   style={{
-                    background:
-                      'linear-gradient(90deg, rgba(54,36,26,0.99) 0%, rgba(40,26,18,0.99) 50%, rgba(29,18,12,0.98) 100%)',
-                    maskImage: FEATHERED_PATCH_MASK,
-                    WebkitMaskImage: FEATHERED_PATCH_MASK,
+                    left: '27.5%',
+                    top: '51.8%',
+                    width: '45.0%',
+                    height: '8.2%',
                   }}
-                />
-                <p
-                  className="relative z-10 font-sans font-semibold text-[#FAF5EB] leading-[1.18] whitespace-nowrap"
-                  style={{ fontSize: '2.1cqi' }}
                 >
-                  {roast.subtitle}
-                </p>
-                <p
-                  className="relative z-10 font-sans font-semibold text-[#FAF5EB] leading-[1.18] whitespace-nowrap"
-                  style={{ fontSize: '2.1cqi' }}
-                >
-                  {variant.frontLabel}
-                </p>
-              </div>
-
-              <div
-                className="absolute flex items-center justify-center pointer-events-none"
-                style={{
-                  left: '33.5%',
-                  top: '86.2%',
-                  width: '33.0%',
-                  height: '5.8%',
-                }}
-              >
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0"
-                  style={{
-                    background: 'linear-gradient(105deg, #D5B26E 0%, #E7CE97 50%, #BF934B 100%)',
-                    maskImage: GOLD_BAND_FEATHER_MASK,
-                    WebkitMaskImage: GOLD_BAND_FEATHER_MASK,
-                  }}
-                />
-                <span
-                  className="relative z-10 font-sans font-bold text-[#140B07] tabular-nums whitespace-nowrap"
-                  style={{ fontSize: '2.4cqi' }}
-                >
-                  Isi Bersih : {config.netWeight}
-                </span>
-              </div>
-
-              {config.sealPlacement === 'front' && (
-                <div className="absolute right-[26%] bottom-[16%] pointer-events-none">
-                  <KthEastJavaSeal variant="original-green" className="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-md" />
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        'linear-gradient(90deg, rgba(52,34,24,0.99) 0%, rgba(39,25,17,1) 50%, rgba(28,17,11,0.99) 100%)',
+                      maskImage: FEATHERED_PATCH_MASK,
+                      WebkitMaskImage: FEATHERED_PATCH_MASK,
+                    }}
+                  />
+                  <p
+                    className="relative z-10 font-sans font-semibold text-[#FAF5EB] leading-[1.18] whitespace-nowrap"
+                    style={{ fontSize: '2.15cqi' }}
+                  >
+                    {roast.subtitle}
+                  </p>
+                  <p
+                    className="relative z-10 font-sans font-semibold text-[#FAF5EB] leading-[1.18] whitespace-nowrap"
+                    style={{ fontSize: '2.15cqi' }}
+                  >
+                    {variant.frontLabel}
+                  </p>
                 </div>
-              )}
-            </>
-          )}
+
+                <div
+                  className="absolute flex items-center justify-center pointer-events-none"
+                  style={{
+                    left: '33.5%',
+                    top: '86.8%',
+                    width: '32.5%',
+                    height: '5.4%',
+                  }}
+                >
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0"
+                    style={{
+                      background: 'linear-gradient(105deg, #D5B26E 0%, #E7CE97 50%, #BF934B 100%)',
+                      maskImage: GOLD_BAND_FEATHER_MASK,
+                      WebkitMaskImage: GOLD_BAND_FEATHER_MASK,
+                    }}
+                  />
+                  <span
+                    className="relative z-10 font-sans font-bold text-[#140B07] tabular-nums whitespace-nowrap"
+                    style={{ fontSize: '2.35cqi' }}
+                  >
+                    Isi Bersih : {config.netWeight}
+                  </span>
+                </div>
+
+                {config.sealPlacement === 'front' && (
+                  <div className="absolute right-[26%] bottom-[16%] pointer-events-none">
+                    <KthEastJavaSeal variant="original-green" className="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-md" />
+                  </div>
+                )}
+              </>
+            )}
 
           {/* Rear Studio: Unmasked Goreng Kreweng Story & White PIRT Box (NO Weight on Rear) */}
           {!showFront && (
@@ -361,10 +366,10 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
               <div
                 className="absolute flex flex-col items-center justify-center text-center pointer-events-none px-4"
                 style={{
-                  left: '27.5%',
+                  left: '25.5%',
                   top: '30.5%',
-                  width: '45.0%',
-                  height: '28.5%',
+                  width: '49.0%',
+                  height: '29.5%',
                 }}
               >
                 <div
@@ -372,14 +377,14 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
                   className="absolute inset-0"
                   style={{
                     background:
-                      'linear-gradient(90deg, rgba(54,37,27,0.99) 0%, rgba(36,23,16,0.99) 55%, rgba(28,17,12,0.98) 100%)',
+                      'linear-gradient(90deg, rgba(50,34,24,0.99) 0%, rgba(35,23,16,1) 55%, rgba(27,17,12,0.99) 100%)',
                     maskImage: FEATHERED_PATCH_MASK,
                     WebkitMaskImage: FEATHERED_PATCH_MASK,
                   }}
                 />
                 <p
-                  className="relative z-10 font-sans text-[#FAF5EB] leading-[1.35]"
-                  style={{ fontSize: '1.88cqi' }}
+                  className="relative z-10 font-sans text-[#FAF5EB] leading-[1.32]"
+                  style={{ fontSize: '1.78cqi' }}
                 >
                   Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari
                   lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter{' '}
@@ -390,19 +395,20 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
                 </p>
                 <p
                   className="relative z-10 mt-2.5 font-sans font-semibold tracking-[0.04em] text-[#FAF5EB] whitespace-nowrap"
-                  style={{ fontSize: '1.68cqi' }}
+                  style={{ fontSize: '1.6cqi' }}
                 >
                   {rearCompositionText}
                 </p>
               </div>
 
-              {/* White PIRT stamp box matching Arunika_Kawi_rear_7407fb99.png */}
+              {/* White PIRT stamp box cleanly below "PIRT" text & above the bottom gold band */}
               <div
                 className="absolute bg-white pointer-events-none"
-                style={{ left: '34.5%', top: '80.6%', width: '16.5%', height: '2.4%' }}
+                style={{ left: '34.4%', top: '81.6%', width: '16.0%', height: '1.6%' }}
               />
             </>
           )}
+          </div>
         </div>
       </div>
     );
@@ -415,6 +421,7 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
     return (
       <div
         className="relative w-full h-full overflow-hidden flex items-center justify-center bg-[#18100C]"
+        style={size === 'hero' ? { containerType: 'size' } : undefined}
         aria-label={`${shapeMeta.code} · ${shapeMeta.shortLabel} (${config.netWeight})`}
       >
         {/* Ambient blurred backdrop when Hero container is wider than 896:1200 */}
@@ -429,13 +436,19 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
           />
         )}
 
-        {/* Exact 896:1200 inner frame with container-inline sizing so overlays & fonts match 1:1 on all viewports */}
+        {/* Exact 896:1200 inner frame on all screen ratios */}
         <div
-          className={`relative overflow-hidden ${
-            size === 'hero' ? 'h-full max-w-full aspect-[896/1200]' : 'w-full h-full'
-          }`}
-          style={{ containerType: 'inline-size' }}
+          className={`relative overflow-hidden ${size === 'hero' ? '' : 'w-full h-full'}`}
+          style={
+            size === 'hero'
+              ? {
+                  width: 'min(100cqw, calc(100cqh * 896 / 1200))',
+                  height: 'min(100cqh, calc(100cqw * 1200 / 896))',
+                }
+              : undefined
+          }
         >
+          <div className="relative w-full h-full" style={{ containerType: 'inline-size' }}>
           <img
             src={photoSrc}
             alt={`${shapeMeta.code} · ${shapeMeta.label}`}
@@ -621,6 +634,7 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
               />
             </div>
           )}
+          </div>
         </div>
       </div>
     );
@@ -647,7 +661,7 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
         />
 
         <div
-          className="relative z-10 flex items-end justify-center w-full px-4 origin-bottom transition-transform duration-200"
+          className="relative z-10 flex items-end justify-center w-full px-3 origin-bottom transition-transform duration-200"
           style={{ transform: `scale(${scaleFactor})` }}
         >
           {isDoypack ? (
@@ -676,27 +690,35 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
             </div>
           ) : (
             <div className="relative flex items-end justify-center" style={{ perspective: '1200px' }}>
-              <div
-                className={`relative ${
-                  tall
-                    ? size === 'hero'
-                      ? 'w-[220px] aspect-[100/240]'
-                      : 'w-[140px] aspect-[100/240]'
-                    : size === 'hero'
-                      ? 'w-[270px] aspect-[130/210]'
-                      : 'w-[175px] aspect-[130/210]'
-                } flex items-stretch`}
-              >
+              <div className="relative flex items-stretch justify-center">
                 <div
-                  className="w-[24%] h-full origin-right overflow-hidden rounded-l-sm shadow-xl shrink-0"
+                  className={`${
+                    tall
+                      ? size === 'hero'
+                        ? 'w-[42px] sm:w-[54px] h-[380px] sm:h-[440px]'
+                        : 'w-[28px] h-[235px]'
+                      : size === 'hero'
+                        ? 'w-[46px] sm:w-[58px] h-[340px] sm:h-[395px]'
+                        : 'w-[32px] h-[225px]'
+                  } origin-right overflow-hidden rounded-l-sm shadow-xl shrink-0`}
                   style={{
-                    transform: 'rotateY(-42deg) translateX(3px) scaleY(0.985)',
+                    transform: 'rotateY(-44deg) translateX(3px) scaleY(0.985)',
                     filter: 'brightness(0.76)',
                   }}
                 >
                   <SideGussetPanel config={config} side="left" compact backgroundOnly={backgroundOnly} />
                 </div>
-                <div className="relative flex-1 h-full overflow-hidden rounded-sm shadow-[0_24px_48px_-12px_rgba(26,20,18,0.42)]">
+                <div
+                  className={`relative ${
+                    tall
+                      ? size === 'hero'
+                        ? 'w-[158px] sm:w-[184px] h-[380px] sm:h-[440px]'
+                        : 'w-[98px] h-[235px]'
+                      : size === 'hero'
+                        ? 'w-[210px] sm:w-[245px] h-[340px] sm:h-[395px]'
+                        : 'w-[140px] h-[225px]'
+                  } overflow-hidden rounded-sm shadow-[0_24px_48px_-12px_rgba(26,20,18,0.42)]`}
+                >
                   {showFront ? (
                     <FrontPanel config={config} compact={isCompact || tall} backgroundOnly={backgroundOnly} />
                   ) : (

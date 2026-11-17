@@ -185,6 +185,7 @@ export function FrontPanel({
   const variant = BEAN_VARIANTS[config.beanVariant];
   const roast = ROAST_LEVELS[config.roastLevel];
   const isDoypack = config.pouchShape === 'doypack-valve';
+  const tall = isTallGusset(config.pouchShape);
   const isHeritage = config.pouchShape === 'tall-heritage';
   const isBotanical = config.pouchShape === 'tall-botanical';
   const isCopper = config.pouchShape === 'tall-copper';
@@ -196,6 +197,150 @@ export function FrontPanel({
     config.netWeight === '100 gram' ? ORIGINAL_UPLOADS.revisedFront100 : ORIGINAL_UPLOADS.revisedFront250;
 
   if (isUploadedFinal && !backgroundOnly) {
+    if (tall) {
+      return (
+        <div
+          className="relative w-full h-full overflow-hidden select-none text-[#FAF5EB] bg-[#1A0F0A] flex flex-col justify-between"
+          style={{ containerType: 'inline-size' }}
+        >
+          {/* Base Warm Mountain Atmosphere */}
+          <div className="absolute inset-0 pouch-matte-surface" />
+          <div
+            className="absolute inset-x-0 top-0 h-[50%] overflow-hidden pointer-events-none"
+            style={{
+              maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.22) 60%, rgba(0,0,0,0) 100%)',
+              WebkitMaskImage:
+                'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.22) 60%, rgba(0,0,0,0) 100%)',
+            }}
+          >
+            <img
+              src={config.naturalMood === 'cherries-beans' ? GENERATED_ASSETS.coffeeCherries : GENERATED_ASSETS.kawiMist}
+              alt=""
+              decoding="async"
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover opacity-55 sepia-[0.28] brightness-75 contrast-110"
+            />
+          </div>
+
+          {config.naturalMood === 'espresso-matte' && (
+            <div
+              className="absolute inset-x-0 top-0 h-[55%] pointer-events-none"
+              style={{
+                background:
+                  'linear-gradient(to bottom, rgba(22,12,8,0.82) 0%, rgba(28,16,11,0.56) 60%, rgba(28,16,11,0) 100%)',
+              }}
+            />
+          )}
+
+          {/* Roasted Robusta Beans Cluster Above Bottom Band */}
+          <div
+            className="absolute inset-x-0 bottom-[10.5%] h-[34%] overflow-hidden pointer-events-none"
+            style={{
+              maskImage: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.92) 55%, rgba(0,0,0,0) 100%)',
+              WebkitMaskImage: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.92) 55%, rgba(0,0,0,0) 100%)',
+            }}
+          >
+            <img
+              src={GENERATED_ASSETS.beansCluster}
+              alt="Biji kopi Robusta sangrai"
+              decoding="async"
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover object-bottom brightness-95 contrast-110"
+            />
+          </div>
+
+          {/* Style-Specific Accents */}
+          {isHeritage && (
+            <div className="absolute inset-[3.5%] border border-[#D8B474]/50 pointer-events-none z-10" />
+          )}
+
+          {isBotanical && (
+            <>
+              <BotanicalCornerArt className="absolute -top-1 -left-1 w-[26cqi] h-[26cqi] opacity-90 pointer-events-none" />
+              <BotanicalCornerArt className="absolute -top-1 -right-1 w-[26cqi] h-[26cqi] -scale-x-100 opacity-90 pointer-events-none" />
+              <BotanicalCornerArt className="absolute bottom-[11.5%] -left-1 w-[26cqi] h-[26cqi] -scale-y-100 opacity-80 pointer-events-none" />
+              <BotanicalCornerArt className="absolute bottom-[11.5%] -right-1 w-[26cqi] h-[26cqi] scale-[-1] opacity-80 pointer-events-none" />
+            </>
+          )}
+
+          {isCopper && (
+            <>
+              <div className="absolute inset-y-0 left-[6.5%] w-[1.5px] gold-foil-gradient opacity-90 pointer-events-none z-10" />
+              <div
+                className="absolute inset-x-0 bottom-[10.5%] h-[34%] pointer-events-none"
+                style={{
+                  background: 'linear-gradient(135deg, #9C4F2B 0%, #B86339 55%, #78391D 100%)',
+                  clipPath: 'polygon(26% 100%, 100% 18%, 100% 100%)',
+                  opacity: 0.9,
+                }}
+              />
+              <BotanicalCornerArt className="absolute bottom-[11%] -right-1 w-[24cqi] h-[24cqi] scale-[-1] opacity-90 pointer-events-none" />
+            </>
+          )}
+
+          {/* Brand & Typography Matching Arunika Kawi Revised Master (100% Uncropped in Tall Width) */}
+          <div
+            className={`relative z-10 pt-[14%] flex flex-col items-center text-center ${
+              isCopper ? 'pl-[11%] pr-[7%]' : 'px-[8%]'
+            }`}
+          >
+            <ArunikaSunBeanCrest className="w-[16cqi] h-[16cqi]" />
+            <div className="mt-[4%] flex items-center justify-center gap-[4%] w-[82%]">
+              <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#D8B474]/80" />
+              <span
+                className="font-sans font-semibold uppercase tracking-[0.16em] text-[#D8B474] whitespace-nowrap"
+                style={{ fontSize: '4.4cqi' }}
+              >
+                COFFE BEAN · EST. 2024
+              </span>
+              <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#D8B474]/80" />
+            </div>
+
+            <h2
+              className="mt-[9%] font-serif font-bold tracking-[0.04em] leading-[0.96] text-[#D8B474] drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)]"
+              style={{ fontSize: '15.5cqi' }}
+            >
+              ARUNIKA
+              <span className="block tracking-[0.08em]">KAWI</span>
+            </h2>
+
+            <p
+              className="mt-[8%] font-sans font-semibold text-[#FAF5EB] leading-[1.2] tracking-[0.01em]"
+              style={{ fontSize: '5.1cqi' }}
+            >
+              {roast.subtitle}
+            </p>
+            <p
+              className="mt-[2%] font-sans font-semibold text-[#FAF5EB] leading-[1.2]"
+              style={{ fontSize: '5.1cqi' }}
+            >
+              {variant.frontLabel}
+            </p>
+          </div>
+
+          {/* Optional Front KTH Seal */}
+          {config.sealPlacement === 'front' && (
+            <div className="relative z-10 flex justify-end px-[7%] pb-[3%]">
+              <KthEastJavaSeal variant="original-green" className="w-[18cqi] h-[18cqi] drop-shadow-md" />
+            </div>
+          )}
+
+          {/* Solid Bottom Band (Weight ONLY on Front) */}
+          <div
+            className={`relative z-10 w-full h-[11%] flex items-center justify-center ${
+              isCopper
+                ? 'bg-[#1B100B] border-t border-[#E6B89A]/55 text-[#FAF5EB]'
+                : 'gold-foil-gradient border-t border-[#F7E8C6]/60 text-[#1E130D]'
+            }`}
+          >
+            <span className="font-sans font-bold tabular-nums whitespace-nowrap" style={{ fontSize: '5.2cqi' }}>
+              Isi Bersih : {config.netWeight}
+            </span>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="relative w-full h-full overflow-hidden select-none text-[#FAF5EB] bg-[#1A0F0A]">
         <img
@@ -203,7 +348,7 @@ export function FrontPanel({
           alt={`Desain Halaman Depan Arunika Kawi (${config.netWeight})`}
           decoding="async"
           referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-fill object-center"
         />
 
         {/* Dynamic Natural Mood Overlay for Uploaded Artwork */}
@@ -237,37 +382,6 @@ export function FrontPanel({
           />
         )}
 
-        {/* Alternatif 03: Fine gold border accent */}
-        {isHeritage && (
-          <div className="absolute inset-[3%] border border-[#D8B474]/45 pointer-events-none" />
-        )}
-
-        {/* Alternatif 04: Botanical Foil Corner Sprays */}
-        {isBotanical && (
-          <>
-            <BotanicalCornerArt className="absolute -top-2 -left-2 w-24 h-24 opacity-90 pointer-events-none" />
-            <BotanicalCornerArt className="absolute -top-2 -right-2 w-24 h-24 -scale-x-100 opacity-90 pointer-events-none" />
-            <BotanicalCornerArt className="absolute bottom-[11%] -left-2 w-24 h-24 -scale-y-100 opacity-80 pointer-events-none" />
-            <BotanicalCornerArt className="absolute bottom-[11%] -right-2 w-24 h-24 scale-[-1] opacity-80 pointer-events-none" />
-          </>
-        )}
-
-        {/* Alternatif 05: Vertical Gold Pinstripe & Copper Diagonal Sash */}
-        {isCopper && (
-          <>
-            <div className="absolute inset-y-0 left-[7.5%] w-[1.5px] gold-foil-gradient opacity-90 pointer-events-none" />
-            <div
-              className="absolute inset-x-0 bottom-[10.5%] h-[36%] pointer-events-none"
-              style={{
-                background: 'linear-gradient(135deg, #9C4F2B 0%, #B86339 55%, #78391D 100%)',
-                clipPath: 'polygon(30% 100%, 100% 14%, 100% 100%)',
-                opacity: 0.9,
-              }}
-            />
-            <BotanicalCornerArt className="absolute bottom-[11%] -right-2 w-24 h-24 scale-[-1] opacity-90 pointer-events-none" />
-          </>
-        )}
-
         {/* Dynamic Roast & Bean Variant Replacement when changed from default */}
         {hasTextOverride && (
           <div className="absolute inset-x-[9%] top-[48.0%] h-[11.2%] flex flex-col items-center justify-center text-center pointer-events-none z-10 px-2">
@@ -278,9 +392,9 @@ export function FrontPanel({
                 background:
                   'linear-gradient(90deg, rgba(40,25,18,0.98) 0%, rgba(28,16,11,0.99) 50%, rgba(24,14,9,0.98) 100%)',
                 maskImage:
-                  'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 62%, rgba(0,0,0,0.88) 80%, rgba(0,0,0,0) 100%)',
+                  'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 66%, rgba(0,0,0,0.88) 84%, rgba(0,0,0,0) 100%)',
                 WebkitMaskImage:
-                  'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 62%, rgba(0,0,0,0.88) 80%, rgba(0,0,0,0) 100%)',
+                  'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 66%, rgba(0,0,0,0.88) 84%, rgba(0,0,0,0) 100%)',
               }}
             />
             <p
@@ -318,19 +432,6 @@ export function FrontPanel({
               variant="original-green"
               className={compact ? 'w-7 h-7 drop-shadow-md' : 'w-11 h-11 drop-shadow-lg'}
             />
-          </div>
-        )}
-
-        {/* Copper band styling only (100 gram & 250 gram gold bands are already baked into master PNGs) */}
-        {isCopper && (
-          <div className="absolute inset-x-0 bottom-0 h-[11.2%] flex items-center justify-center z-10 bg-[#20120C]/95 border-t border-[#E6B89A]/50 text-[#FAF5EB]">
-            <span
-              className={`font-sans font-bold tabular-nums ${
-                compact ? 'text-[7.5px]' : 'text-[12px]'
-              }`}
-            >
-              Isi Bersih : {config.netWeight}
-            </span>
           </div>
         )}
       </div>
@@ -553,7 +654,7 @@ export function FrontPanel({
       {/* Bottom Band (Gold Foil or Copper Satin) */}
       {isCopper ? (
         <div
-          className={`relative z-10 w-full border-t border-[#E6B89A]/45 bg-[#20120C]/92 flex items-center justify-between text-[#FAF5EB] ${
+          className={`relative z-10 w-full border-t border-[#E6B89A]/50 bg-[#1B100B] flex items-center justify-between text-[#FAF5EB] ${
             compact ? 'h-[11%] px-3' : 'h-[11%] px-5'
           }`}
         >
@@ -741,7 +842,9 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
   const variant = BEAN_VARIANTS[config.beanVariant];
   const roast = ROAST_LEVELS[config.roastLevel];
   const isDoypack = config.pouchShape === 'doypack-valve';
+  const tall = isTallGusset(config.pouchShape);
   const isCopper = config.pouchShape === 'tall-copper';
+  const isBotanical = config.pouchShape === 'tall-botanical';
   const isUploadedFinal = config.artworkSource === 'uploaded-final';
   const { batchCode, expiryLabel } = getWibBatchAndExpiry(12);
 
@@ -749,6 +852,145 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
   const hasRearTextOverride = config.beanVariant !== 'robusta-100' || config.roastLevel !== 'traditional';
 
   if (isUploadedFinal && !backgroundOnly) {
+    if (tall) {
+      return (
+        <div
+          className="relative w-full h-full overflow-hidden select-none text-[#FAF5EB] bg-[#1A0F0A] flex flex-col justify-between"
+          style={{ containerType: 'inline-size' }}
+        >
+          {/* Base Espresso Matte + Top Mountain Silhouette */}
+          <div className="absolute inset-0 pouch-matte-surface" />
+          <div
+            className="absolute inset-x-0 top-0 h-[42%] overflow-hidden pointer-events-none"
+            style={{
+              maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.48) 0%, rgba(0,0,0,0.18) 65%, rgba(0,0,0,0) 100%)',
+              WebkitMaskImage:
+                'linear-gradient(to bottom, rgba(0,0,0,0.48) 0%, rgba(0,0,0,0.18) 65%, rgba(0,0,0,0) 100%)',
+            }}
+          >
+            <img
+              src={config.naturalMood === 'cherries-beans' ? GENERATED_ASSETS.coffeeCherries : GENERATED_ASSETS.kawiMist}
+              alt=""
+              decoding="async"
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover opacity-50 sepia-[0.3] brightness-75 contrast-110"
+            />
+          </div>
+
+          {config.naturalMood === 'espresso-matte' && (
+            <div
+              className="absolute inset-x-0 top-0 h-[55%] pointer-events-none"
+              style={{
+                background:
+                  'linear-gradient(to bottom, rgba(22,12,8,0.8) 0%, rgba(28,16,11,0.5) 55%, rgba(28,16,11,0) 100%)',
+              }}
+            />
+          )}
+
+          {isHeritage && (
+            <div className="absolute inset-[3.5%] border border-[#D8B474]/50 pointer-events-none z-10" />
+          )}
+
+          {isBotanical && (
+            <>
+              <BotanicalCornerArt className="absolute -top-1 -left-1 w-[22cqi] h-[22cqi] opacity-80 pointer-events-none" />
+              <BotanicalCornerArt className="absolute -top-1 -right-1 w-[22cqi] h-[22cqi] -scale-x-100 opacity-80 pointer-events-none" />
+            </>
+          )}
+
+          {isCopper && (
+            <div className="absolute inset-y-0 left-[6.5%] w-[1.5px] gold-foil-gradient opacity-85 pointer-events-none z-10" />
+          )}
+
+          {/* Top Roast Crest + Arunika Kawi Coffee Story */}
+          <div
+            className={`relative z-10 flex-1 flex flex-col justify-between pt-[13%] pb-[5%] ${
+              isCopper ? 'pl-[11%] pr-[7%]' : 'px-[7.5%]'
+            }`}
+          >
+            <div className="flex flex-col items-center text-center">
+              <div className="w-[34cqi]">
+                <RoastProfileCrest topText={roast.crestTop} bottomText={roast.crestBottom} className="w-full h-auto" />
+              </div>
+
+              <h3
+                className="mt-[4%] font-sans font-bold text-[#D8B474] tracking-[0.02em]"
+                style={{ fontSize: '6.6cqi' }}
+              >
+                Arunika Kawi Coffee
+              </h3>
+
+              <p
+                className="mt-[5%] text-[#F4ECE0] leading-[1.35]"
+                style={{ fontSize: '3.6cqi' }}
+              >
+                Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari
+                lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter{' '}
+                <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span>{' '}
+                {roast.storyRoast}{' '}
+                <span className="font-semibold text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
+                <span className="font-semibold">harum dan nikmat</span>
+              </p>
+
+              <p
+                className="mt-[7%] font-sans font-semibold tracking-[0.03em] uppercase text-[#FAF5EB]"
+                style={{ fontSize: '3.3cqi' }}
+              >
+                KOMPOSISI {variant.frontLabel.toUpperCase()}
+              </p>
+            </div>
+
+            {/* Bottom Legal Block: Green Seal, KUPS Himatarian Blitar, PIRT, Kode Produksi & Expiry */}
+            <div className="flex items-end justify-between gap-[3%] pt-[4%]">
+              <div className="flex items-start gap-[2.5cqi] min-w-0 flex-[1.25]">
+                {config.sealPlacement === 'back' && (
+                  <KthEastJavaSeal variant="original-green" className="w-[12cqi] h-[12cqi] shrink-0 mt-[1cqi]" />
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-[#D8B474] leading-[1.15]" style={{ fontSize: '3.3cqi' }}>
+                    Diproduksi Oleh
+                  </p>
+                  <p className="text-[#FAF5EB] leading-[1.2] mt-[1cqi]" style={{ fontSize: '2.7cqi' }}>
+                    KUPS Himatarian Blitar
+                    <br />
+                    Jawa Timur – INDONESIA
+                  </p>
+                  <p className="text-[#FAF5EB] font-medium leading-[1.1] mt-[1.5cqi]" style={{ fontSize: '2.6cqi' }}>
+                    PIRT
+                  </p>
+                  <div className="mt-[1cqi] w-full h-[3.2cqi] bg-white rounded-[1px]" />
+                </div>
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <p className="text-[#FAF5EB] font-medium leading-[1.1]" style={{ fontSize: '2.6cqi' }}>
+                  Kode Produksi
+                </p>
+                <div className="mt-[1cqi] w-full h-[3cqi] bg-white rounded-[1px]" />
+                <p className="text-[#FAF5EB] font-medium leading-[1.1] mt-[2.2cqi]" style={{ fontSize: '2.5cqi' }}>
+                  Baik Digunakan Sebelum
+                </p>
+                <div className="mt-[1cqi] w-full h-[3cqi] bg-white rounded-[1px]" />
+              </div>
+            </div>
+          </div>
+
+          {/* Solid Bottom Band: NO Net Weight on Rear */}
+          <div
+            className={`relative z-10 w-full h-[11%] flex items-center justify-center ${
+              isCopper
+                ? 'bg-[#1B100B] border-t border-[#E6B89A]/55 text-[#FAF5EB]'
+                : 'gold-foil-gradient border-t border-[#F7E8C6]/60 text-[#1E130D]'
+            }`}
+          >
+            <span className="font-sans font-bold tracking-[0.05em] uppercase whitespace-nowrap" style={{ fontSize: '4.1cqi' }}>
+              100 % KOPI ASLI INDONESIA
+            </span>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="relative w-full h-full overflow-hidden select-none text-[#FAF5EB] bg-[#1A0F0A]">
         <img
@@ -756,7 +998,7 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
           alt="Desain Halaman Belakang Arunika Kawi"
           decoding="async"
           referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-fill object-center"
         />
 
         {config.naturalMood === 'espresso-matte' && (
@@ -769,10 +1011,6 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
           />
         )}
 
-        {isHeritage && (
-          <div className="absolute inset-[3%] border border-[#D8B474]/45 pointer-events-none" />
-        )}
-
         {/* Dynamic Roast & Bean Variant Override on Rear when changed from default */}
         {hasRearTextOverride && (
           <div className="absolute inset-x-[7%] top-[24.2%] h-[34%] flex flex-col items-center justify-center text-center pointer-events-none px-3 z-10">
@@ -783,9 +1021,9 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
                 background:
                   'linear-gradient(90deg, rgba(40,25,18,0.98) 0%, rgba(28,16,11,0.99) 50%, rgba(24,14,9,0.98) 100%)',
                 maskImage:
-                  'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 64%, rgba(0,0,0,0.88) 82%, rgba(0,0,0,0) 100%)',
+                  'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 66%, rgba(0,0,0,0.88) 84%, rgba(0,0,0,0) 100%)',
                 WebkitMaskImage:
-                  'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 64%, rgba(0,0,0,0.88) 82%, rgba(0,0,0,0) 100%)',
+                  'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 66%, rgba(0,0,0,0.88) 84%, rgba(0,0,0,0) 100%)',
               }}
             />
             <p className={`relative z-10 text-[#F4ECE0] leading-relaxed ${compact ? 'text-[6.2px]' : 'text-[10.5px]'}`}>
@@ -814,15 +1052,6 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
               background: 'radial-gradient(circle, rgba(22,12,8,0.99) 62%, rgba(22,12,8,0.92) 82%, transparent 100%)',
             }}
           />
-        )}
-
-        {/* Copper Rear Bottom Band ONLY (NO Net Weight on Rear) */}
-        {isCopper && (
-          <div className="absolute inset-x-0 bottom-0 h-[11.2%] flex items-center justify-center z-10 bg-[#20120C]/95 border-t border-[#E6B89A]/50 text-[#FAF5EB]">
-            <span className={`font-sans font-bold tracking-[0.06em] uppercase ${compact ? 'text-[6px]' : 'text-[10px]'}`}>
-              100 % KOPI ASLI INDONESIA
-            </span>
-          </div>
         )}
       </div>
     );

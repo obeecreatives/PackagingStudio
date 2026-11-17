@@ -246,15 +246,15 @@ export default function App() {
 
               <div className="lg:col-span-6 flex flex-col">
                 <div className="flex-1 flex flex-col rounded-xl overflow-hidden border border-[#1A1412]/12 bg-[#1D120D]">
-                  <div className="px-3.5 py-2.5 bg-[#EFECE6] border-b border-[#1A1412]/10 flex flex-wrap items-center justify-between gap-2">
+                  <div className="px-3.5 py-2.5 bg-[#EFECE6] border-b border-[#1A1412]/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#574D47]">
                       Pratinjau Mockup · {activeShapeMeta.code} ({config.netWeight})
                     </span>
-                    <div className="inline-flex flex-wrap items-center gap-1 p-1 bg-[#E2DDD3] rounded-lg">
+                    <div className="grid grid-cols-3 sm:inline-flex items-center gap-1 p-1 bg-[#E2DDD3] rounded-lg w-full sm:w-auto">
                       <button
                         type="button"
                         onClick={() => setHeroScene('natural-kawi')}
-                        className={`px-2.5 py-1.5 min-h-[36px] text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                        className={`px-1 sm:px-2.5 py-1.5 min-h-[38px] text-[10.5px] sm:text-xs font-medium rounded-md transition-colors whitespace-nowrap text-center cursor-pointer ${
                           heroScene === 'natural-kawi'
                             ? 'bg-[#1A1412] text-[#FAF5EB]'
                             : 'text-[#574D47] hover:text-[#1A1412]'
@@ -265,7 +265,7 @@ export default function App() {
                       <button
                         type="button"
                         onClick={() => setHeroScene('studio-front')}
-                        className={`px-2.5 py-1.5 min-h-[36px] text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                        className={`px-1 sm:px-2.5 py-1.5 min-h-[38px] text-[10.5px] sm:text-xs font-medium rounded-md transition-colors whitespace-nowrap text-center cursor-pointer ${
                           heroScene === 'studio-front'
                             ? 'bg-[#1A1412] text-[#FAF5EB]'
                             : 'text-[#574D47] hover:text-[#1A1412]'
@@ -276,7 +276,7 @@ export default function App() {
                       <button
                         type="button"
                         onClick={() => setHeroScene('studio-rear')}
-                        className={`px-2.5 py-1.5 min-h-[36px] text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                        className={`px-1 sm:px-2.5 py-1.5 min-h-[38px] text-[10.5px] sm:text-xs font-medium rounded-md transition-colors whitespace-nowrap text-center cursor-pointer ${
                           heroScene === 'studio-rear'
                             ? 'bg-[#1A1412] text-[#FAF5EB]'
                             : 'text-[#574D47] hover:text-[#1A1412]'
@@ -288,7 +288,7 @@ export default function App() {
                   </div>
 
                   <div
-                    className={`relative flex-1 min-h-[430px] lg:min-h-[540px] ${
+                    className={`relative w-full h-[430px] sm:h-[520px] lg:h-[580px] ${
                       heroScene !== 'natural-kawi' ? 'bg-white' : 'bg-[#1D120D]'
                     }`}
                   >
