@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Maximize2 } from 'lucide-react';
 import {
   BEAN_VARIANTS,
   getDynamicShapeDescription,
@@ -9,10 +10,17 @@ import {
   ROAST_LEVELS,
 } from '../types/packaging';
 import { LiveMockupScene } from './LiveMockupScene';
+import type { ExpandPreviewTarget } from './ExpandPreviewModal';
 
 type ReferenceTab = 'revised-final' | 'tall-3style' | 'doypack-blank' | 'draft-1' | 'draft-2' | 'ref-3';
 
-export function DesignCritiqueSection({ config }: { config: PackagingConfig }) {
+export function DesignCritiqueSection({
+  config,
+  onExpand,
+}: {
+  config: PackagingConfig;
+  onExpand: (target: ExpandPreviewTarget) => void;
+}) {
   const [selectedRef, setSelectedRef] = useState<ReferenceTab>('revised-final');
   const variant = BEAN_VARIANTS[config.beanVariant];
   const roast = ROAST_LEVELS[config.roastLevel];
@@ -168,7 +176,20 @@ export function DesignCritiqueSection({ config }: { config: PackagingConfig }) {
 
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
               <div className="flex flex-col">
-                <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-white border border-[#1A1412]/12">
+                <button
+                  type="button"
+                  onClick={() =>
+                    onExpand({
+                      kind: 'image',
+                      title: activeSource.title,
+                      subtitle: 'Referensi Sebelum · Resolusi Asli',
+                      src: activeSource.src,
+                      filename: `arunika-referensi-${selectedRef}.png`,
+                      bgClass: 'bg-white',
+                    })
+                  }
+                  className="group relative aspect-[3/4] w-full rounded-lg overflow-hidden bg-white border border-[#1A1412]/12 cursor-zoom-in text-left"
+                >
                   <img
                     src={activeSource.src}
                     alt={activeSource.title}
@@ -179,7 +200,10 @@ export function DesignCritiqueSection({ config }: { config: PackagingConfig }) {
                       selectedRef === 'doypack-blank' ? 'object-contain p-2' : 'object-cover'
                     }`}
                   />
-                </div>
+                  <span className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full bg-[#120C09]/75 text-[#FAF5EB] flex items-center justify-center opacity-85 group-hover:opacity-100 group-hover:bg-[#8A6429] transition-colors shadow">
+                    <Maximize2 className="w-4 h-4" />
+                  </span>
+                </button>
                 <div className="mt-3">
                   <p className="text-xs font-medium text-[#8A6429]">Sebelum · {activeSource.title}</p>
                   <p className="mt-1 text-xs text-[#574D47] leading-relaxed">{activeSource.caption}</p>
@@ -187,9 +211,24 @@ export function DesignCritiqueSection({ config }: { config: PackagingConfig }) {
               </div>
 
               <div className="flex flex-col">
-                <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-[#18100C] border border-[#A67B38]/40">
+                <button
+                  type="button"
+                  onClick={() =>
+                    onExpand({
+                      kind: 'mockup',
+                      title: activeSource.afterTitle,
+                      subtitle: `${targetMeta.label} · ${config.netWeight}`,
+                      config: targetConfig,
+                      initialScene: 'natural-kawi',
+                    })
+                  }
+                  className="group relative aspect-[3/4] w-full rounded-lg overflow-hidden bg-[#18100C] border border-[#A67B38]/40 cursor-zoom-in text-left"
+                >
                   <LiveMockupScene config={targetConfig} scene="natural-kawi" size="critique" />
-                </div>
+                  <span className="absolute top-2.5 right-2.5 z-30 w-9 h-9 rounded-full bg-[#120C09]/75 text-[#FAF5EB] flex items-center justify-center opacity-85 group-hover:opacity-100 group-hover:bg-[#8A6429] transition-colors shadow">
+                    <Maximize2 className="w-4 h-4" />
+                  </span>
+                </button>
                 <div className="mt-3">
                   <p className="text-xs font-medium text-[#1A1412]">{activeSource.afterTitle}</p>
                   <p className="mt-1 text-xs text-[#574D47] leading-relaxed">{activeSource.afterCaption}</p>

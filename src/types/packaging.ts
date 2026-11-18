@@ -1,3 +1,10 @@
+import beansClusterImg from '../assets/images/natural_coffee_beans_cluster_1794878296922.jpg';
+import kawiMistImg from '../assets/images/natural_kawi_mist_landscape_1794878296610.jpg';
+import coffeeCherriesImg from '../assets/images/natural_coffee_cherries_branch_1794878297817.jpg';
+import sceneTravertineKawiImg from '../assets/images/scene_travertine_kawi_1794975719904.jpg';
+import sceneCafeCounterImg from '../assets/images/scene_cafe_counter_1794975718810.jpg';
+import sceneSlateDawnImg from '../assets/images/scene_slate_dawn_1794975720255.jpg';
+
 export type PouchShapeId =
   | 'box-gusset'
   | 'doypack-valve'
@@ -399,17 +406,12 @@ export function getDynamicShapeDescription(shape: PouchShapeId, config: Packagin
 }
 
 export const GENERATED_ASSETS = {
-  pouchMockup: '/src/assets/images/arunika_v2_box_gusset_1794898861802.jpg',
-  doypackStudio: '/src/assets/images/arunika_doypack_exact_front_1794899522560.jpg',
-  doypackStudioRear: '/src/assets/images/arunika_doypack_exact_rear_1794899521097.jpg',
-  doypackNatural: '/src/assets/images/arunika_doypack_exact_natural_pair_1794899799953.jpg',
-  tallHeritage: '/src/assets/images/arunika_v2_tall_heritage_1794898865922.jpg',
-  tallBotanical: '/src/assets/images/arunika_v2_tall_botanical_1794898868139.jpg',
-  tallCopper: '/src/assets/images/tall_copper_clean_1794970254810.jpg',
-  tallMinimal: '/src/assets/images/tall_minimal_clean_1794970258179.jpg',
-  beansCluster: '/src/assets/images/natural_coffee_beans_cluster_1794878296922.jpg',
-  kawiMist: '/src/assets/images/natural_kawi_mist_landscape_1794878296610.jpg',
-  coffeeCherries: '/src/assets/images/natural_coffee_cherries_branch_1794878297817.jpg',
+  sceneTravertineKawi: sceneTravertineKawiImg,
+  sceneCafeCounter: sceneCafeCounterImg,
+  sceneSlateDawn: sceneSlateDawnImg,
+  beansCluster: beansClusterImg,
+  kawiMist: kawiMistImg,
+  coffeeCherries: coffeeCherriesImg,
 };
 
 export const ORIGINAL_UPLOADS = {

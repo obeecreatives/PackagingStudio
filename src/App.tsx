@@ -17,6 +17,7 @@ import {
   SealPlacement,
   WeightOption,
 } from './types/packaging';
+import { Maximize2 } from 'lucide-react';
 import { TopBar } from './components/TopBar';
 import {
   BackPanel,
@@ -26,6 +27,7 @@ import {
   SideGussetPanel,
 } from './components/PackagingPanels';
 import { LiveMockupScene, MockupSceneMode } from './components/LiveMockupScene';
+import { ExpandPreviewModal, ExpandPreviewTarget } from './components/ExpandPreviewModal';
 import { DesignCritiqueSection } from './components/DesignCritiqueSection';
 import { DesignElementsKit } from './components/DesignElementsKit';
 import { PouchSizeGuideSection } from './components/PouchSizeGuideSection';
@@ -63,6 +65,7 @@ export default function App() {
   const [compareMode, setCompareMode] = useState<CompareDisplayMode>('natural-kawi');
   const [heroScene, setHeroScene] = useState<MockupSceneMode>('natural-kawi');
   const [previewBgOnly, setPreviewBgOnly] = useState(false);
+  const [expandTarget, setExpandTarget] = useState<ExpandPreviewTarget | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const isOnline = useOnlineStatus();
@@ -255,45 +258,91 @@ export default function App() {
                     <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#574D47]">
                       Pratinjau Mockup · {activeShapeMeta.code} ({config.netWeight})
                     </span>
-                    <div className="grid grid-cols-3 sm:inline-flex items-center gap-1 p-1 bg-[#E2DDD3] rounded-lg w-full sm:w-auto">
+                    <div className="flex items-center gap-1.5 w-full sm:w-auto">
+                      <div className="grid grid-cols-3 sm:inline-flex items-center gap-1 p-1 bg-[#E2DDD3] rounded-lg flex-1 sm:flex-initial">
+                        <button
+                          type="button"
+                          onClick={() => setHeroScene('natural-kawi')}
+                          className={`px-1 sm:px-2.5 py-1.5 min-h-[38px] text-[10.5px] sm:text-xs font-medium rounded-md transition-colors whitespace-nowrap text-center cursor-pointer ${
+                            heroScene === 'natural-kawi'
+                              ? 'bg-[#1A1412] text-[#FAF5EB]'
+                              : 'text-[#574D47] hover:text-[#1A1412]'
+                          }`}
+                        >
+                          Suasana Natural
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setHeroScene('studio-front')}
+                          className={`px-1 sm:px-2.5 py-1.5 min-h-[38px] text-[10.5px] sm:text-xs font-medium rounded-md transition-colors whitespace-nowrap text-center cursor-pointer ${
+                            heroScene === 'studio-front'
+                              ? 'bg-[#1A1412] text-[#FAF5EB]'
+                              : 'text-[#574D47] hover:text-[#1A1412]'
+                          }`}
+                        >
+                          Studio Depan
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setHeroScene('studio-rear')}
+                          className={`px-1 sm:px-2.5 py-1.5 min-h-[38px] text-[10.5px] sm:text-xs font-medium rounded-md transition-colors whitespace-nowrap text-center cursor-pointer ${
+                            heroScene === 'studio-rear'
+                              ? 'bg-[#1A1412] text-[#FAF5EB]'
+                              : 'text-[#574D47] hover:text-[#1A1412]'
+                          }`}
+                        >
+                          Studio Belakang
+                        </button>
+                      </div>
                       <button
                         type="button"
-                        onClick={() => setHeroScene('natural-kawi')}
-                        className={`px-1 sm:px-2.5 py-1.5 min-h-[38px] text-[10.5px] sm:text-xs font-medium rounded-md transition-colors whitespace-nowrap text-center cursor-pointer ${
-                          heroScene === 'natural-kawi'
-                            ? 'bg-[#1A1412] text-[#FAF5EB]'
-                            : 'text-[#574D47] hover:text-[#1A1412]'
-                        }`}
+                        onClick={() =>
+                          setExpandTarget({
+                            kind: 'mockup',
+                            title: `${activeShapeMeta.code} · ${activeShapeMeta.label}`,
+                            subtitle: `${config.netWeight} · ${activeVariantMeta.frontLabel} · ${activeRoastMeta.label}`,
+                            config,
+                            initialScene: heroScene,
+                            backgroundOnly: previewBgOnly,
+                          })
+                        }
+                        aria-label="Perbesar pratinjau mockup"
+                        title="Perbesar layar penuh"
+                        className="min-w-[40px] min-h-[40px] px-2.5 flex items-center justify-center bg-white hover:bg-[#1A1412] text-[#1A1412] hover:text-[#FAF5EB] border border-[#1A1412]/15 rounded-lg transition-colors cursor-pointer shrink-0"
                       >
-                        Suasana Natural
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setHeroScene('studio-front')}
-                        className={`px-1 sm:px-2.5 py-1.5 min-h-[38px] text-[10.5px] sm:text-xs font-medium rounded-md transition-colors whitespace-nowrap text-center cursor-pointer ${
-                          heroScene === 'studio-front'
-                            ? 'bg-[#1A1412] text-[#FAF5EB]'
-                            : 'text-[#574D47] hover:text-[#1A1412]'
-                        }`}
-                      >
-                        Studio Depan
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setHeroScene('studio-rear')}
-                        className={`px-1 sm:px-2.5 py-1.5 min-h-[38px] text-[10.5px] sm:text-xs font-medium rounded-md transition-colors whitespace-nowrap text-center cursor-pointer ${
-                          heroScene === 'studio-rear'
-                            ? 'bg-[#1A1412] text-[#FAF5EB]'
-                            : 'text-[#574D47] hover:text-[#1A1412]'
-                        }`}
-                      >
-                        Studio Belakang
+                        <Maximize2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
 
                   <div
-                    className={`relative w-full h-[430px] sm:h-[520px] lg:h-[580px] ${
+                    role="button"
+                    tabIndex={0}
+                    onClick={() =>
+                      setExpandTarget({
+                        kind: 'mockup',
+                        title: `${activeShapeMeta.code} · ${activeShapeMeta.label}`,
+                        subtitle: `${config.netWeight} · ${activeVariantMeta.frontLabel} · ${activeRoastMeta.label}`,
+                        config,
+                        initialScene: heroScene,
+                        backgroundOnly: previewBgOnly,
+                      })
+                    }
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setExpandTarget({
+                          kind: 'mockup',
+                          title: `${activeShapeMeta.code} · ${activeShapeMeta.label}`,
+                          subtitle: `${config.netWeight} · ${activeVariantMeta.frontLabel} · ${activeRoastMeta.label}`,
+                          config,
+                          initialScene: heroScene,
+                          backgroundOnly: previewBgOnly,
+                        });
+                      }
+                    }}
+                    aria-label={`Perbesar mockup ${activeShapeMeta.code}`}
+                    className={`group relative w-full h-[430px] sm:h-[520px] lg:h-[580px] cursor-zoom-in ${
                       heroScene !== 'natural-kawi' ? 'bg-white' : 'bg-[#1D120D]'
                     }`}
                   >
@@ -303,6 +352,10 @@ export default function App() {
                       size="hero"
                       backgroundOnly={previewBgOnly}
                     />
+                    <span className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[#1A1412]/85 text-[#FAF5EB] text-[11px] font-medium border border-[#D8B474]/30">
+                      <Maximize2 className="w-3.5 h-3.5 text-[#D8B474]" />
+                      Klik untuk Perbesar
+                    </span>
                   </div>
                 </div>
               </div>
@@ -332,25 +385,52 @@ export default function App() {
                   const cardConfig: PackagingConfig = { ...config, pouchShape: shapeId };
 
                   return (
-                    <button
+                    <div
                       key={shapeId}
-                      type="button"
+                      role="button"
+                      tabIndex={0}
                       onClick={() => {
                         setConfig((prev) => ({ ...prev, pouchShape: shapeId }));
                       }}
-                      className={`text-left bg-[#EFECE6] rounded-xl overflow-hidden border transition-all cursor-pointer flex flex-col ${
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setConfig((prev) => ({ ...prev, pouchShape: shapeId }));
+                        }
+                      }}
+                      className={`group text-left bg-[#EFECE6] rounded-xl overflow-hidden border transition-all cursor-pointer flex flex-col ${
                         isActive
                           ? 'border-[#8A6429] ring-1 ring-[#8A6429]'
                           : 'border-[#1A1412]/10 hover:border-[#1A1412]/30'
                       }`}
                     >
-                      <div className="aspect-[3/4] w-full overflow-hidden bg-[#1D120D]">
+                      <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1D120D]">
                         <LiveMockupScene
                           config={cardConfig}
                           scene="natural-kawi"
                           size="card"
                           backgroundOnly={previewBgOnly}
                         />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfig((prev) => ({ ...prev, pouchShape: shapeId }));
+                            setExpandTarget({
+                              kind: 'mockup',
+                              title: `${meta.code} · ${meta.label}`,
+                              subtitle: `${config.netWeight} · ${cardWeightSpecs.dimensions} · ${activeVariantMeta.frontLabel}`,
+                              config: cardConfig,
+                              initialScene: 'natural-kawi',
+                              backgroundOnly: previewBgOnly,
+                            });
+                          }}
+                          aria-label={`Perbesar ${meta.code} ${meta.shortLabel}`}
+                          title="Perbesar mockup"
+                          className="absolute top-2.5 right-2.5 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-md bg-[#1A1412]/80 hover:bg-[#1A1412] text-[#FAF5EB] border border-[#D8B474]/35 transition-colors cursor-pointer"
+                        >
+                          <Maximize2 className="w-4 h-4 text-[#D8B474]" />
+                        </button>
                       </div>
                       <div className="p-3.5 flex-1 flex flex-col justify-between">
                         <div>
@@ -373,7 +453,7 @@ export default function App() {
                           </p>
                         </div>
                       </div>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
@@ -639,16 +719,48 @@ export default function App() {
                                 {meta.fonts.tagline.replace('Plus Jakarta Sans · ', '')}
                               </p>
                             </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setConfig((prev) => ({ ...prev, pouchShape: shapeId }));
-                                setViewMode('dieline');
-                              }}
-                              className="min-h-[44px] px-2.5 flex items-center text-xs font-medium text-[#8A6429] hover:underline whitespace-nowrap shrink-0 cursor-pointer"
-                            >
-                              Lihat Dieline
-                            </button>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setConfig((prev) => ({ ...prev, pouchShape: shapeId }));
+                                  setViewMode('dieline');
+                                }}
+                                className="min-h-[44px] px-2 flex items-center text-xs font-medium text-[#8A6429] hover:underline whitespace-nowrap cursor-pointer"
+                              >
+                                Dieline
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setConfig((prev) => ({ ...prev, pouchShape: shapeId }));
+                                  if (compareMode === '3d-single') {
+                                    setExpandTarget({
+                                      kind: 'panel',
+                                      title: `${meta.code} · Mockup 3D Interaktif`,
+                                      subtitle: `${specs.dimensions} · ${config.netWeight}`,
+                                      config: { ...config, pouchShape: shapeId },
+                                      panel: '3d',
+                                      backgroundOnly: previewBgOnly,
+                                    });
+                                  } else {
+                                    setExpandTarget({
+                                      kind: 'mockup',
+                                      title: `${meta.code} · ${meta.label}`,
+                                      subtitle: `${specs.dimensions} · ${config.netWeight}`,
+                                      config: { ...config, pouchShape: shapeId },
+                                      initialScene: compareMode,
+                                      backgroundOnly: previewBgOnly,
+                                    });
+                                  }
+                                }}
+                                aria-label={`Perbesar ${meta.code}`}
+                                title="Perbesar"
+                                className="min-w-[38px] min-h-[38px] flex items-center justify-center rounded-md border border-[#1A1412]/15 bg-white hover:bg-[#1A1412] text-[#1A1412] hover:text-[#FAF5EB] transition-colors cursor-pointer"
+                              >
+                                <Maximize2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
 
                           {compareMode === '3d-single' ? (
@@ -658,8 +770,34 @@ export default function App() {
                             />
                           ) : (
                             <div
-                              onClick={() => setConfig((prev) => ({ ...prev, pouchShape: shapeId }))}
-                              className={`aspect-[3/4] w-full overflow-hidden rounded-xl border border-[#C99C52]/20 cursor-pointer ${
+                              role="button"
+                              tabIndex={0}
+                              onClick={() => {
+                                setConfig((prev) => ({ ...prev, pouchShape: shapeId }));
+                                setExpandTarget({
+                                  kind: 'mockup',
+                                  title: `${meta.code} · ${meta.label}`,
+                                  subtitle: `${specs.dimensions} · ${config.netWeight}`,
+                                  config: { ...config, pouchShape: shapeId },
+                                  initialScene: compareMode,
+                                  backgroundOnly: previewBgOnly,
+                                });
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  setConfig((prev) => ({ ...prev, pouchShape: shapeId }));
+                                  setExpandTarget({
+                                    kind: 'mockup',
+                                    title: `${meta.code} · ${meta.label}`,
+                                    subtitle: `${specs.dimensions} · ${config.netWeight}`,
+                                    config: { ...config, pouchShape: shapeId },
+                                    initialScene: compareMode,
+                                    backgroundOnly: previewBgOnly,
+                                  });
+                                }
+                              }}
+                              className={`group relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-[#C99C52]/20 cursor-zoom-in ${
                                 compareMode === 'natural-kawi' ? 'bg-[#1D120D]' : 'bg-white'
                               }`}
                             >
@@ -669,6 +807,10 @@ export default function App() {
                                 size="card"
                                 backgroundOnly={previewBgOnly}
                               />
+                              <span className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-2.5 right-2.5 inline-flex items-center gap-1 px-2 py-1 rounded bg-[#1A1412]/85 text-[#FAF5EB] text-[10px] font-medium">
+                                <Maximize2 className="w-3 h-3 text-[#D8B474]" />
+                                Perbesar
+                              </span>
                             </div>
                           )}
                         </div>
@@ -678,12 +820,77 @@ export default function App() {
                 </div>
               )}
 
-              {viewMode === 'dieline' && <FullPrintDieline config={config} backgroundOnly={previewBgOnly} />}
+              {viewMode === 'dieline' && (
+                <div className="space-y-3">
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandTarget({
+                          kind: 'panel',
+                          title: `Full Print Dieline · ${activeShapeMeta.code}`,
+                          subtitle: `${activeWeightSpecs.dimensions} · ${config.netWeight}`,
+                          config,
+                          panel: 'dieline',
+                          backgroundOnly: previewBgOnly,
+                        })
+                      }
+                      className="min-h-[40px] inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-md bg-[#1A1412] text-[#FAF5EB] hover:bg-[#31221B] transition-colors cursor-pointer"
+                    >
+                      <Maximize2 className="w-3.5 h-3.5 text-[#D8B474]" />
+                      Perbesar Dieline
+                    </button>
+                  </div>
+                  <FullPrintDieline config={config} backgroundOnly={previewBgOnly} />
+                </div>
+              )}
 
               {viewMode === 'front' && (
-                <div className="bg-[#160F0C] rounded-xl p-8 border border-[#C99C52]/25 flex justify-center">
+                <div className="relative bg-[#160F0C] rounded-xl p-8 border border-[#C99C52]/25 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandTarget({
+                        kind: 'panel',
+                        title: `Panel Depan · ${activeShapeMeta.code}`,
+                        subtitle: `${activeWeightSpecs.dimensions} · ${config.netWeight}`,
+                        config,
+                        panel: 'front',
+                        backgroundOnly: previewBgOnly,
+                      })
+                    }
+                    className="absolute top-4 right-4 z-10 min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-md bg-[#2A1D16] hover:bg-[#3A2920] text-[#FAF5EB] border border-[#D8B474]/30 transition-colors cursor-pointer"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5 text-[#D8B474]" />
+                    Perbesar
+                  </button>
                   <div
-                    className={`w-full ${
+                    role="button"
+                    tabIndex={0}
+                    onClick={() =>
+                      setExpandTarget({
+                        kind: 'panel',
+                        title: `Panel Depan · ${activeShapeMeta.code}`,
+                        subtitle: `${activeWeightSpecs.dimensions} · ${config.netWeight}`,
+                        config,
+                        panel: 'front',
+                        backgroundOnly: previewBgOnly,
+                      })
+                    }
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setExpandTarget({
+                          kind: 'panel',
+                          title: `Panel Depan · ${activeShapeMeta.code}`,
+                          subtitle: `${activeWeightSpecs.dimensions} · ${config.netWeight}`,
+                          config,
+                          panel: 'front',
+                          backgroundOnly: previewBgOnly,
+                        });
+                      }
+                    }}
+                    className={`w-full cursor-zoom-in ${
                       tall
                         ? 'max-w-[330px] aspect-[100/240] rounded-sm'
                         : isDoypack
@@ -703,7 +910,24 @@ export default function App() {
               )}
 
               {viewMode === 'back-gusset' && (
-                <div className="bg-[#160F0C] rounded-xl p-6 sm:p-8 border border-[#C99C52]/25 flex flex-wrap items-center justify-center gap-6">
+                <div className="relative bg-[#160F0C] rounded-xl p-6 sm:p-8 border border-[#C99C52]/25 flex flex-wrap items-center justify-center gap-6">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandTarget({
+                        kind: 'panel',
+                        title: `Panel Belakang · ${activeShapeMeta.code}`,
+                        subtitle: `${activeWeightSpecs.dimensions} · ${config.netWeight}`,
+                        config,
+                        panel: 'back',
+                        backgroundOnly: previewBgOnly,
+                      })
+                    }
+                    className="absolute top-4 right-4 z-10 min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-md bg-[#2A1D16] hover:bg-[#3A2920] text-[#FAF5EB] border border-[#D8B474]/30 transition-colors cursor-pointer"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5 text-[#D8B474]" />
+                    Perbesar
+                  </button>
                   {!isDoypack && (
                     <div
                       className={`${
@@ -714,7 +938,32 @@ export default function App() {
                     </div>
                   )}
                   <div
-                    className={`w-full ${
+                    role="button"
+                    tabIndex={0}
+                    onClick={() =>
+                      setExpandTarget({
+                        kind: 'panel',
+                        title: `Panel Belakang · ${activeShapeMeta.code}`,
+                        subtitle: `${activeWeightSpecs.dimensions} · ${config.netWeight}`,
+                        config,
+                        panel: 'back',
+                        backgroundOnly: previewBgOnly,
+                      })
+                    }
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setExpandTarget({
+                          kind: 'panel',
+                          title: `Panel Belakang · ${activeShapeMeta.code}`,
+                          subtitle: `${activeWeightSpecs.dimensions} · ${config.netWeight}`,
+                          config,
+                          panel: 'back',
+                          backgroundOnly: previewBgOnly,
+                        });
+                      }
+                    }}
+                    className={`w-full cursor-zoom-in ${
                       tall
                         ? 'max-w-[330px] aspect-[100/240] rounded-sm'
                         : isDoypack
@@ -736,13 +985,41 @@ export default function App() {
                 </div>
               )}
 
-              {viewMode === 'pouch-3d' && <InteractivePouch3D config={config} backgroundOnly={previewBgOnly} />}
+              {viewMode === 'pouch-3d' && (
+                <div className="space-y-3">
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandTarget({
+                          kind: 'panel',
+                          title: `Mockup 3D Interaktif · ${activeShapeMeta.code}`,
+                          subtitle: `${activeWeightSpecs.dimensions} · ${config.netWeight}`,
+                          config,
+                          panel: '3d',
+                          backgroundOnly: previewBgOnly,
+                        })
+                      }
+                      className="min-h-[40px] inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-md bg-[#1A1412] text-[#FAF5EB] hover:bg-[#31221B] transition-colors cursor-pointer"
+                    >
+                      <Maximize2 className="w-3.5 h-3.5 text-[#D8B474]" />
+                      Perbesar 3D
+                    </button>
+                  </div>
+                  <InteractivePouch3D config={config} backgroundOnly={previewBgOnly} />
+                </div>
+              )}
             </div>
           </div>
         </section>
 
-        <DesignCritiqueSection config={config} />
-        <DesignElementsKit config={config} onExport={handleExport} isExporting={isExporting} />
+        <DesignCritiqueSection config={config} onExpand={setExpandTarget} />
+        <DesignElementsKit
+          config={config}
+          onExport={handleExport}
+          isExporting={isExporting}
+          onExpand={setExpandTarget}
+        />
         <PouchSizeGuideSection
           config={config}
           onApplyPreset={(shape, weight) => {
@@ -772,6 +1049,7 @@ export default function App() {
       </footer>
 
       <MobileBottomNav />
+      <ExpandPreviewModal target={expandTarget} onClose={() => setExpandTarget(null)} />
     </div>
   );
 }

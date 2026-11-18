@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Check, Copy, Download } from 'lucide-react';
+import { Check, Copy, Download, Maximize2 } from 'lucide-react';
 import {
   ArunikaSunBeanCrest,
   BotanicalCornerArt,
@@ -13,13 +13,14 @@ import {
   getWeightSpecs,
   PackagingConfig,
   POUCH_SHAPES,
-  PouchShapeId,
   ROAST_LEVELS,
 } from '../types/packaging';
 import { COLOR_TOKENS, getNaturalMockupAssetForShape, PHOTO_ASSETS } from '../data/packagingSpecs';
 import { LiveMockupScene, MockupSceneMode } from './LiveMockupScene';
 import { BackPanel, FrontPanel } from './PackagingPanels';
+import type { ExpandPreviewTarget } from './ExpandPreviewModal';
 import { ExportScope } from '../utils/exportPrintArtwork';
+import { renderAndDownloadMockup } from '../utils/exportMockupScene';
 import {
   downloadImageAsset,
   downloadSvgAsPng,
@@ -27,28 +28,19 @@ import {
 } from '../utils/exportSingleElement';
 import { getWibBatchAndExpiry, getWibFormattedDate } from '../utils/dateUtils';
 
-const PHOTO_LIVE_SCENE_MAP: Record<string, { shape: PouchShapeId; scene: MockupSceneMode }> = {
-  'mockup-box': { shape: 'box-gusset', scene: 'natural-kawi' },
-  'mockup-doypack-studio': { shape: 'doypack-valve', scene: 'studio-front' },
-  'mockup-doypack-studio-rear': { shape: 'doypack-valve', scene: 'studio-rear' },
-  'mockup-doypack-natural': { shape: 'doypack-valve', scene: 'natural-kawi' },
-  'mockup-tall-heritage': { shape: 'tall-heritage', scene: 'natural-kawi' },
-  'mockup-tall-botanical': { shape: 'tall-botanical', scene: 'natural-kawi' },
-  'mockup-tall-copper': { shape: 'tall-copper', scene: 'natural-kawi' },
-  'mockup-tall-minimal': { shape: 'tall-minimal', scene: 'natural-kawi' },
-};
-
 function VectorElementCard({
   title,
   description,
   fileSlug,
   pngSize = [1200, 1200],
+  onExpandClick,
   children,
 }: {
   title: string;
   description: string;
   fileSlug: string;
   pngSize?: [number, number];
+  onExpandClick: () => void;
   children: React.ReactNode;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -62,9 +54,21 @@ function VectorElementCard({
       <div
         ref={containerRef}
         data-vector-slug={fileSlug}
-        className="h-44 bg-[#18100C] flex items-center justify-center p-5 border-b border-[#1A1412]/10"
+        onClick={onExpandClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onExpandClick();
+          }
+        }}
+        className="group relative h-44 bg-[#18100C] flex items-center justify-center p-5 border-b border-[#1A1412]/10 cursor-zoom-in"
       >
         {children}
+        <span className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-[#120C09]/70 text-[#FAF5EB] flex items-center justify-center opacity-80 group-hover:opacity-100 group-hover:bg-[#8A6429] transition-colors">
+          <Maximize2 className="w-3.5 h-3.5" />
+        </span>
       </div>
       <div className="p-4 flex-1 flex flex-col justify-between">
         <div>
@@ -98,12 +102,14 @@ interface DesignElementsKitProps {
   config: PackagingConfig;
   onExport: (scope: ExportScope) => void;
   isExporting: boolean;
+  onExpand: (target: ExpandPreviewTarget) => void;
 }
 
-export function DesignElementsKit({ config, onExport, isExporting }: DesignElementsKitProps) {
+export function DesignElementsKit({ config, onExport, isExporting, onExpand }: DesignElementsKitProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [photoPage, setPhotoPage] = useState<number>(0);
   const [activeKitScene, setActiveKitScene] = useState<MockupSceneMode>('natural-kawi');
+  const [downloadingAssetId, setDownloadingAssetId] = useState<string | null>(null);
   const PHOTOS_PER_PAGE = 7;
   const totalPhotoPages = Math.ceil(PHOTO_ASSETS.length / PHOTOS_PER_PAGE);
   const visiblePhotos = PHOTO_ASSETS.slice(
@@ -213,33 +219,61 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
 
           <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#160F0C] p-6 rounded-xl border border-[#C99C52]/20">
             <div className="flex flex-col items-center">
-              <div
-                className={`w-full ${
+              <button
+                type="button"
+                onClick={() =>
+                  onExpand({
+                    kind: 'panel',
+                    title: `Background Murni Panel Depan · ${shapeMeta.code}`,
+                    subtitle: `${weightSpecs.frontDim} · Tanpa Teks & Logo`,
+                    config,
+                    panel: 'front',
+                    backgroundOnly: true,
+                  })
+                }
+                className={`group relative w-full ${
                   config.pouchShape === 'doypack-valve'
                     ? 'max-w-[300px] aspect-[150/220] rounded-xl'
                     : config.pouchShape === 'box-gusset'
                       ? 'max-w-[290px] aspect-[130/210] rounded-sm'
                       : 'max-w-[250px] aspect-[100/240] rounded-sm'
-                } overflow-hidden shadow-2xl ring-1 ring-[#D8B474]/25`}
+                } overflow-hidden shadow-2xl ring-1 ring-[#D8B474]/25 cursor-zoom-in`}
               >
                 <FrontPanel config={config} backgroundOnly />
-              </div>
+                <span className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-[#120C09]/75 text-[#FAF5EB] flex items-center justify-center opacity-85 group-hover:opacity-100 group-hover:bg-[#8A6429] transition-colors">
+                  <Maximize2 className="w-3.5 h-3.5" />
+                </span>
+              </button>
               <p className="mt-2.5 font-mono text-[11px] text-[#CBBBA8]">
                 Pratinjau Background Panel Depan (Murni Tanpa Teks &amp; Logo)
               </p>
             </div>
             <div className="flex flex-col items-center">
-              <div
-                className={`w-full ${
+              <button
+                type="button"
+                onClick={() =>
+                  onExpand({
+                    kind: 'panel',
+                    title: `Background Murni Panel Belakang · ${shapeMeta.code}`,
+                    subtitle: `${weightSpecs.frontDim} · Tanpa Teks & Logo`,
+                    config,
+                    panel: 'back',
+                    backgroundOnly: true,
+                  })
+                }
+                className={`group relative w-full ${
                   config.pouchShape === 'doypack-valve'
                     ? 'max-w-[300px] aspect-[150/220] rounded-xl'
                     : config.pouchShape === 'box-gusset'
                       ? 'max-w-[290px] aspect-[130/210] rounded-sm'
                       : 'max-w-[250px] aspect-[100/240] rounded-sm'
-                } overflow-hidden shadow-2xl ring-1 ring-[#D8B474]/25`}
+                } overflow-hidden shadow-2xl ring-1 ring-[#D8B474]/25 cursor-zoom-in`}
               >
                 <BackPanel config={config} backgroundOnly />
-              </div>
+                <span className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-[#120C09]/75 text-[#FAF5EB] flex items-center justify-center opacity-85 group-hover:opacity-100 group-hover:bg-[#8A6429] transition-colors">
+                  <Maximize2 className="w-3.5 h-3.5" />
+                </span>
+              </button>
               <p className="mt-2.5 font-mono text-[11px] text-[#CBBBA8]">
                 Pratinjau Background Panel Belakang (Murni Tanpa Teks &amp; Logo)
               </p>
@@ -261,6 +295,17 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
               title="Emblem Arunika Sun & Bean"
               description="Ikon dua biji kopi & sinar fajar ('Arunika') berlapis gradasi emas."
               fileSlug="arunika-emblem-utama"
+              onExpandClick={() =>
+                onExpand({
+                  kind: 'vector',
+                  title: 'Emblem Arunika Sun & Bean',
+                  subtitle: 'SVG Vektor · PNG 1200×1200 Transparan',
+                  slug: 'arunika-emblem-utama',
+                  roastTop: roast.crestTop,
+                  roastBottom: roast.crestBottom,
+                  beanLabel: variant.frontLabel,
+                })
+              }
             >
               <ArunikaSunBeanCrest className="w-28 h-28" />
             </VectorElementCard>
@@ -270,6 +315,18 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
               description="Bingkai awan emas mewah untuk label Traditional / Bold / Artisan Roast."
               fileSlug="arunika-bingkai-roast"
               pngSize={[1400, 840]}
+              onExpandClick={() =>
+                onExpand({
+                  kind: 'vector',
+                  title: 'Bingkai Profil Sangrai',
+                  subtitle: 'SVG Vektor · PNG 1400×840 Transparan',
+                  slug: 'arunika-bingkai-roast',
+                  pngSize: [1400, 840],
+                  roastTop: roast.crestTop,
+                  roastBottom: roast.crestBottom,
+                  beanLabel: variant.frontLabel,
+                })
+              }
             >
               <RoastProfileCrest topText={roast.crestTop} bottomText={roast.crestBottom} className="w-44" />
             </VectorElementCard>
@@ -278,6 +335,17 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
               title="Ornamen Mandala Heritage"
               description="Bingkai mandala emas 16 kelopak untuk Alternatif 03 Tall Gusset."
               fileSlug="arunika-mandala-heritage"
+              onExpandClick={() =>
+                onExpand({
+                  kind: 'vector',
+                  title: 'Ornamen Mandala Heritage',
+                  subtitle: 'SVG Vektor · PNG 1200×1200 Transparan',
+                  slug: 'arunika-mandala-heritage',
+                  roastTop: roast.crestTop,
+                  roastBottom: roast.crestBottom,
+                  beanLabel: variant.frontLabel,
+                })
+              }
             >
               <MandalaHeritageCrest label={variant.frontLabel} className="w-32 h-32" />
             </VectorElementCard>
@@ -286,6 +354,17 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
               title="Garis Botani Daun & Ceri Kopi"
               description="Ornamen sudut daun dan buah ceri kopi emas khusus Alternatif 04 Tall Botanical."
               fileSlug="arunika-botani-daun-kopi"
+              onExpandClick={() =>
+                onExpand({
+                  kind: 'vector',
+                  title: 'Garis Botani Daun & Ceri Kopi',
+                  subtitle: 'SVG Vektor · PNG 1200×1200 Transparan',
+                  slug: 'arunika-botani-daun-kopi',
+                  roastTop: roast.crestTop,
+                  roastBottom: roast.crestBottom,
+                  beanLabel: variant.frontLabel,
+                })
+              }
             >
               <BotanicalCornerArt className="w-32 h-32" />
             </VectorElementCard>
@@ -294,6 +373,17 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
               title="Stempel KTH (Emas Heritage)"
               description="Stempel Produk Asli Kelompok Tani Hutan Jawa Timur selaras palet emas."
               fileSlug="arunika-stempel-kth-emas"
+              onExpandClick={() =>
+                onExpand({
+                  kind: 'vector',
+                  title: 'Stempel KTH (Emas Heritage)',
+                  subtitle: 'SVG Vektor · PNG 1200×1200 Transparan',
+                  slug: 'arunika-stempel-kth-emas',
+                  roastTop: roast.crestTop,
+                  roastBottom: roast.crestBottom,
+                  beanLabel: variant.frontLabel,
+                })
+              }
             >
               <KthEastJavaSeal variant="gold-heritage" className="w-28 h-28" />
             </VectorElementCard>
@@ -302,6 +392,17 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
               title="Stempel KTH (Hijau Asli)"
               description="Versi warna hijau-emas asli sesuai draf pertama untuk kebutuhan resmi."
               fileSlug="arunika-stempel-kth-hijau"
+              onExpandClick={() =>
+                onExpand({
+                  kind: 'vector',
+                  title: 'Stempel KTH (Hijau Asli)',
+                  subtitle: 'SVG Vektor · PNG 1200×1200 Transparan',
+                  slug: 'arunika-stempel-kth-hijau',
+                  roastTop: roast.crestTop,
+                  roastBottom: roast.crestBottom,
+                  beanLabel: variant.frontLabel,
+                })
+              }
             >
               <KthEastJavaSeal variant="original-green" className="w-28 h-28" />
             </VectorElementCard>
@@ -311,6 +412,18 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
               description="Barcode 8 997024 192504 siap tempat pada pojok kanan bawah panel belakang."
               fileSlug="arunika-barcode-ean13"
               pngSize={[1300, 560]}
+              onExpandClick={() =>
+                onExpand({
+                  kind: 'vector',
+                  title: 'Barcode Produk EAN-13',
+                  subtitle: 'SVG Vektor · PNG 1300×560 Transparan',
+                  slug: 'arunika-barcode-ean13',
+                  pngSize: [1300, 560],
+                  roastTop: roast.crestTop,
+                  roastBottom: roast.crestBottom,
+                  beanLabel: variant.frontLabel,
+                })
+              }
             >
               <Ean13Barcode className="w-44 h-20" />
             </VectorElementCard>
@@ -348,13 +461,26 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
 
           {/* Dynamic Featured Active Mockup Final Card (Always Tracks Active Alternative & Weight) */}
           <div className="mb-6 bg-[#F6F5F2] rounded-xl border border-[#8A6429]/40 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
-            <div
-              className={`lg:col-span-5 aspect-[4/3] lg:aspect-auto lg:min-h-[320px] ${
+            <button
+              type="button"
+              onClick={() =>
+                onExpand({
+                  kind: 'mockup',
+                  title: `Mockup Final · ${shapeMeta.code} ${shapeMeta.shortLabel}`,
+                  subtitle: `${weightSpecs.dimensions} · ${config.netWeight} · ${variant.frontLabel}`,
+                  config,
+                  initialScene: activeKitScene,
+                })
+              }
+              className={`group relative lg:col-span-5 aspect-[4/3] lg:aspect-auto lg:min-h-[320px] ${
                 activeKitScene === 'natural-kawi' ? 'bg-[#18100C]' : 'bg-white'
-              } overflow-hidden`}
+              } overflow-hidden cursor-zoom-in text-left`}
             >
               <LiveMockupScene config={config} scene={activeKitScene} size="card" />
-            </div>
+              <span className="absolute top-3 right-3 z-30 w-9 h-9 rounded-full bg-[#120C09]/75 text-[#FAF5EB] flex items-center justify-center opacity-85 group-hover:opacity-100 group-hover:bg-[#8A6429] transition-colors shadow">
+                <Maximize2 className="w-4 h-4" />
+              </span>
+            </button>
             <div className="lg:col-span-7 p-5 sm:p-6 flex flex-col justify-between gap-4">
               <div>
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -409,16 +535,26 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
                   </button>
                   <button
                     type="button"
-                    onClick={() =>
-                      downloadImageAsset(
-                        activeNaturalMeta.src,
-                        `arunika-mockup-${config.pouchShape}-${config.netWeight.replace(/\s+/g, '')}.jpg`
-                      )
-                    }
-                    className="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[#1A1412] text-[#FAF5EB] hover:bg-[#31221B] rounded-md transition-colors cursor-pointer whitespace-nowrap"
+                    disabled={downloadingAssetId === 'featured-mockup'}
+                    onClick={async () => {
+                      setDownloadingAssetId('featured-mockup');
+                      try {
+                        await renderAndDownloadMockup(
+                          config,
+                          activeKitScene,
+                          `arunika-mockup-${config.pouchShape}-${activeKitScene}-${config.netWeight.replace(/\s+/g, '')}.png`,
+                          'image/png'
+                        );
+                      } finally {
+                        setDownloadingAssetId(null);
+                      }
+                    }}
+                    className="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[#1A1412] text-[#FAF5EB] hover:bg-[#31221B] disabled:opacity-60 rounded-md transition-colors cursor-pointer whitespace-nowrap"
                   >
                     <Download className="w-3.5 h-3.5 text-[#D8B474]" />
-                    <span>Unduh Foto Dasar JPG</span>
+                    <span>
+                      {downloadingAssetId === 'featured-mockup' ? 'Memproses...' : 'Unduh Mockup PNG'}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -427,16 +563,37 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {visiblePhotos.map((asset) => {
-              const liveSpec = PHOTO_LIVE_SCENE_MAP[asset.id];
+              const liveSpec = asset.liveMockup;
+              const isBusy = downloadingAssetId === asset.id;
               return (
                 <div
                   key={asset.id}
                   className="bg-[#F6F5F2] rounded-xl border border-[#1A1412]/10 overflow-hidden flex flex-col"
                 >
-                  <div
-                    className={`aspect-[16/10] ${
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (liveSpec) {
+                        onExpand({
+                          kind: 'mockup',
+                          title: asset.title,
+                          subtitle: `${POUCH_SHAPES[liveSpec.shape].dimensions} · ${config.netWeight}`,
+                          config: { ...config, pouchShape: liveSpec.shape },
+                          initialScene: liveSpec.scene,
+                        });
+                      } else {
+                        onExpand({
+                          kind: 'image',
+                          title: asset.title,
+                          subtitle: `${asset.dims} · ${asset.filename}`,
+                          src: asset.src,
+                          filename: asset.filename,
+                        });
+                      }
+                    }}
+                    className={`group relative aspect-[16/10] w-full ${
                       liveSpec && liveSpec.scene !== 'natural-kawi' ? 'bg-white' : 'bg-[#18100C]'
-                    } overflow-hidden`}
+                    } overflow-hidden cursor-zoom-in text-left`}
                   >
                     {liveSpec ? (
                       <LiveMockupScene
@@ -454,7 +611,10 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
                         className="w-full h-full object-cover"
                       />
                     )}
-                  </div>
+                    <span className="absolute top-2.5 right-2.5 z-30 w-8 h-8 rounded-full bg-[#120C09]/75 text-[#FAF5EB] flex items-center justify-center opacity-85 group-hover:opacity-100 group-hover:bg-[#8A6429] transition-colors shadow">
+                      <Maximize2 className="w-3.5 h-3.5" />
+                    </span>
+                  </button>
                   <div className="p-4 flex-1 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between gap-2">
@@ -466,11 +626,28 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
                       <span className="font-mono text-[11px] text-[#8A6429] tabular-nums">{asset.dims}</span>
                       <button
                         type="button"
-                        onClick={() => downloadImageAsset(asset.src, asset.filename)}
-                        className="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[#1A1412] text-[#FAF5EB] hover:bg-[#31221B] rounded-md transition-colors cursor-pointer whitespace-nowrap shrink-0"
+                        disabled={isBusy}
+                        onClick={async () => {
+                          setDownloadingAssetId(asset.id);
+                          try {
+                            if (liveSpec) {
+                              await renderAndDownloadMockup(
+                                { ...config, pouchShape: liveSpec.shape },
+                                liveSpec.scene,
+                                asset.filename,
+                                'image/png'
+                              );
+                            } else {
+                              await downloadImageAsset(asset.src, asset.filename);
+                            }
+                          } finally {
+                            setDownloadingAssetId(null);
+                          }
+                        }}
+                        className="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[#1A1412] text-[#FAF5EB] hover:bg-[#31221B] disabled:opacity-60 rounded-md transition-colors cursor-pointer whitespace-nowrap shrink-0"
                       >
                         <Download className="w-3.5 h-3.5 text-[#D8B474]" />
-                        <span>{asset.filename.endsWith('.png') ? 'Unduh PNG' : 'Unduh JPG'}</span>
+                        <span>{isBusy ? 'Memproses...' : asset.filename.endsWith('.png') ? 'Unduh PNG' : 'Unduh JPG'}</span>
                       </button>
                     </div>
                   </div>

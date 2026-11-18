@@ -8,6 +8,7 @@ import {
   ROAST_LEVELS,
 } from '../types/packaging';
 import { getWibDateKey } from './dateUtils';
+import { downloadCanvas } from './exportSingleElement';
 
 export function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -396,90 +397,21 @@ export async function renderPrintSheetCanvas(
   };
 
   const drawFrontContent = (px: number, py: number, pw: number, ph: number) => {
-    const hasTextOverride = config.beanVariant !== 'robusta-100' || config.roastLevel !== 'traditional';
+    const matchesExactUploadedMaster =
+      config.artworkSource === 'uploaded-final' &&
+      !isBackgroundOnly &&
+      !tall &&
+      config.beanVariant === 'robusta-100' &&
+      config.roastLevel === 'traditional' &&
+      config.sealPlacement === 'back' &&
+      config.naturalMood === 'kawi-beans';
 
-    if (config.artworkSource === 'uploaded-final' && !isBackgroundOnly && revisedFrontImg) {
+    if (matchesExactUploadedMaster && revisedFrontImg) {
       ctx.save();
       ctx.beginPath();
       ctx.rect(px, py, pw, ph);
       ctx.clip();
       drawCoverImage(ctx, revisedFrontImg, px, py, pw, ph, 'center');
-
-      if (config.naturalMood === 'cherries-beans' && cherriesImg) {
-        drawFeatheredImage(
-          ctx,
-          cherriesImg,
-          px,
-          py,
-          pw,
-          ph * 0.52,
-          [
-            { offset: 0, alpha: 0.45 },
-            { offset: 0.5, alpha: 0.35 },
-            { offset: 1, alpha: 0 },
-          ],
-          0.55,
-          'center'
-        );
-      }
-
-      if (config.naturalMood === 'espresso-matte') {
-        const darkOverlay = ctx.createLinearGradient(px, py, px, py + ph * 0.48);
-        darkOverlay.addColorStop(0, 'rgba(22, 12, 8, 0.82)');
-        darkOverlay.addColorStop(0.55, 'rgba(28, 16, 11, 0.58)');
-        darkOverlay.addColorStop(1, 'rgba(28, 16, 11, 0)');
-        ctx.fillStyle = darkOverlay;
-        ctx.fillRect(px, py, pw, ph * 0.48);
-      }
-
-      if (isHeritage) {
-        ctx.strokeStyle = 'rgba(216, 180, 116, 0.5)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(px + pw * 0.03, py + ph * 0.03, pw * 0.94, ph * 0.94);
-      }
-
-      if (isCopper) {
-        ctx.fillStyle = 'rgba(156, 79, 43, 0.9)';
-        ctx.beginPath();
-        ctx.moveTo(px + pw * 0.3, py + ph * 0.895);
-        ctx.lineTo(px + pw, py + ph * 0.59);
-        ctx.lineTo(px + pw, py + ph * 0.895);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.fillStyle = drawGoldGradient(ctx, px + pw * 0.075, py, 3, ph);
-        ctx.fillRect(px + pw * 0.075, py, 3, ph);
-      }
-
-      if (hasTextOverride) {
-        const bx = px + pw * 0.08;
-        const by = py + ph * 0.482;
-        const bw = pw * 0.84;
-        const bh = ph * 0.115;
-        const patchGrad = ctx.createRadialGradient(
-          bx + bw / 2,
-          by + bh / 2,
-          bh * 0.15,
-          bx + bw / 2,
-          by + bh / 2,
-          bw * 0.56
-        );
-        patchGrad.addColorStop(0, 'rgba(34, 21, 14, 0.99)');
-        patchGrad.addColorStop(0.68, 'rgba(28, 17, 11, 0.95)');
-        patchGrad.addColorStop(1, 'rgba(28, 17, 11, 0)');
-        ctx.fillStyle = patchGrad;
-        ctx.fillRect(bx, by, bw, bh);
-        ctx.fillStyle = '#FAF5EB';
-        ctx.textAlign = 'center';
-        ctx.font = `600 ${Math.round(pw * 0.036)}px "Plus Jakarta Sans", sans-serif`;
-        ctx.fillText(roast.subtitle, px + pw / 2, py + ph * 0.53);
-        ctx.fillText(variant.frontLabel, px + pw / 2, py + ph * 0.575);
-      }
-
-      if (config.sealPlacement === 'front') {
-        drawKthSeal(ctx, px + pw * 0.84, py + ph * 0.8, pw * 0.085);
-      }
-
       if (isDoypack && config.showPrintMarks) {
         ctx.save();
         ctx.setLineDash([6, 6]);
@@ -490,26 +422,43 @@ export async function renderPrintSheetCanvas(
         ctx.stroke();
         ctx.restore();
       }
-
-      if (isCopper) {
-        const bandH = ph * 0.096;
-        const bandY = py + ph - bandH;
-        ctx.fillStyle = 'rgba(32, 18, 12, 0.94)';
-        ctx.fillRect(px, bandY, pw, bandH);
-        ctx.strokeStyle = 'rgba(230, 184, 154, 0.5)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(px, bandY, pw, 2);
-        ctx.fillStyle = '#FAF5EB';
-        ctx.textAlign = 'center';
-        ctx.font = `700 ${Math.round(pw * 0.035)}px "Plus Jakarta Sans", sans-serif`;
-        ctx.fillText(`Isi Bersih : ${config.netWeight}`, px + pw / 2, bandY + bandH * 0.62);
-      }
-
       ctx.restore();
       return;
     }
 
     drawPanelBase(px, py, pw, ph, false);
+
+    if (!isBackgroundOnly && isHeritage) {
+      ctx.strokeStyle = 'rgba(216, 180, 116, 0.5)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(px + pw * 0.035, py + ph * 0.035, pw * 0.93, ph * 0.93);
+    }
+
+    if (config.pouchShape === 'tall-botanical' && !isBackgroundOnly) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(216, 180, 116, 0.55)';
+      ctx.lineWidth = 2;
+      const corners = [
+        [px + pw * 0.04, py + ph * 0.04, 1, 1],
+        [px + pw * 0.96, py + ph * 0.04, -1, 1],
+        [px + pw * 0.04, py + ph * 0.84, 1, -1],
+        [px + pw * 0.96, py + ph * 0.84, -1, -1],
+      ];
+      corners.forEach(([cx0, cy0, sx, sy]) => {
+        ctx.save();
+        ctx.translate(cx0, cy0);
+        ctx.scale(sx, sy);
+        ctx.beginPath();
+        ctx.moveTo(0, ph * 0.09);
+        ctx.quadraticCurveTo(pw * 0.05, ph * 0.04, pw * 0.14, 0);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(pw * 0.06, ph * 0.04, pw * 0.035, ph * 0.015, -0.5, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      });
+      ctx.restore();
+    }
     if (isBackgroundOnly) return;
 
     const cx = px + pw / 2;
@@ -650,100 +599,31 @@ export async function renderPrintSheetCanvas(
   };
 
   const drawBackContent = (px: number, py: number, pw: number, ph: number) => {
-    const hasTextOverride = config.beanVariant !== 'robusta-100' || config.roastLevel !== 'traditional';
+    const matchesExactUploadedMaster =
+      config.artworkSource === 'uploaded-final' &&
+      !isBackgroundOnly &&
+      !tall &&
+      config.beanVariant === 'robusta-100' &&
+      config.roastLevel === 'traditional' &&
+      config.sealPlacement === 'back' &&
+      config.naturalMood === 'kawi-beans';
 
-    if (config.artworkSource === 'uploaded-final' && !isBackgroundOnly && revisedRearImg) {
+    if (matchesExactUploadedMaster && revisedRearImg) {
       ctx.save();
       ctx.beginPath();
       ctx.rect(px, py, pw, ph);
       ctx.clip();
       drawCoverImage(ctx, revisedRearImg, px, py, pw, ph, 'center');
-
-      if (config.naturalMood === 'espresso-matte') {
-        const darkOverlay = ctx.createLinearGradient(px, py, px, py + ph * 0.5);
-        darkOverlay.addColorStop(0, 'rgba(22, 12, 8, 0.72)');
-        darkOverlay.addColorStop(0.55, 'rgba(28, 16, 11, 0.45)');
-        darkOverlay.addColorStop(1, 'rgba(28, 16, 11, 0)');
-        ctx.fillStyle = darkOverlay;
-        ctx.fillRect(px, py, pw, ph * 0.5);
-      }
-
-      if (isHeritage) {
-        ctx.strokeStyle = 'rgba(216, 180, 116, 0.45)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(px + pw * 0.03, py + ph * 0.03, pw * 0.94, ph * 0.94);
-      }
-
-      if (config.sealPlacement !== 'back') {
-        const sx = px + pw * 0.125;
-        const sy = py + ph * 0.802;
-        const sr = pw * 0.085;
-        const sealCover = ctx.createRadialGradient(sx, sy, sr * 0.55, sx, sy, sr);
-        sealCover.addColorStop(0, 'rgba(24, 14, 9, 0.99)');
-        sealCover.addColorStop(0.78, 'rgba(24, 14, 9, 0.92)');
-        sealCover.addColorStop(1, 'rgba(24, 14, 9, 0)');
-        ctx.fillStyle = sealCover;
-        ctx.beginPath();
-        ctx.arc(sx, sy, sr, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      if (hasTextOverride) {
-        const bx = px + pw * 0.06;
-        const by = py + ph * 0.242;
-        const bw = pw * 0.88;
-        const bh = ph * 0.345;
-        const rearPatch = ctx.createRadialGradient(
-          bx + bw / 2,
-          by + bh / 2,
-          bh * 0.2,
-          bx + bw / 2,
-          by + bh / 2,
-          bw * 0.58
-        );
-        rearPatch.addColorStop(0, 'rgba(34, 21, 14, 0.99)');
-        rearPatch.addColorStop(0.72, 'rgba(28, 17, 11, 0.96)');
-        rearPatch.addColorStop(1, 'rgba(28, 17, 11, 0)');
-        ctx.fillStyle = rearPatch;
-        ctx.fillRect(bx, by, bw, bh);
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#FAF5EB';
-        ctx.font = `400 ${Math.round(pw * 0.0235)}px "Plus Jakarta Sans", sans-serif`;
-        ctx.fillText('Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan.', px + pw / 2, py + ph * 0.3);
-        ctx.fillText('Dipetik langsung dari lereng Gunung Kawi. Setiap seduhan menghadirkan', px + pw / 2, py + ph * 0.335);
-        ctx.fillStyle = '#C9A35E';
-        ctx.font = `600 ${Math.round(pw * 0.0235)}px "Plus Jakarta Sans", sans-serif`;
-        ctx.fillText(`karakter ${variant.storyCharacter}`, px + pw / 2, py + ph * 0.37);
-        ctx.fillStyle = '#FAF5EB';
-        ctx.font = `400 ${Math.round(pw * 0.0235)}px "Plus Jakarta Sans", sans-serif`;
-        ctx.fillText(roast.storyRoast, px + pw / 2, py + ph * 0.405);
-        ctx.fillStyle = '#C9A35E';
-        ctx.font = `700 ${Math.round(pw * 0.025)}px "Plus Jakarta Sans", sans-serif`;
-        ctx.fillText('Arunika Kawi Coffee Harum dan Nikmat', px + pw / 2, py + ph * 0.455);
-        ctx.fillStyle = '#FAF5EB';
-        ctx.font = `700 ${Math.round(pw * 0.024)}px "Plus Jakarta Sans", sans-serif`;
-        ctx.fillText(`KOMPOSISI ${variant.frontLabel.toUpperCase()}`, px + pw / 2, py + ph * 0.545);
-      }
-
-      if (isCopper) {
-        const bandH = ph * 0.118;
-        const bandY = py + ph - bandH;
-        ctx.fillStyle = 'rgba(32, 18, 12, 0.94)';
-        ctx.fillRect(px, bandY, pw, bandH);
-        ctx.strokeStyle = 'rgba(230, 184, 154, 0.5)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(px, bandY, pw, 2);
-        ctx.fillStyle = '#FAF5EB';
-        ctx.textAlign = 'center';
-        ctx.font = `700 ${Math.round(pw * 0.032)}px "Plus Jakarta Sans", sans-serif`;
-        ctx.fillText('100 % KOPI ASLI INDONESIA', px + pw / 2, bandY + bandH * 0.62);
-      }
-
       ctx.restore();
       return;
     }
 
     drawPanelBase(px, py, pw, ph, true);
+    if (!isBackgroundOnly && isHeritage) {
+      ctx.strokeStyle = 'rgba(216, 180, 116, 0.45)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(px + pw * 0.035, py + ph * 0.035, pw * 0.93, ph * 0.93);
+    }
     if (isBackgroundOnly) return;
 
     const cx = px + pw / 2;
@@ -892,8 +772,6 @@ export async function renderAndDownloadPrintSheet(
   if (!rendered) return;
 
   const { canvas, isBackgroundOnly, baseScope } = rendered;
-  const dataUrl = canvas.toDataURL('image/png');
-  const link = document.createElement('a');
   const suffix = isBackgroundOnly
     ? baseScope === 'full-dieline'
       ? 'BackgroundSaja-Full'
@@ -906,9 +784,6 @@ export async function renderAndDownloadPrintSheet(
         ? 'PanelDepan'
         : 'PanelBelakang';
   const wibDate = getWibDateKey();
-  link.download = `PackagingStudio-${config.pouchShape}-${suffix}-${config.netWeight.replace(/\s+/g, '')}-${wibDate}.png`;
-  link.href = dataUrl;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  const filename = `PackagingStudio-${config.pouchShape}-${suffix}-${config.netWeight.replace(/\s+/g, '')}-${wibDate}.png`;
+  await downloadCanvas(canvas, filename, 'image/png');
 }

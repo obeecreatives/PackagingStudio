@@ -1,7 +1,7 @@
 import React, { useId } from 'react';
 
 export function ArunikaSunBeanCrest({ className = 'w-11 h-11' }: { className?: string }) {
-  const gradId = useId();
+  const gradId = `sunbean-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
   return (
     <svg
       viewBox="0 0 80 80"
@@ -62,7 +62,7 @@ export function RoastProfileCrest({
   bottomText: string;
   className?: string;
 }) {
-  const crestGradId = useId();
+  const crestGradId = `roast-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
   return (
     <svg viewBox="0 0 180 108" fill="none" className={className} aria-label={`${topText} ${bottomText}`}>
       <defs>
@@ -121,7 +121,7 @@ export function MandalaHeritageCrest({
   className?: string;
   compact?: boolean;
 }) {
-  const gradId = useId();
+  const gradId = `mandala-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
   const petals = Array.from({ length: 16 }, (_, i) => i * 22.5);
   const words = label.split(' ');
   const line1 = words.slice(0, Math.ceil(words.length / 2)).join(' ');
@@ -179,7 +179,7 @@ export function MandalaHeritageCrest({
 }
 
 export function BotanicalCornerArt({ className = '' }: { className?: string }) {
-  const gradId = useId();
+  const gradId = `botanical-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
   return (
     <svg viewBox="0 0 120 120" fill="none" className={className} aria-hidden="true">
       <defs>
@@ -225,7 +225,7 @@ export function KthEastJavaSeal({
   className?: string;
   variant?: 'gold-heritage' | 'original-green';
 }) {
-  const uid = useId();
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const topArcId = `topArc-${uid}`;
   const bottomArcId = `bottomArc-${uid}`;
   const strokeColor = variant === 'gold-heritage' ? '#D6B373' : '#7BA63F';
@@ -244,13 +244,13 @@ export function KthEastJavaSeal({
       </defs>
 
       <text fill={textColor} fontSize="8.3" fontWeight="700" letterSpacing="1.6">
-        <textPath href={`#${topArcId}`} startOffset="50%" textAnchor="middle">
+        <textPath href={`#${topArcId}`} xlinkHref={`#${topArcId}`} startOffset="50%" textAnchor="middle">
           PRODUK ASLI
         </textPath>
       </text>
 
       <text fill={textColor} fontSize="6.7" fontWeight="600" letterSpacing="0.85">
-        <textPath href={`#${bottomArcId}`} startOffset="50%" textAnchor="middle">
+        <textPath href={`#${bottomArcId}`} xlinkHref={`#${bottomArcId}`} startOffset="50%" textAnchor="middle">
           KELOMPOK TANI HUTAN
         </textPath>
       </text>

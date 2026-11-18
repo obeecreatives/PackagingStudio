@@ -19,6 +19,7 @@ import {
 } from '../types/packaging';
 import { getWibBatchAndExpiry, getWibDateKey, getWibFormattedDateTime } from './dateUtils';
 import { loadImage, renderPrintSheetCanvas } from './exportPrintArtwork';
+import { renderMockupSceneCanvas } from './exportMockupScene';
 
 const PAGE_W = 210;
 const PAGE_H = 297;
@@ -83,49 +84,44 @@ async function rasterizeSvgBySlug(slug: string, sizePx = 320): Promise<string | 
 
     const serializer = new XMLSerializer();
     const svgString = serializer.serializeToString(clone);
-    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+    const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
 
-    try {
-      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-        const el = new Image();
-        el.onload = () => resolve(el);
-        el.onerror = reject;
-        el.src = url;
-      });
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = reject;
+      el.src = url;
+    });
 
-      const canvas = document.createElement('canvas');
-      canvas.width = sizePx;
-      canvas.height = sizePx;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return null;
+    const canvas = document.createElement('canvas');
+    canvas.width = sizePx;
+    canvas.height = sizePx;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
 
-      ctx.fillStyle = '#18100C';
-      ctx.fillRect(0, 0, sizePx, sizePx);
+    ctx.fillStyle = '#18100C';
+    ctx.fillRect(0, 0, sizePx, sizePx);
 
-      const pad = Math.round(sizePx * 0.12);
-      const boxSize = sizePx - pad * 2;
-      const viewBox = svg.viewBox?.baseVal;
-      const aspect =
-        viewBox && viewBox.width > 0 && viewBox.height > 0
-          ? viewBox.width / viewBox.height
-          : (img.naturalWidth || 1) / Math.max(1, img.naturalHeight || 1);
+    const pad = Math.round(sizePx * 0.12);
+    const boxSize = sizePx - pad * 2;
+    const viewBox = svg.viewBox?.baseVal;
+    const aspect =
+      viewBox && viewBox.width > 0 && viewBox.height > 0
+        ? viewBox.width / viewBox.height
+        : (img.naturalWidth || 1) / Math.max(1, img.naturalHeight || 1);
 
-      let drawW = boxSize;
-      let drawH = boxSize;
-      if (aspect > 1) {
-        drawH = Math.round(boxSize / aspect);
-      } else if (aspect < 1) {
-        drawW = Math.round(boxSize * aspect);
-      }
-      const dx = Math.round((sizePx - drawW) / 2);
-      const dy = Math.round((sizePx - drawH) / 2);
-      ctx.drawImage(img, dx, dy, drawW, drawH);
-
-      return canvasToJpegDataUrl(canvas, 0.9);
-    } finally {
-      URL.revokeObjectURL(url);
+    let drawW = boxSize;
+    let drawH = boxSize;
+    if (aspect > 1) {
+      drawH = Math.round(boxSize / aspect);
+    } else if (aspect < 1) {
+      drawW = Math.round(boxSize * aspect);
     }
+    const dx = Math.round((sizePx - drawW) / 2);
+    const dy = Math.round((sizePx - drawH) / 2);
+    ctx.drawImage(img, dx, dy, drawW, drawH);
+
+    return canvasToJpegDataUrl(canvas, 0.9);
   } catch {
     return null;
   }
@@ -239,7 +235,9 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
     renderPrintSheetCanvas(config, 'back-only', 5),
     renderPrintSheetCanvas(config, 'bg-front-only', 4),
     renderPrintSheetCanvas(config, 'bg-back-only', 4),
-    imageUrlToJpegData(naturalMockup.src, 900),
+    renderMockupSceneCanvas(config, 'natural-kawi', 900, 1200).then((c) =>
+      c ? { dataUrl: canvasToJpegDataUrl(c, 0.9), width: c.width, height: c.height } : imageUrlToJpegData(naturalMockup.src, 900)
+    ),
     imageUrlToJpegData(
       config.netWeight === '100 gram' ? ORIGINAL_UPLOADS.revisedFront100 : ORIGINAL_UPLOADS.revisedFront250,
       700
