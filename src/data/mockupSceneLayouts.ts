@@ -1,21 +1,22 @@
 import { GENERATED_ASSETS, PouchShapeId } from '../types/packaging';
+import type { Point2D } from '../utils/perspectiveHomography';
 
 export interface PanelOverlayRect {
-  /** Left offset in % of the 3:4 or 1:1 scene image */
+  /** Bounding box left offset in % of the 3:4 or 1:1 scene image */
   x: number;
-  /** Top offset in % of the 3:4 or 1:1 scene image */
+  /** Bounding box top offset in % of the 3:4 or 1:1 scene image */
   y: number;
-  /** Width in % of the scene image */
+  /** Bounding box width in % of the scene image */
   w: number;
-  /** Height in % of the scene image */
+  /** Bounding box height in % of the scene image */
   h: number;
-  /** CSS 3D Y-rotation in degrees for foreshortened faces */
-  rotateYDeg?: number;
-  /** Vertical shear angle in degrees to match camera perspective horizon */
-  skewYDeg?: number;
-  /** Top ratio (0..1 of box height) where bottom foil/copper band starts */
+  /** Exact 4-corner perspective quad [TL, TR, BR, BL] in % of image dimensions */
+  quad: [Point2D, Point2D, Point2D, Point2D];
+  /** Optional top padding % inside usable upper area (smaller when quad already starts below zipper/fin) */
+  topPadPct?: number;
+  /** Top ratio (0..1 of panel height) where bottom foil/copper band starts */
   bandRatioTop: number;
-  /** Height ratio (0..1 of box height) of bottom foil/copper band */
+  /** Height ratio (0..1 of panel height) of bottom foil/copper band */
   bandRatioH: number;
   /** Ink color for bottom band text ('#1E130D' on gold foil, '#FAF5EB' on dark lip) */
   bandTextColor: string;
@@ -39,19 +40,30 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
       y: 26.3,
       w: 38.8,
       h: 55.5,
+      quad: [
+        { x: 11.2, y: 26.3 },
+        { x: 50.0, y: 26.3 },
+        { x: 50.0, y: 81.8 },
+        { x: 11.2, y: 81.8 },
+      ],
       bandRatioTop: 0.903,
       bandRatioH: 0.097,
       bandTextColor: '#1E130D',
     },
     rear: {
-      x: 52.8,
-      y: 26.6,
-      w: 28.2,
-      h: 54.4,
-      rotateYDeg: -16,
-      skewYDeg: 3.8,
-      bandRatioTop: 0.896,
-      bandRatioH: 0.104,
+      x: 52.3,
+      y: 27.2,
+      w: 29.2,
+      h: 54.1,
+      quad: [
+        { x: 55.2, y: 28.0 },
+        { x: 80.8, y: 27.2 },
+        { x: 81.5, y: 81.3 },
+        { x: 52.3, y: 78.6 },
+      ],
+      topPadPct: 7.0,
+      bandRatioTop: 0.892,
+      bandRatioH: 0.108,
       bandTextColor: '#1E130D',
     },
   },
@@ -59,10 +71,16 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
     baseImage: GENERATED_ASSETS.blankV2DoypackNatural,
     variantStyle: 'doypack',
     front: {
-      x: 13.5,
+      x: 13.4,
       y: 33.8,
       w: 37.8,
       h: 45.2,
+      quad: [
+        { x: 13.4, y: 33.8 },
+        { x: 51.2, y: 33.8 },
+        { x: 48.8, y: 79.0 },
+        { x: 15.6, y: 79.0 },
+      ],
       bandRatioTop: 0.892,
       bandRatioH: 0.106,
       bandTextColor: '#1E130D',
@@ -73,8 +91,13 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
       y: 34.2,
       w: 38.0,
       h: 45.6,
-      rotateYDeg: 0,
-      skewYDeg: 0,
+      quad: [
+        { x: 52.8, y: 34.2 },
+        { x: 90.8, y: 34.2 },
+        { x: 88.4, y: 79.8 },
+        { x: 54.6, y: 79.8 },
+      ],
+      topPadPct: 14.5,
       bandRatioTop: 0.888,
       bandRatioH: 0.11,
       bandTextColor: '#1E130D',
@@ -84,23 +107,34 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
     baseImage: GENERATED_ASSETS.blankV3TallHeritage,
     variantStyle: 'heritage-mandala',
     front: {
-      x: 14.2,
+      x: 14.4,
       y: 16.5,
-      w: 36.0,
+      w: 35.8,
       h: 71.7,
-      bandRatioTop: 0.924,
-      bandRatioH: 0.076,
+      quad: [
+        { x: 14.4, y: 16.5 },
+        { x: 50.2, y: 16.5 },
+        { x: 50.2, y: 88.2 },
+        { x: 14.4, y: 88.2 },
+      ],
+      bandRatioTop: 0.916,
+      bandRatioH: 0.084,
       bandTextColor: '#1E130D',
     },
     rear: {
-      x: 60.2,
-      y: 19.8,
-      w: 27.6,
-      h: 65.2,
-      rotateYDeg: -18,
-      skewYDeg: -4.0,
-      bandRatioTop: 0.906,
-      bandRatioH: 0.094,
+      x: 59.5,
+      y: 24.2,
+      w: 28.3,
+      h: 62.2,
+      quad: [
+        { x: 59.5, y: 24.2 },
+        { x: 86.2, y: 25.5 },
+        { x: 87.8, y: 83.8 },
+        { x: 61.5, y: 86.4 },
+      ],
+      topPadPct: 7.5,
+      bandRatioTop: 0.902,
+      bandRatioH: 0.098,
       bandTextColor: '#1E130D',
     },
   },
@@ -108,25 +142,34 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
     baseImage: GENERATED_ASSETS.blankV4TallBotanical,
     variantStyle: 'botanical',
     front: {
-      x: 17.5,
+      x: 17.0,
       y: 11.6,
-      w: 35.8,
-      h: 75.4,
-      rotateYDeg: 8,
-      skewYDeg: 1.8,
-      bandRatioTop: 0.91,
-      bandRatioH: 0.09,
+      w: 37.4,
+      h: 76.2,
+      quad: [
+        { x: 17.0, y: 11.6 },
+        { x: 51.6, y: 15.2 },
+        { x: 54.4, y: 86.0 },
+        { x: 17.8, y: 87.8 },
+      ],
+      bandRatioTop: 0.908,
+      bandRatioH: 0.092,
       bandTextColor: '#1E130D',
     },
     rear: {
-      x: 62.0,
-      y: 13.8,
-      w: 30.8,
-      h: 68.8,
-      rotateYDeg: 14,
-      skewYDeg: -2.8,
-      bandRatioTop: 0.906,
-      bandRatioH: 0.094,
+      x: 60.2,
+      y: 19.0,
+      w: 33.6,
+      h: 65.2,
+      quad: [
+        { x: 60.2, y: 19.0 },
+        { x: 91.2, y: 20.2 },
+        { x: 93.8, y: 82.0 },
+        { x: 61.4, y: 84.2 },
+      ],
+      topPadPct: 7.5,
+      bandRatioTop: 0.905,
+      bandRatioH: 0.095,
       bandTextColor: '#1E130D',
     },
   },
@@ -134,23 +177,34 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
     baseImage: GENERATED_ASSETS.blankV5TallCopper,
     variantStyle: 'copper',
     front: {
-      x: 19.5,
-      y: 21.3,
-      w: 30.8,
-      h: 64.2,
-      bandRatioTop: 0.88,
-      bandRatioH: 0.12,
+      x: 19.2,
+      y: 21.8,
+      w: 31.0,
+      h: 63.6,
+      quad: [
+        { x: 19.2, y: 21.8 },
+        { x: 50.2, y: 21.8 },
+        { x: 50.2, y: 85.4 },
+        { x: 19.2, y: 85.4 },
+      ],
+      bandRatioTop: 0.876,
+      bandRatioH: 0.124,
       bandTextColor: '#FAF5EB',
     },
     rear: {
-      x: 52.5,
-      y: 22.2,
-      w: 21.4,
-      h: 62.6,
-      rotateYDeg: 20,
-      skewYDeg: 4.8,
-      bandRatioTop: 0.868,
-      bandRatioH: 0.132,
+      x: 52.0,
+      y: 26.8,
+      w: 23.0,
+      h: 58.8,
+      quad: [
+        { x: 58.2, y: 28.5 },
+        { x: 75.0, y: 26.8 },
+        { x: 72.2, y: 85.6 },
+        { x: 52.0, y: 81.2 },
+      ],
+      topPadPct: 7.5,
+      bandRatioTop: 0.872,
+      bandRatioH: 0.128,
       bandTextColor: '#FAF5EB',
     },
   },
@@ -162,19 +216,30 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
       y: 26.5,
       w: 36.0,
       h: 59.5,
+      quad: [
+        { x: 12.8, y: 26.5 },
+        { x: 48.8, y: 26.5 },
+        { x: 48.8, y: 86.0 },
+        { x: 12.8, y: 86.0 },
+      ],
       bandRatioTop: 0.888,
       bandRatioH: 0.112,
       bandTextColor: '#1E130D',
     },
     rear: {
-      x: 52.8,
-      y: 25.0,
-      w: 24.8,
-      h: 59.2,
-      rotateYDeg: 18,
-      skewYDeg: 3.4,
-      bandRatioTop: 0.868,
-      bandRatioH: 0.132,
+      x: 52.2,
+      y: 31.0,
+      w: 26.8,
+      h: 55.2,
+      quad: [
+        { x: 58.2, y: 32.4 },
+        { x: 79.0, y: 31.0 },
+        { x: 77.6, y: 86.2 },
+        { x: 52.2, y: 83.4 },
+      ],
+      topPadPct: 6.5,
+      bandRatioTop: 0.835,
+      bandRatioH: 0.165,
       bandTextColor: '#1E130D',
     },
   },
@@ -193,6 +258,12 @@ export const STUDIO_DOYPACK_LAYOUT: {
     y: 10.2,
     w: 51.2,
     h: 83.0,
+    quad: [
+      { x: 24.2, y: 10.2 },
+      { x: 75.4, y: 10.2 },
+      { x: 75.4, y: 93.2 },
+      { x: 24.2, y: 93.2 },
+    ],
     bandRatioTop: 0.896,
     bandRatioH: 0.102,
     bandTextColor: '#1E130D',
@@ -203,6 +274,13 @@ export const STUDIO_DOYPACK_LAYOUT: {
     y: 10.2,
     w: 51.2,
     h: 83.0,
+    quad: [
+      { x: 24.2, y: 10.2 },
+      { x: 75.4, y: 10.2 },
+      { x: 75.4, y: 93.2 },
+      { x: 24.2, y: 93.2 },
+    ],
+    topPadPct: 14.5,
     bandRatioTop: 0.896,
     bandRatioH: 0.102,
     bandTextColor: '#1E130D',

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import {
   BEAN_VARIANTS,
   GENERATED_ASSETS,
@@ -12,6 +12,7 @@ import {
   PanelOverlayRect,
   STUDIO_DOYPACK_LAYOUT,
 } from '../data/mockupSceneLayouts';
+import { computeQuadHomography } from '../utils/perspectiveHomography';
 import {
   ArunikaSunBeanCrest,
   KthEastJavaSeal,
@@ -29,31 +30,75 @@ interface LiveMockupSceneProps {
   backgroundOnly?: boolean;
 }
 
-function getBoxTransform(rect: PanelOverlayRect): React.CSSProperties {
-  const parts: string[] = [];
-  if (rect.rotateYDeg || rect.skewYDeg) {
-    parts.push('perspective(920px)');
-    if (rect.rotateYDeg) parts.push(`rotateY(${rect.rotateYDeg}deg)`);
-    if (rect.skewYDeg) parts.push(`skewY(${rect.skewYDeg}deg)`);
+interface StageSize {
+  w: number;
+  h: number;
+}
+
+function useStageSize(ref: React.RefObject<HTMLDivElement | null>, layoutKey: string): StageSize {
+  const [size, setSize] = useState<StageSize>({ w: 0, h: 0 });
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const update = () => {
+      const w = el.clientWidth;
+      const h = el.clientHeight;
+      setSize((prev) => (prev.w === w && prev.h === h ? prev : { w, h }));
+    };
+
+    update();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [ref, layoutKey]);
+
+  return size;
+}
+
+function getBoxTransform(rect: PanelOverlayRect, stageSize: StageSize): React.CSSProperties {
+  if (stageSize.w > 0 && stageSize.h > 0 && rect.quad) {
+    const nominalW = Math.max(1, (rect.w / 100) * stageSize.w);
+    const nominalH = Math.max(1, (rect.h / 100) * stageSize.h);
+    const [tlPct, trPct, brPct, blPct] = rect.quad;
+    const tl = { x: (tlPct.x / 100) * stageSize.w, y: (tlPct.y / 100) * stageSize.h };
+    const tr = { x: (trPct.x / 100) * stageSize.w, y: (trPct.y / 100) * stageSize.h };
+    const br = { x: (brPct.x / 100) * stageSize.w, y: (brPct.y / 100) * stageSize.h };
+    const bl = { x: (blPct.x / 100) * stageSize.w, y: (blPct.y / 100) * stageSize.h };
+
+    const { cssMatrix3d } = computeQuadHomography(nominalW, nominalH, tl, tr, br, bl);
+
+    return {
+      left: 0,
+      top: 0,
+      width: `${nominalW}px`,
+      height: `${nominalH}px`,
+      containerType: 'inline-size',
+      transform: cssMatrix3d,
+      transformOrigin: '0 0',
+    };
   }
+
   return {
     left: `${rect.x}%`,
     top: `${rect.y}%`,
     width: `${rect.w}%`,
     height: `${rect.h}%`,
     containerType: 'inline-size',
-    transform: parts.length ? parts.join(' ') : undefined,
-    transformOrigin: 'center center',
   };
 }
 
 function FrontTextOverlay({
   config,
   rect,
+  stageSize,
   variantStyle,
 }: {
   config: PackagingConfig;
   rect: PanelOverlayRect;
+  stageSize: StageSize;
   variantStyle: 'classic' | 'doypack' | 'heritage-mandala' | 'botanical' | 'copper' | 'minimal';
 }) {
   const variant = BEAN_VARIANTS[config.beanVariant];
@@ -65,7 +110,7 @@ function FrontTextOverlay({
   const isDoypack = variantStyle === 'doypack';
 
   return (
-    <div className="absolute pointer-events-none select-none z-20" style={getBoxTransform(rect)}>
+    <div className="absolute pointer-events-none select-none z-20" style={getBoxTransform(rect, stageSize)}>
       {/* Main Upper Typography Zone */}
       <div
         className={`relative w-full flex flex-col items-center text-center ${
@@ -167,41 +212,44 @@ function FrontTextOverlay({
 function RearTextOverlay({
   config,
   rect,
+  stageSize,
   variantStyle,
 }: {
   config: PackagingConfig;
   rect: PanelOverlayRect;
+  stageSize: StageSize;
   variantStyle: 'classic' | 'doypack' | 'heritage-mandala' | 'botanical' | 'copper' | 'minimal';
 }) {
   const variant = BEAN_VARIANTS[config.beanVariant];
   const roast = ROAST_LEVELS[config.roastLevel];
   const isCopper = variantStyle === 'copper';
-  const isDoypack = variantStyle === 'doypack';
+  const topPad = rect.topPadPct ?? 9.5;
 
   return (
-    <div className="absolute pointer-events-none select-none z-20" style={getBoxTransform(rect)}>
+    <div className="absolute pointer-events-none select-none z-20" style={getBoxTransform(rect, stageSize)}>
       <div
-        className={`relative w-full flex flex-col justify-between ${
-          isDoypack ? 'pt-[12%] pb-[3.8%] px-[7.5%]' : isCopper ? 'pt-[14%] pb-[4%] px-[5.5%]' : 'pt-[11.5%] pb-[4%] px-[7%]'
-        }`}
-        style={{ height: `${rect.bandRatioTop * 100}%` }}
+        className="relative w-full flex flex-col justify-between px-[8%] pb-[3.8%]"
+        style={{
+          height: `${rect.bandRatioTop * 100}%`,
+          paddingTop: `${topPad}%`,
+        }}
       >
         {/* Top Crest + Story Copy */}
-        <div className="flex flex-col items-center text-center">
-          <div className={isCopper ? 'w-[33cqi]' : 'w-[30cqi]'}>
+        <div className="flex flex-col items-center text-center shrink-0">
+          <div className={isCopper ? 'w-[32cqi]' : 'w-[30cqi]'}>
             <RoastProfileCrest topText={roast.crestTop} bottomText={roast.crestBottom} className="w-full h-auto" />
           </div>
 
           <h3
-            className="mt-[2.5%] font-sans font-bold text-[#D8B474] tracking-[0.02em] drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]"
-            style={{ fontSize: isCopper ? '6.2cqi' : '5.8cqi' }}
+            className="mt-[2.2%] font-sans font-bold text-[#D8B474] tracking-[0.02em] drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]"
+            style={{ fontSize: isCopper ? '6.1cqi' : '5.7cqi' }}
           >
             Arunika Kawi Coffee
           </h3>
 
           <p
-            className="mt-[3.5%] text-[#F4ECE0] leading-[1.3] drop-shadow-[0_1px_5px_rgba(0,0,0,0.92)]"
-            style={{ fontSize: isCopper ? '3.4cqi' : '3.25cqi' }}
+            className="mt-[3.2%] text-[#F4ECE0] leading-[1.28] drop-shadow-[0_1px_5px_rgba(0,0,0,0.92)]"
+            style={{ fontSize: isCopper ? '3.35cqi' : '3.2cqi' }}
           >
             Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan. Dipetik langsung dari lereng
             Gunung Kawi. Setiap seduhan menghadirkan karakter{' '}
@@ -210,14 +258,17 @@ function RearTextOverlay({
 
           <p
             className="mt-[3%] font-sans font-semibold leading-tight text-center drop-shadow-[0_1px_5px_rgba(0,0,0,0.92)]"
-            style={{ fontSize: isCopper ? '3.5cqi' : '3.35cqi' }}
+            style={{ fontSize: isCopper ? '3.45cqi' : '3.3cqi' }}
           >
             <span className="text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
             <span className="text-[#FAF5EB]">Harum dan Nikmat</span>
           </p>
+        </div>
 
+        {/* Middle Composition Line — Anchored vertically in the middle open space matching master */}
+        <div className="flex-1 flex items-center justify-center text-center py-[2%]">
           <p
-            className="mt-[4.5%] font-sans font-semibold tracking-[0.02em] uppercase text-[#FAF5EB] drop-shadow-[0_1px_5px_rgba(0,0,0,0.92)]"
+            className="font-sans font-semibold tracking-[0.025em] uppercase text-[#FAF5EB] drop-shadow-[0_1px_5px_rgba(0,0,0,0.92)]"
             style={{ fontSize: isCopper ? '3.15cqi' : '2.95cqi' }}
           >
             KOMPOSISI {config.beanVariant === 'robusta-100' ? '100 % BIJI KOPI ROBUSTA' : variant.frontLabel.toUpperCase()}
@@ -225,14 +276,14 @@ function RearTextOverlay({
         </div>
 
         {/* Footer Legal Row */}
-        <div className="flex items-end justify-between gap-[3%] pt-[2%]">
+        <div className="shrink-0 flex items-end justify-between gap-[3%]">
           <div className="flex items-start gap-[2.2cqi] min-w-0 flex-[1.32]">
             {config.sealPlacement === 'back' && (
               <div className="flex flex-col items-center shrink-0">
-                <KthEastJavaSeal variant="original-green" className="w-[12.5cqi] h-[12.5cqi] mt-[0.5cqi] drop-shadow" />
+                <KthEastJavaSeal variant="original-green" className="w-[12cqi] h-[12cqi] mt-[0.4cqi] drop-shadow" />
                 <span
-                  className="text-[#FAF5EB] font-medium leading-[1.1] mt-[0.8cqi] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
-                  style={{ fontSize: '2.4cqi' }}
+                  className="text-[#FAF5EB] font-medium leading-[1.1] mt-[0.7cqi] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
+                  style={{ fontSize: '2.35cqi' }}
                 >
                   PIRT
                 </span>
@@ -241,13 +292,13 @@ function RearTextOverlay({
             <div className="min-w-0 flex-1">
               <p
                 className="font-semibold text-[#D8B474] leading-[1.15] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
-                style={{ fontSize: '3.1cqi' }}
+                style={{ fontSize: '3cqi' }}
               >
                 Diproduksi Oleh
               </p>
               <p
-                className="text-[#FAF5EB] leading-[1.2] mt-[0.8cqi] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
-                style={{ fontSize: '2.5cqi' }}
+                className="text-[#FAF5EB] leading-[1.18] mt-[0.7cqi] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
+                style={{ fontSize: '2.45cqi' }}
               >
                 KUPS Himatarian Blitar
                 <br />
@@ -255,31 +306,31 @@ function RearTextOverlay({
               </p>
               {config.sealPlacement !== 'back' && (
                 <p
-                  className="text-[#FAF5EB] font-medium leading-[1.1] mt-[0.8cqi] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
-                  style={{ fontSize: '2.4cqi' }}
+                  className="text-[#FAF5EB] font-medium leading-[1.1] mt-[0.7cqi] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
+                  style={{ fontSize: '2.35cqi' }}
                 >
                   PIRT
                 </p>
               )}
-              <div className="mt-[1.4cqi] w-full h-[3cqi] bg-white rounded-[1px]" />
+              <div className="mt-[1.3cqi] w-full h-[2.9cqi] bg-white rounded-[1px]" />
             </div>
           </div>
 
           <div className="flex-1 min-w-0">
             <p
               className="text-[#FAF5EB] font-medium leading-[1.1] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
-              style={{ fontSize: '2.4cqi' }}
+              style={{ fontSize: '2.35cqi' }}
             >
               Kode Produksi
             </p>
-            <div className="mt-[0.8cqi] w-full h-[2.8cqi] bg-white rounded-[1px]" />
+            <div className="mt-[0.7cqi] w-full h-[2.7cqi] bg-white rounded-[1px]" />
             <p
-              className="text-[#FAF5EB] font-medium leading-[1.1] mt-[1.8cqi] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
-              style={{ fontSize: '2.2cqi' }}
+              className="text-[#FAF5EB] font-medium leading-[1.1] mt-[1.6cqi] drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
+              style={{ fontSize: '2.15cqi' }}
             >
               Baik Digunakan Sebelum
             </p>
-            <div className="mt-[0.8cqi] w-full h-[2.8cqi] bg-white rounded-[1px]" />
+            <div className="mt-[0.7cqi] w-full h-[2.7cqi] bg-white rounded-[1px]" />
           </div>
         </div>
       </div>
@@ -295,7 +346,7 @@ function RearTextOverlay({
       >
         <span
           className="font-sans font-bold tracking-[0.04em] uppercase whitespace-nowrap"
-          style={{ fontSize: isCopper ? '4.4cqi' : '4.0cqi' }}
+          style={{ fontSize: isCopper ? '4.3cqi' : '3.95cqi' }}
         >
           100 % KOPI ASLI INDONESIA
         </span>
@@ -402,6 +453,9 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
   const isStudio = scene === 'studio-front' || scene === 'studio-rear';
   const scaleFactor = config.netWeight === '100 gram' ? 0.93 : 1;
 
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const stageSize = useStageSize(stageRef, `${scene}-${isDoypack ? 'doy' : 'gusset'}`);
+
   if (isStudio) {
     const showFront = scene === 'studio-front';
 
@@ -416,6 +470,7 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
           aria-label={`${shapeMeta.code} ${showFront ? 'Tampak Depan' : 'Tampak Belakang'} (${config.netWeight})`}
         >
           <div
+            ref={stageRef}
             className="relative overflow-hidden flex items-center justify-center origin-bottom transition-transform duration-200"
             style={{
               width: 'min(100cqw, 100cqh)',
@@ -438,9 +493,9 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
             />
             {!backgroundOnly &&
               (showFront ? (
-                <FrontTextOverlay config={config} rect={overlayRect} variantStyle="doypack" />
+                <FrontTextOverlay config={config} rect={overlayRect} stageSize={stageSize} variantStyle="doypack" />
               ) : (
-                <RearTextOverlay config={config} rect={overlayRect} variantStyle="doypack" />
+                <RearTextOverlay config={config} rect={overlayRect} stageSize={stageSize} variantStyle="doypack" />
               ))}
           </div>
         </div>
@@ -490,6 +545,7 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
 
       {/* Exact 3:4 Coordinate-Locked Stage so pouches are never cropped and text overlays align 100% */}
       <div
+        ref={stageRef}
         className="relative overflow-hidden origin-bottom transition-transform duration-200 shadow-2xl"
         style={{
           width: 'min(100cqw, 75cqh)',
@@ -532,8 +588,8 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
 
         {!backgroundOnly && (
           <>
-            <FrontTextOverlay config={config} rect={layout.front} variantStyle={layout.variantStyle} />
-            <RearTextOverlay config={config} rect={layout.rear} variantStyle={layout.variantStyle} />
+            <FrontTextOverlay config={config} rect={layout.front} stageSize={stageSize} variantStyle={layout.variantStyle} />
+            <RearTextOverlay config={config} rect={layout.rear} stageSize={stageSize} variantStyle={layout.variantStyle} />
           </>
         )}
       </div>

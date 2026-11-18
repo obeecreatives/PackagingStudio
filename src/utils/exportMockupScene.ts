@@ -11,8 +11,9 @@ import {
   STUDIO_DOYPACK_LAYOUT,
 } from '../data/mockupSceneLayouts';
 import { getWibDateKey } from './dateUtils';
-import { loadImage, renderPrintSheetCanvas } from './exportPrintArtwork';
+import { renderPrintSheetCanvas, loadImage } from './exportPrintArtwork';
 import { downloadCanvas } from './exportSingleElement';
+import { drawCanvasQuadWarp } from './perspectiveHomography';
 
 function drawCover(
   ctx: CanvasRenderingContext2D,
@@ -94,24 +95,52 @@ function drawRoastBadge(
   topText: string,
   bottomText: string
 ) {
-  const h = w * 0.52;
+  const h = w * 0.6;
+  const sx = w / 180;
+  const sy = h / 108;
+
+  const drawBaroquePath = (inset = 0) => {
+    const ox = cx - w / 2;
+    const oy = cy - h / 2;
+    const p = (x: number, y: number): [number, number] => [
+      ox + (90 + (x - 90) * (1 - inset)) * sx,
+      oy + (54 + (y - 54) * (1 - inset)) * sy,
+    ];
+    ctx.beginPath();
+    ctx.moveTo(...p(42, 26));
+    ctx.bezierCurveTo(...p(52, 14), ...p(69, 9), ...p(90, 9));
+    ctx.bezierCurveTo(...p(111, 9), ...p(128, 14), ...p(138, 26));
+    ctx.bezierCurveTo(...p(155, 28), ...p(167, 40), ...p(167, 54));
+    ctx.bezierCurveTo(...p(167, 68), ...p(155, 80), ...p(138, 82));
+    ctx.bezierCurveTo(...p(128, 93), ...p(111, 99), ...p(90, 99));
+    ctx.bezierCurveTo(...p(69, 99), ...p(52, 93), ...p(42, 82));
+    ctx.bezierCurveTo(...p(25, 80), ...p(13, 68), ...p(13, 54));
+    ctx.bezierCurveTo(...p(13, 40), ...p(25, 28), ...p(42, 26));
+    ctx.closePath();
+  };
+
   ctx.save();
-  ctx.fillStyle = 'rgba(22, 12, 8, 0.55)';
-  ctx.strokeStyle = '#D8B474';
-  ctx.lineWidth = Math.max(1, w * 0.018);
-  ctx.beginPath();
-  ctx.roundRect(cx - w / 2, cy - h / 2, w, h, h * 0.42);
+  drawBaroquePath(0);
+  ctx.fillStyle = 'rgba(20, 11, 7, 0.56)';
   ctx.fill();
+  ctx.strokeStyle = '#D8B474';
+  ctx.lineWidth = Math.max(1.2, sx * 1.8);
   ctx.stroke();
 
-  ctx.fillStyle = '#E8CCA0';
+  drawBaroquePath(0.09);
+  ctx.strokeStyle = 'rgba(216, 180, 116, 0.55)';
+  ctx.lineWidth = Math.max(0.8, sx * 0.8);
+  ctx.stroke();
+
+  ctx.fillStyle = '#F4E6C8';
   ctx.textAlign = 'center';
-  ctx.font = `600 ${Math.max(8, Math.round(h * 0.22))}px "Plus Jakarta Sans", sans-serif`;
-  ctx.fillText(topText, cx, cy - h * 0.06);
+  ctx.textBaseline = 'middle';
+  ctx.font = `600 ${Math.max(8, Math.round(12 * sy))}px "Plus Jakarta Sans", sans-serif`;
+  ctx.fillText(topText, cx, cy - 8 * sy);
 
   ctx.fillStyle = '#D8B474';
-  ctx.font = `700 ${Math.max(10, Math.round(h * 0.34))}px "Cormorant Garamond", Georgia, serif`;
-  ctx.fillText(bottomText, cx, cy + h * 0.3);
+  ctx.font = `700 ${Math.max(11, Math.round(21 * sy))}px "Cormorant Garamond", Georgia, serif`;
+  ctx.fillText(bottomText, cx, cy + 12 * sy);
   ctx.restore();
 }
 
@@ -172,61 +201,117 @@ function drawMandalaCrest(ctx: CanvasRenderingContext2D, cx: number, cy: number,
   ctx.restore();
 }
 
-function applyRectTransform(
-  ctx: CanvasRenderingContext2D,
-  sceneW: number,
-  sceneH: number,
-  rect: PanelOverlayRect,
-  fn: (boxW: number, boxH: number) => void
-) {
-  const bx = (rect.x / 100) * sceneW;
-  const by = (rect.y / 100) * sceneH;
-  const bw = (rect.w / 100) * sceneW;
-  const bh = (rect.h / 100) * sceneH;
-
-  const cx = bx + bw / 2;
-  const cy = by + bh / 2;
-  const scaleX = rect.rotateYDeg ? Math.cos((rect.rotateYDeg * Math.PI) / 180) : 1;
-  const skewY = rect.skewYDeg ? Math.tan((rect.skewYDeg * Math.PI) / 180) : 0;
-
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.transform(scaleX, skewY, 0, 1, 0, 0);
-  ctx.translate(-bw / 2, -bh / 2);
-  fn(bw, bh);
-  ctx.restore();
+interface RichRun {
+  text: string;
+  color: string;
+  font: string;
 }
 
-function wrapCenteredText(
+/**
+ * Draws centered wrapped text supporting inline color/weight spans (e.g. gold highlight on rasa kopi robusta).
+ */
+function drawRichCenteredParagraph(
   ctx: CanvasRenderingContext2D,
-  text: string,
+  runs: RichRun[],
   cx: number,
   startY: number,
   maxWidth: number,
   lineHeight: number
 ): number {
-  const words = text.split(/\s+/);
-  let line = '';
-  let y = startY;
-  for (let i = 0; i < words.length; i++) {
-    const test = line ? `${line} ${words[i]}` : words[i];
-    if (ctx.measureText(test).width > maxWidth && line) {
-      ctx.fillText(line, cx, y);
-      line = words[i];
-      y += lineHeight;
-    } else {
-      line = test;
+  interface WordToken {
+    word: string;
+    color: string;
+    font: string;
+    width: number;
+  }
+
+  const tokens: WordToken[] = [];
+  for (const run of runs) {
+    ctx.font = run.font;
+    const words = run.text.trim().split(/\s+/);
+    for (const w of words) {
+      if (!w) continue;
+      tokens.push({
+        word: w,
+        color: run.color,
+        font: run.font,
+        width: ctx.measureText(w).width,
+      });
     }
   }
-  if (line) {
-    ctx.fillText(line, cx, y);
+
+  const spaceW = ctx.measureText(' ').width;
+  const lines: WordToken[][] = [];
+  let currentLine: WordToken[] = [];
+  let currentWidth = 0;
+
+  for (const t of tokens) {
+    const addW = currentLine.length > 0 ? spaceW + t.width : t.width;
+    if (currentWidth + addW > maxWidth && currentLine.length > 0) {
+      lines.push(currentLine);
+      currentLine = [t];
+      currentWidth = t.width;
+    } else {
+      currentLine.push(t);
+      currentWidth += addW;
+    }
+  }
+  if (currentLine.length > 0) {
+    lines.push(currentLine);
+  }
+
+  let y = startY;
+  ctx.save();
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  for (const line of lines) {
+    let totalW = 0;
+    for (let i = 0; i < line.length; i++) {
+      totalW += line[i].width + (i > 0 ? spaceW : 0);
+    }
+    let cursorX = cx - totalW / 2;
+    for (let i = 0; i < line.length; i++) {
+      const tok = line[i];
+      ctx.font = tok.font;
+      ctx.fillStyle = tok.color;
+      ctx.fillText(tok.word, cursorX, y);
+      cursorX += tok.width + spaceW;
+    }
     y += lineHeight;
   }
+  ctx.restore();
   return y;
 }
 
+function warpOverlayRect(
+  destCtx: CanvasRenderingContext2D,
+  sceneW: number,
+  sceneH: number,
+  rect: PanelOverlayRect,
+  drawFn: (offCtx: CanvasRenderingContext2D, bw: number, bh: number) => void
+) {
+  const offW = 720;
+  const offH = Math.max(420, Math.round((offW * rect.h * sceneH) / (Math.max(1, rect.w) * sceneW)));
+
+  const offCanvas = document.createElement('canvas');
+  offCanvas.width = offW;
+  offCanvas.height = offH;
+  const offCtx = offCanvas.getContext('2d');
+  if (!offCtx) return;
+
+  drawFn(offCtx, offW, offH);
+
+  const [tlPct, trPct, brPct, blPct] = rect.quad;
+  const tl = { x: (tlPct.x / 100) * sceneW, y: (tlPct.y / 100) * sceneH };
+  const tr = { x: (trPct.x / 100) * sceneW, y: (trPct.y / 100) * sceneH };
+  const br = { x: (brPct.x / 100) * sceneW, y: (brPct.y / 100) * sceneH };
+  const bl = { x: (blPct.x / 100) * sceneW, y: (blPct.y / 100) * sceneH };
+
+  drawCanvasQuadWarp(destCtx, offCanvas, tl, tr, br, bl, 14, 24);
+}
+
 function drawFrontOverlayCanvas(
-  ctx: CanvasRenderingContext2D,
+  destCtx: CanvasRenderingContext2D,
   config: PackagingConfig,
   sceneW: number,
   sceneH: number,
@@ -240,7 +325,7 @@ function drawFrontOverlayCanvas(
   const isDoypack = variantStyle === 'doypack';
   const isHeritage = variantStyle === 'heritage-mandala';
 
-  applyRectTransform(ctx, sceneW, sceneH, rect, (bw, bh) => {
+  warpOverlayRect(destCtx, sceneW, sceneH, rect, (ctx, bw, bh) => {
     const cx = bw / 2;
     const cqi = bw / 100;
 
@@ -310,7 +395,7 @@ function drawFrontOverlayCanvas(
 }
 
 function drawRearOverlayCanvas(
-  ctx: CanvasRenderingContext2D,
+  destCtx: CanvasRenderingContext2D,
   config: PackagingConfig,
   sceneW: number,
   sceneH: number,
@@ -320,93 +405,134 @@ function drawRearOverlayCanvas(
   const variant = BEAN_VARIANTS[config.beanVariant];
   const roast = ROAST_LEVELS[config.roastLevel];
   const isCopper = variantStyle === 'copper';
-  const isDoypack = variantStyle === 'doypack';
+  const topPad = rect.topPadPct ?? 9.5;
 
-  applyRectTransform(ctx, sceneW, sceneH, rect, (bw, bh) => {
+  warpOverlayRect(destCtx, sceneW, sceneH, rect, (ctx, bw, bh) => {
     const cx = bw / 2;
     const cqi = bw / 100;
     const usableH = bh * rect.bandRatioTop;
 
     ctx.save();
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.88)';
     ctx.shadowBlur = Math.max(4, cqi * 1.6);
     ctx.shadowOffsetY = 1;
 
-    const badgeY = usableH * (isDoypack ? 0.17 : 0.16);
-    drawRoastBadge(ctx, cx, badgeY, bw * 0.32, roast.crestTop, roast.crestBottom);
+    // 1. Top Baroque Roast Crest cleanly below zipper/top-fin
+    const badgeW = (isCopper ? 32 : 30) * cqi;
+    const badgeH = badgeW * 0.6;
+    const badgeY = (topPad / 100) * usableH + badgeH * 0.5;
+    drawRoastBadge(ctx, cx, badgeY, badgeW, roast.crestTop, roast.crestBottom);
 
+    // 2. Arunika Kawi Coffee sub-headline
+    const headFontPx = Math.round((isCopper ? 6.1 : 5.7) * cqi);
     ctx.fillStyle = '#D8B474';
     ctx.textAlign = 'center';
-    ctx.font = `700 ${Math.round((isCopper ? 6.5 : 5.9) * cqi)}px "Plus Jakarta Sans", sans-serif`;
-    const headY = badgeY + bw * 0.13;
+    ctx.font = `700 ${headFontPx}px "Plus Jakarta Sans", sans-serif`;
+    const headY = badgeY + badgeH * 0.5 + 7.2 * cqi;
     ctx.fillText('Arunika Kawi Coffee', cx, headY);
 
-    const bodySize = Math.round((isCopper ? 3.65 : 3.35) * cqi);
-    ctx.fillStyle = '#F4ECE0';
-    ctx.font = `400 ${bodySize}px "Plus Jakarta Sans", sans-serif`;
-    const copy = `Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan. Dipetik langsung dari lereng Gunung Kawi. Setiap seduhan menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast}`;
-    const afterStoryY = wrapCenteredText(ctx, copy, cx, headY + 6.5 * cqi, bw * 0.86, bodySize * 1.34);
+    // 3. Story Paragraph with Gold Highlighted Bean Character
+    const bodySize = Math.round((isCopper ? 3.35 : 3.2) * cqi);
+    const normalFont = `400 ${bodySize}px "Plus Jakarta Sans", sans-serif`;
+    const italicFont = `italic 400 ${bodySize}px "Plus Jakarta Sans", sans-serif`;
+    const goldBoldFont = `600 ${bodySize}px "Plus Jakarta Sans", sans-serif`;
 
-    ctx.fillStyle = '#D8B474';
-    ctx.font = `600 ${Math.round((isCopper ? 3.8 : 3.5) * cqi)}px "Plus Jakarta Sans", sans-serif`;
-    const tagY = afterStoryY + 2.5 * cqi;
-    ctx.fillText('Arunika Kawi Coffee Harum dan Nikmat', cx, tagY);
+    const afterStoryY = drawRichCenteredParagraph(
+      ctx,
+      [
+        { text: 'Diolah secara tradisional (', color: '#F4ECE0', font: normalFont },
+        { text: 'Goreng Kreweng', color: '#F4ECE0', font: italicFont },
+        {
+          text: ') oleh Kelompok Tani Hutan. Dipetik langsung dari lereng Gunung Kawi. Setiap seduhan menghadirkan karakter',
+          color: '#F4ECE0',
+          font: normalFont,
+        },
+        { text: variant.storyCharacter, color: '#D8B474', font: goldBoldFont },
+        { text: roast.storyRoast, color: '#F4ECE0', font: normalFont },
+      ],
+      cx,
+      headY + 6.2 * cqi,
+      bw * 0.84,
+      bodySize * 1.3
+    );
 
+    // 4. Tagline
+    const tagSize = Math.round((isCopper ? 3.45 : 3.3) * cqi);
+    const afterTagY = drawRichCenteredParagraph(
+      ctx,
+      [
+        { text: 'Arunika Kawi Coffee', color: '#D8B474', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
+        { text: 'Harum dan Nikmat', color: '#FAF5EB', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
+      ],
+      cx,
+      afterStoryY + 2.8 * cqi,
+      bw * 0.86,
+      tagSize * 1.25
+    );
+
+    // 5. Legal Footer (reserve bottom ~20.5% of usable height)
+    const footTop = usableH - 17.5 * cqi;
+
+    // Center KOMPOSISI cleanly halfway between afterTagY and footTop (eliminates middle void!)
+    const compY = afterTagY + Math.max(4.5 * cqi, (footTop - afterTagY - 2 * cqi) * 0.48);
     ctx.fillStyle = '#FAF5EB';
-    ctx.font = `600 ${Math.round((isCopper ? 3.3 : 3.05) * cqi)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.font = `600 ${Math.round((isCopper ? 3.15 : 2.95) * cqi)}px "Plus Jakarta Sans", sans-serif`;
     const compLabel =
       config.beanVariant === 'robusta-100'
         ? 'KOMPOSISI 100 % BIJI KOPI ROBUSTA'
         : `KOMPOSISI ${variant.frontLabel.toUpperCase()}`;
-    ctx.fillText(compLabel, cx, tagY + 7.5 * cqi);
+    ctx.fillText(compLabel, cx, compY);
 
-    // Legal Footer
-    const footTop = usableH * 0.8;
-    const padX = bw * 0.07;
+    // Footer Columns with clean 8% horizontal margin
+    const padX = bw * 0.08;
+    const rightMargin = bw * 0.92;
 
     if (config.sealPlacement === 'back') {
-      const sealR = 5.8 * cqi;
+      const sealR = 5.6 * cqi;
       drawKthGreenSeal(ctx, padX + sealR, footTop + sealR, sealR);
       ctx.fillStyle = '#FAF5EB';
       ctx.textAlign = 'center';
-      ctx.font = `500 ${Math.round(2.4 * cqi)}px "Plus Jakarta Sans", sans-serif`;
-      ctx.fillText('PIRT', padX + sealR, footTop + sealR * 2 + 2.6 * cqi);
+      ctx.font = `500 ${Math.round(2.3 * cqi)}px "Plus Jakarta Sans", sans-serif`;
+      ctx.fillText('PIRT', padX + sealR, footTop + sealR * 2 + 2.5 * cqi);
     }
 
-    const infoX = config.sealPlacement === 'back' ? padX + 14 * cqi : padX;
+    const infoX = config.sealPlacement === 'back' ? padX + 13.5 * cqi : padX;
     ctx.textAlign = 'left';
     ctx.fillStyle = '#D8B474';
-    ctx.font = `600 ${Math.round(3.1 * cqi)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('Diproduksi Oleh', infoX, footTop + 2.5 * cqi);
+    ctx.font = `600 ${Math.round(2.95 * cqi)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText('Diproduksi Oleh', infoX, footTop + 2.4 * cqi);
 
     ctx.fillStyle = '#FAF5EB';
-    ctx.font = `400 ${Math.round(2.45 * cqi)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('KUPS Himatarian Blitar', infoX, footTop + 5.8 * cqi);
-    ctx.fillText('Jawa Timur – INDONESIA', infoX, footTop + 8.8 * cqi);
+    ctx.font = `400 ${Math.round(2.4 * cqi)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText('KUPS Himatarian Blitar', infoX, footTop + 5.6 * cqi);
+    ctx.fillText('Jawa Timur – INDONESIA', infoX, footTop + 8.5 * cqi);
 
+    const leftBoxW = bw * 0.54 - infoX - 2.5 * cqi;
     ctx.shadowBlur = 0;
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(infoX, footTop + 10.6 * cqi, bw * 0.32, 3 * cqi);
+    ctx.fillRect(infoX, footTop + 10.3 * cqi, Math.max(12 * cqi, leftBoxW), 2.8 * cqi);
 
     const rightX = bw * 0.56;
+    const rightBoxW = rightMargin - rightX;
     ctx.shadowBlur = Math.max(3, cqi);
     ctx.fillStyle = '#FAF5EB';
-    ctx.font = `500 ${Math.round(2.4 * cqi)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('Kode Produksi', rightX, footTop + 2.5 * cqi);
+    ctx.font = `500 ${Math.round(2.3 * cqi)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText('Kode Produksi', rightX, footTop + 2.4 * cqi);
     ctx.shadowBlur = 0;
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(rightX, footTop + 3.6 * cqi, bw * 0.37, 2.8 * cqi);
+    ctx.fillRect(rightX, footTop + 3.5 * cqi, rightBoxW, 2.6 * cqi);
 
     ctx.shadowBlur = Math.max(3, cqi);
     ctx.fillStyle = '#FAF5EB';
-    ctx.font = `500 ${Math.round(2.2 * cqi)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('Baik Digunakan Sebelum', rightX, footTop + 9.2 * cqi);
+    ctx.font = `500 ${Math.round(2.1 * cqi)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText('Baik Digunakan Sebelum', rightX, footTop + 9.0 * cqi);
     ctx.shadowBlur = 0;
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(rightX, footTop + 10.4 * cqi, bw * 0.37, 2.8 * cqi);
+    ctx.fillRect(rightX, footTop + 10.1 * cqi, rightBoxW, 2.6 * cqi);
     ctx.restore();
 
-    // Bottom Band (NO net weight on Rear)
+    // 6. Bottom Band (NO net weight on Rear)
     const bandCenterY = bh * (rect.bandRatioTop + rect.bandRatioH * 0.56);
     ctx.fillStyle = rect.bandTextColor;
     ctx.textAlign = 'center';
