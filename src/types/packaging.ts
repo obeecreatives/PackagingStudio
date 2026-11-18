@@ -4,6 +4,14 @@ import coffeeCherriesImg from '../assets/images/natural_coffee_cherries_branch_1
 import sceneTravertineKawiImg from '../assets/images/scene_travertine_kawi_1794975719904.jpg';
 import sceneCafeCounterImg from '../assets/images/scene_cafe_counter_1794975718810.jpg';
 import sceneSlateDawnImg from '../assets/images/scene_slate_dawn_1794975720255.jpg';
+import blankV1BoxGussetImg from '../assets/images/blank_v1_box_gusset_1794980488336.jpg';
+import blankV2DoypackNaturalImg from '../assets/images/blank_v2_doypack_natural_1794980490266.jpg';
+import blankV3TallHeritageImg from '../assets/images/blank_v3_tall_heritage_1794980491252.jpg';
+import blankV4TallBotanicalImg from '../assets/images/blank_v4_tall_botanical_1794980492610.jpg';
+import blankV5TallCopperImg from '../assets/images/blank_v5_tall_copper_1794980492037.jpg';
+import blankV6TallMinimalImg from '../assets/images/blank_v6_tall_minimal_1794980493646.jpg';
+import blankStudioDoypackFrontImg from '../assets/images/blank_studio_doypack_front_1794980515058.jpg';
+import blankStudioDoypackRearImg from '../assets/images/blank_studio_doypack_rear_1794980515985.jpg';
 
 export type PouchShapeId =
   | 'box-gusset'
@@ -412,6 +420,14 @@ export const GENERATED_ASSETS = {
   beansCluster: beansClusterImg,
   kawiMist: kawiMistImg,
   coffeeCherries: coffeeCherriesImg,
+  blankV1BoxGusset: blankV1BoxGussetImg,
+  blankV2DoypackNatural: blankV2DoypackNaturalImg,
+  blankV3TallHeritage: blankV3TallHeritageImg,
+  blankV4TallBotanical: blankV4TallBotanicalImg,
+  blankV5TallCopper: blankV5TallCopperImg,
+  blankV6TallMinimal: blankV6TallMinimalImg,
+  blankStudioDoypackFront: blankStudioDoypackFrontImg,
+  blankStudioDoypackRear: blankStudioDoypackRearImg,
 };
 
 export const ORIGINAL_UPLOADS = {

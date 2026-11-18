@@ -591,7 +591,7 @@ export function DesignElementsKit({ config, onExport, isExporting, onExpand }: D
                         });
                       }
                     }}
-                    className={`group relative aspect-[16/10] w-full ${
+                    className={`group relative aspect-[4/3] w-full ${
                       liveSpec && liveSpec.scene !== 'natural-kawi' ? 'bg-white' : 'bg-[#18100C]'
                     } overflow-hidden cursor-zoom-in text-left`}
                   >

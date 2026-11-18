@@ -213,11 +213,15 @@ export function FrontPanel({
         />
 
         {isDoypack && (showValveGraphic || config.showPrintMarks) && (
-          <div className="absolute top-[25.5%] left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+          <div className="absolute top-[26.8%] left-1/2 -translate-x-1/2 z-10 pointer-events-none">
             {showValveGraphic ? (
-              <DegassingValveVisual compact={compact} />
+              <div className="w-[9.5cqi] h-[9.5cqi] rounded-full bg-gradient-to-br from-[#2B1D16] via-[#1C110C] to-[#110906] border border-[#5A4232]/75 shadow-[inset_0_1px_3px_rgba(255,255,255,0.14),0_2px_5px_rgba(0,0,0,0.65)] flex items-center justify-center">
+                <div className="w-[70%] h-[70%] rounded-full border border-[#0E0704]/80" />
+              </div>
             ) : (
-              <DegassingValveVisual compact={compact} isPrintGuide />
+              <div className="w-[9.5cqi] h-[9.5cqi] rounded-full border border-dashed border-[#38BDF8] bg-[#160F0C]/65 flex items-center justify-center">
+                <div className="w-[24%] h-[24%] rounded-full bg-[#38BDF8]/80" />
+              </div>
             )}
           </div>
         )}
@@ -940,6 +944,8 @@ export function InteractivePouch3D({
 }) {
   const isDoypack = config.pouchShape === 'doypack-valve';
   const tall = isTallGusset(config.pouchShape);
+  const isCopper = config.pouchShape === 'tall-copper';
+  const isHeritage = config.pouchShape === 'tall-heritage';
   const weightSpecs = getWeightSpecs(config.pouchShape, config.netWeight);
 
   if (isDoypack) {
@@ -952,25 +958,25 @@ export function InteractivePouch3D({
           }}
         />
 
+        {/* Contoured Stand-Up Doypack Silhouette (top corners, tear notches, slightly tapered sides, curved bottom arch) */}
         <div
-          className="relative w-[300px] sm:w-[320px] h-[445px] overflow-hidden shadow-[0_32px_60px_-14px_rgba(0,0,0,0.88)] origin-bottom transition-transform duration-200"
+          className="relative w-[300px] sm:w-[325px] h-[455px] overflow-hidden shadow-[0_32px_60px_-14px_rgba(0,0,0,0.88)] origin-bottom transition-transform duration-200"
           style={{
-            borderRadius: '14px 14px 28px 28px',
+            clipPath:
+              'polygon(1.5% 0.4%, 98.5% 0.4%, 99.6% 2%, 99.6% 6.3%, 98.4% 6.9%, 99.4% 7.6%, 96.6% 93.5%, 94.2% 96.8%, 84% 98.8%, 68% 99.7%, 50% 100%, 32% 99.7%, 16% 98.8%, 5.8% 96.8%, 3.4% 93.5%, 0.6% 7.6%, 1.6% 6.9%, 0.4% 6.3%, 0.4% 2%)',
             transform: `scale(${weightSpecs.visualScale})`,
           }}
         >
           <FrontPanel config={config} showValveGraphic={!backgroundOnly} backgroundOnly={backgroundOnly} />
-          <div className="absolute inset-y-0 left-0 w-[11px] bg-gradient-to-r from-white/10 via-black/35 to-transparent border-r border-white/10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-[11px] bg-gradient-to-l from-white/10 via-black/35 to-transparent border-l border-white/10 pointer-events-none" />
+          <div className="absolute inset-y-0 left-0 w-[12px] bg-gradient-to-r from-white/12 via-black/35 to-transparent border-r border-white/10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-[12px] bg-gradient-to-l from-white/12 via-black/35 to-transparent border-l border-white/10 pointer-events-none" />
           <div className="absolute inset-x-0 top-[9.5%] h-[2px] bg-black/55 border-b border-white/15 pointer-events-none" />
           <div className="absolute inset-x-0 top-[11.2%] h-[3px] bg-black/45 border-b border-white/10 pointer-events-none" />
-          <div className="absolute left-0 top-[6.8%] w-2 h-1 bg-[#0E0907] rounded-r-full pointer-events-none" />
-          <div className="absolute right-0 top-[6.8%] w-2 h-1 bg-[#0E0907] rounded-l-full pointer-events-none" />
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                'radial-gradient(ellipse at 50% 62%, rgba(255,255,255,0.06) 0%, rgba(0,0,0,0.12) 70%, rgba(0,0,0,0.34) 100%)',
+                'radial-gradient(ellipse at 50% 58%, rgba(255,248,234,0.08) 0%, rgba(0,0,0,0.10) 68%, rgba(0,0,0,0.34) 100%)',
             }}
           />
         </div>
@@ -993,36 +999,45 @@ export function InteractivePouch3D({
         className="relative flex items-stretch justify-center origin-bottom transition-transform duration-200"
         style={{ perspective: '1200px', transform: `scale(${weightSpecs.visualScale})` }}
       >
+        {/* Realistic Pinched-Top Side Gusset with V-Fold Center Shadow & Bottom Wrap */}
         <div
-          className={`hidden sm:block ${tall ? 'w-[62px] h-[465px]' : 'w-[72px] h-[440px]'} origin-right rounded-l-md overflow-hidden shadow-2xl`}
+          className={`hidden sm:block relative ${tall ? 'w-[76px] h-[465px]' : 'w-[84px] h-[440px]'} shrink-0`}
           style={{
-            transform: 'rotateY(-46deg) translateX(4px) scaleY(0.985)',
-            filter: 'brightness(0.76)',
+            clipPath: 'polygon(78% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 16%)',
+            background: isHeritage
+              ? 'linear-gradient(90deg, #A88446 0%, #DFC389 48%, #8F6D36 52%, #C9A96A 100%)'
+              : 'linear-gradient(90deg, #1E130E 0%, #312018 46%, #140B07 52%, #261811 100%)',
+            boxShadow: 'inset -4px 0 10px rgba(0,0,0,0.45)',
           }}
         >
-          <SideGussetPanel config={config} side="left" compact backgroundOnly={backgroundOnly} />
+          <div className="absolute inset-y-[16%] left-[48%] w-[2px] bg-black/55" />
+          <div
+            className={`absolute inset-x-0 bottom-0 ${
+              isCopper
+                ? 'h-[11%] bg-[#180E0A] border-t border-[#C47145]/75'
+                : 'h-[11.2%] gold-foil-gradient border-t border-[#F7E8C6]/65'
+            }`}
+          />
         </div>
 
         <div
           className={`relative ${
             tall ? 'w-[225px] sm:w-[245px] h-[465px]' : 'w-[290px] sm:w-[310px] h-[440px]'
-          } rounded-md overflow-hidden shadow-[0_32px_60px_-14px_rgba(0,0,0,0.88)]`}
+          } rounded-r-[4px] overflow-hidden shadow-[14px_32px_60px_-14px_rgba(0,0,0,0.88)] origin-left`}
           style={{
-            transform: 'rotateY(6deg)',
+            transform: 'rotateY(7deg)',
           }}
         >
           <FrontPanel config={config} compact={tall} backgroundOnly={backgroundOnly} />
 
           <div className="absolute inset-x-0 top-[7.5%] h-[2px] bg-black/55 border-b border-white/15 pointer-events-none" />
           <div className="absolute inset-x-0 top-[9.2%] h-[3px] bg-black/45 border-b border-white/10 pointer-events-none" />
-          <div className="absolute left-0 top-[5.8%] w-1.5 h-1 bg-[#0E0907] rounded-r-full pointer-events-none" />
-          <div className="absolute right-0 top-[5.8%] w-1.5 h-1 bg-[#0E0907] rounded-l-full pointer-events-none" />
 
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                'linear-gradient(108deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 28%, rgba(0,0,0,0.16) 72%, rgba(255,255,255,0.05) 100%)',
+                'linear-gradient(108deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0) 28%, rgba(0,0,0,0.16) 72%, rgba(255,255,255,0.05) 100%)',
             }}
           />
         </div>

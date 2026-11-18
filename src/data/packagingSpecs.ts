@@ -182,7 +182,7 @@ export const PHOTO_ASSETS: PhotoAssetMeta[] = [
     id: 'mockup-box',
     title: 'Mockup Final · Versi 01 Box Pouch',
     usage: 'Presentasi Box Pouch Gusset (Depan & Belakang) di atas travertine & fajar Kawi',
-    src: GENERATED_ASSETS.sceneTravertineKawi,
+    src: GENERATED_ASSETS.blankV1BoxGusset,
     filename: 'arunika-mockup-01-box-pouch.png',
     dims: 'High-Res Komposit',
     liveMockup: { shape: 'box-gusset', scene: 'natural-kawi' },
@@ -191,7 +191,7 @@ export const PHOTO_ASSETS: PhotoAssetMeta[] = [
     id: 'mockup-doypack-studio',
     title: 'Mockup Final · Alternatif 02 Doypack Depan',
     usage: 'Mockup lurus latar studio putih persis bentuk Doypack + katup udara tengah',
-    src: GENERATED_ASSETS.sceneTravertineKawi,
+    src: GENERATED_ASSETS.blankStudioDoypackFront,
     filename: 'arunika-mockup-02a-doypack-depan.png',
     dims: 'High-Res Komposit',
     liveMockup: { shape: 'doypack-valve', scene: 'studio-front' },
@@ -200,7 +200,7 @@ export const PHOTO_ASSETS: PhotoAssetMeta[] = [
     id: 'mockup-doypack-studio-rear',
     title: 'Mockup Final · Alternatif 02 Doypack Belakang',
     usage: 'Mockup lurus latar studio putih sisi belakang Doypack tanpa katup udara',
-    src: GENERATED_ASSETS.sceneTravertineKawi,
+    src: GENERATED_ASSETS.blankStudioDoypackRear,
     filename: 'arunika-mockup-02b-doypack-belakang.png',
     dims: 'High-Res Komposit',
     liveMockup: { shape: 'doypack-valve', scene: 'studio-rear' },
@@ -209,7 +209,7 @@ export const PHOTO_ASSETS: PhotoAssetMeta[] = [
     id: 'mockup-doypack-natural',
     title: 'Mockup Final · Alternatif 02 Doypack Natural',
     usage: 'Mockup Doypack (Depan & Belakang) di atas batu vulkanik, travertine & fajar Gunung Kawi',
-    src: GENERATED_ASSETS.sceneTravertineKawi,
+    src: GENERATED_ASSETS.blankV2DoypackNatural,
     filename: 'arunika-mockup-02c-doypack-natural.png',
     dims: 'High-Res Komposit',
     liveMockup: { shape: 'doypack-valve', scene: 'natural-kawi' },
@@ -218,7 +218,7 @@ export const PHOTO_ASSETS: PhotoAssetMeta[] = [
     id: 'mockup-tall-heritage',
     title: 'Mockup Final · Alternatif 03 Tall Classic Border',
     usage: 'Foto tall gusset (Depan & Belakang) dengan bingkai garis emas tipis',
-    src: GENERATED_ASSETS.sceneCafeCounter,
+    src: GENERATED_ASSETS.blankV3TallHeritage,
     filename: 'arunika-mockup-03-tall-classic.png',
     dims: 'High-Res Komposit',
     liveMockup: { shape: 'tall-heritage', scene: 'natural-kawi' },
@@ -227,7 +227,7 @@ export const PHOTO_ASSETS: PhotoAssetMeta[] = [
     id: 'mockup-tall-botanical',
     title: 'Mockup Final · Alternatif 04 Tall Botanical (Ornamen Daun)',
     usage: 'Foto tall gusset dengan ilustrasi botani daun & ceri kopi foil emas — dipertahankan sebagai opsi berornamen',
-    src: GENERATED_ASSETS.sceneSlateDawn,
+    src: GENERATED_ASSETS.blankV4TallBotanical,
     filename: 'arunika-mockup-04-tall-botanical.png',
     dims: 'High-Res Komposit',
     liveMockup: { shape: 'tall-botanical', scene: 'natural-kawi' },
@@ -236,7 +236,7 @@ export const PHOTO_ASSETS: PhotoAssetMeta[] = [
     id: 'mockup-tall-copper',
     title: 'Mockup Final · Alternatif 05 Tall Copper Clean (Tanpa Daun)',
     usage: 'Foto tall gusset bersih tanpa ornamen daun dengan garis emas vertikal & bidang diagonal tembaga',
-    src: GENERATED_ASSETS.sceneCafeCounter,
+    src: GENERATED_ASSETS.blankV5TallCopper,
     filename: 'arunika-mockup-05-tall-copper-clean.png',
     dims: 'High-Res Komposit',
     liveMockup: { shape: 'tall-copper', scene: 'natural-kawi' },
@@ -245,7 +245,7 @@ export const PHOTO_ASSETS: PhotoAssetMeta[] = [
     id: 'mockup-tall-minimal',
     title: 'Mockup Final · Alternatif 06 Tall Minimalis Bersih',
     usage: 'Foto tall gusset gaya minimalis bersih tanpa bingkai dan tanpa ornamen daun dengan pita foil emas bawah',
-    src: GENERATED_ASSETS.sceneSlateDawn,
+    src: GENERATED_ASSETS.blankV6TallMinimal,
     filename: 'arunika-mockup-06-tall-minimalis.png',
     dims: 'High-Res Komposit',
     liveMockup: { shape: 'tall-minimal', scene: 'natural-kawi' },
@@ -261,37 +261,37 @@ export function getNaturalMockupAssetForShape(shape: PouchShapeId): {
     case 'box-gusset':
       return {
         title: 'Mockup Natural · Versi 01 Box Pouch Gusset',
-        src: GENERATED_ASSETS.sceneTravertineKawi,
+        src: GENERATED_ASSETS.blankV1BoxGusset,
         usage: 'Presentasi Box Pouch Gusset (Depan & Belakang) di atas batu travertine & fajar Gunung Kawi',
       };
     case 'doypack-valve':
       return {
         title: 'Mockup Natural · Alternatif 02 Doypack + Valve',
-        src: GENERATED_ASSETS.sceneTravertineKawi,
+        src: GENERATED_ASSETS.blankV2DoypackNatural,
         usage: 'Presentasi Stand-Up Doypack + Katup Udara Tengah di atas batu vulkanik & fajar Gunung Kawi',
       };
     case 'tall-heritage':
       return {
         title: 'Mockup Natural · Alternatif 03 Tall Classic Border',
-        src: GENERATED_ASSETS.sceneCafeCounter,
+        src: GENERATED_ASSETS.blankV3TallHeritage,
         usage: 'Tall Flat-Bottom Gusset dengan bingkai garis emas tipis & suasana kopi hangat',
       };
     case 'tall-botanical':
       return {
         title: 'Mockup Natural · Alternatif 04 Tall Botanical Foil',
-        src: GENERATED_ASSETS.sceneSlateDawn,
+        src: GENERATED_ASSETS.blankV4TallBotanical,
         usage: 'Tall Flat-Bottom Gusset dengan ilustrasi botani daun & ceri kopi foil emas',
       };
     case 'tall-copper':
       return {
         title: 'Mockup Natural · Alternatif 05 Tall Copper Clean (Tanpa Daun)',
-        src: GENERATED_ASSETS.sceneCafeCounter,
+        src: GENERATED_ASSETS.blankV5TallCopper,
         usage: 'Tall Flat-Bottom Gusset bersih tanpa daun dengan garis emas vertikal & bidang diagonal tembaga terakota',
       };
     case 'tall-minimal':
       return {
         title: 'Mockup Natural · Alternatif 06 Tall Minimalis Bersih',
-        src: GENERATED_ASSETS.sceneSlateDawn,
+        src: GENERATED_ASSETS.blankV6TallMinimal,
         usage: 'Tall Flat-Bottom Gusset minimalis murni tanpa bingkai dan tanpa daun dengan pita foil emas bawah',
       };
   }
