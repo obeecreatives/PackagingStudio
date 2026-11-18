@@ -1,4 +1,78 @@
 import React, { useId } from 'react';
+import {
+  ARUNIKA_GLYPHS,
+  ARUNIKA_WORDMARK_VIEWBOX,
+  KAWI_GLYPHS,
+} from '../utils/arunikaWordmarkPaths';
+
+export function ArunikaKawiWordmark({
+  className = 'w-[62cqi] h-auto',
+  tone = 'gold-foil',
+}: {
+  className?: string;
+  tone?: 'gold-foil' | 'dark-ink';
+}) {
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
+  const gradId = `arunikaWordmark-${uid}`;
+  const shadowId = `arunikaShadow-${uid}`;
+
+  return (
+    <svg
+      viewBox={ARUNIKA_WORDMARK_VIEWBOX}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      role="img"
+      aria-label="ARUNIKA KAWI"
+    >
+      <defs>
+        <linearGradient id={gradId} x1="0" y1="10" x2="490" y2="123" gradientUnits="userSpaceOnUse">
+          {tone === 'dark-ink' ? (
+            <>
+              <stop offset="0%" stopColor="#1E130D" />
+              <stop offset="50%" stopColor="#3B2518" />
+              <stop offset="100%" stopColor="#1A110B" />
+            </>
+          ) : (
+            <>
+              <stop offset="0%" stopColor="#B98A42" />
+              <stop offset="28%" stopColor="#E4C482" />
+              <stop offset="50%" stopColor="#F6E4BB" />
+              <stop offset="75%" stopColor="#D2A55B" />
+              <stop offset="100%" stopColor="#AE7F39" />
+            </>
+          )}
+        </linearGradient>
+        <filter id={shadowId} x="-6%" y="-10%" width="112%" height="128%">
+          <feDropShadow
+            dx="0"
+            dy="2"
+            stdDeviation="2.5"
+            floodColor={tone === 'dark-ink' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.85)'}
+          />
+        </filter>
+      </defs>
+      <g filter={tone === 'dark-ink' ? undefined : `url(#${shadowId})`}>
+        {ARUNIKA_GLYPHS.map((glyph, idx) => (
+          <path
+            key={`a-${idx}`}
+            d={glyph.d}
+            fill={`url(#${gradId})`}
+            fillRule={glyph.evenOdd ? 'evenodd' : 'nonzero'}
+          />
+        ))}
+        {KAWI_GLYPHS.map((glyph, idx) => (
+          <path
+            key={`k-${idx}`}
+            d={glyph.d}
+            fill={`url(#${gradId})`}
+            fillRule={glyph.evenOdd ? 'evenodd' : 'nonzero'}
+          />
+        ))}
+      </g>
+    </svg>
+  );
+}
 
 export function ArunikaSunBeanCrest({ className = 'w-11 h-11' }: { className?: string }) {
   const gradId = `sunbean-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;

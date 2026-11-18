@@ -8,6 +8,7 @@ import {
   ROAST_LEVELS,
 } from '../types/packaging';
 import { getWibDateKey } from './dateUtils';
+import { drawArunikaKawiWordmarkCanvas } from './arunikaWordmarkPaths';
 import { downloadCanvas } from './exportSingleElement';
 
 export function loadImage(src: string): Promise<HTMLImageElement> {
@@ -484,10 +485,7 @@ export async function renderPrintSheetCanvas(
         ctx.restore();
       }
 
-      ctx.fillStyle = '#D8B474';
-      ctx.font = `700 ${Math.round(pw * 0.088)}px "Cormorant Garamond", Georgia, serif`;
-      ctx.fillText('ARUNIKA', cx, py + ph * 0.405);
-      ctx.fillText('KAWI', cx, py + ph * 0.472);
+      drawArunikaKawiWordmarkCanvas(ctx, cx, py + ph * 0.34, pw * 0.56);
 
       ctx.fillStyle = '#FAF5EB';
       ctx.font = `600 ${Math.round(pw * 0.032)}px "Plus Jakarta Sans", sans-serif`;
@@ -503,10 +501,7 @@ export async function renderPrintSheetCanvas(
       ctx.font = `500 ${Math.round(pw * 0.021)}px "Plus Jakarta Sans", sans-serif`;
       ctx.fillText('EST 2024', cx, py + ph * 0.232);
 
-      ctx.fillStyle = '#D8B474';
-      ctx.font = `700 ${Math.round(pw * 0.11)}px "Cormorant Garamond", Georgia, serif`;
-      ctx.fillText('ARUNIKA', cx, py + ph * 0.315);
-      ctx.fillText('KAWI', cx, py + ph * 0.385);
+      drawArunikaKawiWordmarkCanvas(ctx, cx, py + ph * 0.268, pw * 0.66);
 
       ctx.fillStyle = '#FAF5EB';
       ctx.font = `600 ${Math.round(pw * 0.035)}px "Plus Jakarta Sans", sans-serif`;
@@ -536,10 +531,7 @@ export async function renderPrintSheetCanvas(
       ctx.lineTo(cx + pw * 0.24, py + ph * 0.262);
       ctx.stroke();
 
-      ctx.fillStyle = '#D8B474';
-      ctx.font = `700 ${Math.round(pw * 0.095)}px "Cormorant Garamond", Georgia, serif`;
-      ctx.fillText('ARUNIKA', cx, py + ph * 0.36);
-      ctx.fillText('KAWI', cx, py + ph * 0.43);
+      drawArunikaKawiWordmarkCanvas(ctx, cx, py + ph * 0.305, pw * 0.62);
 
       ctx.fillStyle = '#FAF5EB';
       ctx.font = `600 ${Math.round(pw * 0.034)}px "Plus Jakarta Sans", sans-serif`;
@@ -656,16 +648,16 @@ export async function renderPrintSheetCanvas(
     ctx.fillStyle = '#F4ECE0';
     ctx.font = `400 ${Math.round(pw * 0.021)}px "Plus Jakarta Sans", sans-serif`;
     const lines = [
-      'Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan.',
-      'Dipetik langsung dari lereng Gunung Kawi. Setiap seduhan menghadirkan',
-      `karakter ${variant.storyCharacter}`,
+      'Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan,',
+      'dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya',
+      `menghadirkan karakter ${variant.storyCharacter}`,
       roast.storyRoast,
     ];
     lines.forEach((line, i) => ctx.fillText(line, cx, py + ph * (0.28 + i * 0.032)));
 
     ctx.fillStyle = '#C9A35E';
     ctx.font = `700 ${Math.round(pw * 0.023)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('Arunika Kawi Coffee Harum dan Nikmat', cx, py + ph * 0.44);
+    ctx.fillText('Arunika Kawi Coffee harum dan nikmat', cx, py + ph * 0.44);
 
     ctx.fillStyle = '#FAF5EB';
     ctx.font = `700 ${Math.round(pw * 0.023)}px "Plus Jakarta Sans", sans-serif`;

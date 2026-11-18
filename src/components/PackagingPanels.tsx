@@ -10,6 +10,7 @@ import {
   ROAST_LEVELS,
 } from '../types/packaging';
 import {
+  ArunikaKawiWordmark,
   ArunikaSunBeanCrest,
   BotanicalCornerArt,
   KthEastJavaSeal,
@@ -274,13 +275,7 @@ export function FrontPanel({
                 )}
               </div>
 
-              <h2
-                className="font-serif font-bold tracking-[0.04em] leading-[0.94] text-[#D8B474] drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)]"
-                style={{ fontSize: '14cqi' }}
-              >
-                ARUNIKA
-                <span className="block tracking-[0.07em]">KAWI</span>
-              </h2>
+              <ArunikaKawiWordmark className="w-[58cqi] h-auto shrink-0" />
 
               <p
                 className="mt-[5%] font-sans font-semibold text-[#FAF5EB] leading-[1.18]"
@@ -315,13 +310,7 @@ export function FrontPanel({
                 <span className="h-px flex-1 bg-[#FAF5EB]/55" />
               </div>
 
-              <h2
-                className="mt-[6.5%] font-serif font-bold tracking-[0.04em] leading-[0.94] text-[#D8B474] drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)]"
-                style={{ fontSize: '15cqi' }}
-              >
-                ARUNIKA
-                <span className="block tracking-[0.07em]">KAWI</span>
-              </h2>
+              <ArunikaKawiWordmark className="mt-[6.5%] w-[62cqi] h-auto shrink-0" />
 
               <p
                 className="mt-[6%] font-sans font-semibold text-[#FAF5EB] leading-[1.2]"
@@ -357,13 +346,7 @@ export function FrontPanel({
                 <span className="h-px flex-1 bg-[#FAF5EB]/55" />
               </div>
 
-              <h2
-                className="mt-[8.5%] font-serif font-bold tracking-[0.04em] leading-[0.95] text-[#D8B474] drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)]"
-                style={{ fontSize: '15.5cqi' }}
-              >
-                ARUNIKA
-                <span className="block tracking-[0.07em]">KAWI</span>
-              </h2>
+              <ArunikaKawiWordmark className="mt-[8.5%] w-[66cqi] h-auto shrink-0" />
 
               <p
                 className="mt-[8%] font-sans font-semibold text-[#FAF5EB] leading-[1.2] tracking-[0.01em]"
@@ -398,13 +381,7 @@ export function FrontPanel({
                 <span className="h-px flex-1 bg-[#FAF5EB]/55" />
               </div>
 
-              <h2
-                className="mt-[7%] font-serif font-bold tracking-[0.04em] leading-[0.94] text-[#D8B474] drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)]"
-                style={{ fontSize: '14.5cqi' }}
-              >
-                ARUNIKA
-                <span className="block tracking-[0.07em]">KAWI</span>
-              </h2>
+              <ArunikaKawiWordmark className="mt-[7%] w-[62cqi] h-auto shrink-0" />
 
               <p
                 className="mt-[7%] font-sans font-semibold text-[#FAF5EB] leading-[1.2]"
@@ -678,8 +655,8 @@ export function BackPanel({ config, backgroundOnly = false }: PanelProps) {
             </h3>
 
             <p className="mt-[4.5%] text-[#F4ECE0] leading-[1.34]" style={{ fontSize: '3.45cqi' }}>
-              Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan. Dipetik langsung dari lereng
-              Gunung Kawi. Setiap seduhan menghadirkan karakter{' '}
+              Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari lereng
+              Gunung Kawi. Setiap seduhannya menghadirkan karakter{' '}
               <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span> {roast.storyRoast}
             </p>
 
@@ -688,7 +665,7 @@ export function BackPanel({ config, backgroundOnly = false }: PanelProps) {
               style={{ fontSize: '3.6cqi' }}
             >
               <span className="text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
-              <span className="text-[#FAF5EB]">Harum dan Nikmat</span>
+              <span className="text-[#FAF5EB]">harum dan nikmat</span>
             </p>
 
             <p

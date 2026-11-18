@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Check, Copy, Download, Maximize2 } from 'lucide-react';
 import {
+  ArunikaKawiWordmark,
   ArunikaSunBeanCrest,
   BotanicalCornerArt,
   Ean13Barcode,
@@ -287,10 +288,31 @@ export function DesignElementsKit({ config, onExport, isExporting, onExpand }: D
             <h3 className="font-serif text-2xl font-semibold text-[#1A1412]">
               01. Elemen Vektor, Emblem, Stempel &amp; Barcode
             </h3>
-            <span className="font-mono text-xs text-[#574D47]">7 Aset Vektor Skalabel</span>
+            <span className="font-mono text-xs text-[#574D47]">8 Aset Vektor Skalabel</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <VectorElementCard
+              title="Wordmark ARUNIKA KAWI"
+              description="Tipografi utama 'ARUNIKA' swash display serif & 'KAWI' bold sans berlapis foil emas."
+              fileSlug="arunika-wordmark-utama"
+              pngSize={[1600, 440]}
+              onExpandClick={() =>
+                onExpand({
+                  kind: 'vector',
+                  title: 'Wordmark ARUNIKA KAWI',
+                  subtitle: 'SVG Vektor · PNG 1600×440 Transparan',
+                  slug: 'arunika-wordmark-utama',
+                  pngSize: [1600, 440],
+                  roastTop: roast.crestTop,
+                  roastBottom: roast.crestBottom,
+                  beanLabel: variant.frontLabel,
+                })
+              }
+            >
+              <ArunikaKawiWordmark className="w-52 h-auto" />
+            </VectorElementCard>
+
             <VectorElementCard
               title="Emblem Arunika Sun & Bean"
               description="Ikon dua biji kopi & sinar fajar ('Arunika') berlapis gradasi emas."
@@ -720,9 +742,9 @@ export function DesignElementsKit({ config, onExport, isExporting, onExpand }: D
                   <p className="text-xs font-medium text-[#8A6429]">
                     Display Utama · {shapeMeta.fonts.display}
                   </p>
-                  <p className="mt-1 font-serif text-3xl font-bold tracking-[0.06em] text-[#1A1412]">
-                    ARUNIKA KAWI
-                  </p>
+                  <div className="mt-2 mb-1">
+                    <ArunikaKawiWordmark tone="dark-ink" className="w-48 h-auto" />
+                  </div>
                   <p className="font-serif italic text-base text-[#574D47]">
                     {roast.subtitle} ({shapeMeta.fonts.tagline})
                   </p>

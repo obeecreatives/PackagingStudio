@@ -4,6 +4,7 @@ import { getWeightSpecs, isTallGusset, PackagingConfig, POUCH_SHAPES } from '../
 import { LiveMockupScene, MockupSceneMode } from './LiveMockupScene';
 import { BackPanel, FrontPanel, FullPrintDieline, InteractivePouch3D } from './PackagingPanels';
 import {
+  ArunikaKawiWordmark,
   ArunikaSunBeanCrest,
   BotanicalCornerArt,
   Ean13Barcode,
@@ -126,6 +127,8 @@ export function ExpandPreviewModal({ target, onClose }: ExpandPreviewModalProps)
 
   const renderVectorElement = (t: Extract<ExpandPreviewTarget, { kind: 'vector' }>) => {
     switch (t.slug) {
+      case 'arunika-wordmark-utama':
+        return <ArunikaKawiWordmark className="w-72 h-auto" />;
       case 'arunika-emblem-utama':
         return <ArunikaSunBeanCrest className="w-56 h-56" />;
       case 'arunika-bingkai-roast':

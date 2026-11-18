@@ -310,7 +310,7 @@ export const BEAN_VARIANTS: Record<
     notes: ['Dark Chocolate', 'Roasted Hazelnut', 'Spiced Caramel'],
     altitude: '1.100 – 1.400 MDPL',
     process: 'Natural & Goreng Kreweng Tradisional',
-    storyCharacter: 'rasa kopi robusta yang autentik.',
+    storyCharacter: 'rasa kopi robusta yang autentik',
   },
   'robusta-honey': {
     label: 'Fine Robusta Honey',
@@ -353,7 +353,7 @@ export const ROAST_LEVELS: Record<
     bodyScore: 5,
     bitternessScore: 4,
     aromaScore: 4,
-    storyRoast: 'Proses sangrai tradisional menghasilkan aroma khas.',
+    storyRoast: 'Proses sangrai tradisionalnya menghasilkan aroma khas',
   },
   'medium-dark': {
     label: 'Medium-Dark Roast',

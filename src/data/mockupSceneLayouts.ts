@@ -22,6 +22,8 @@ export interface PanelOverlayRect {
   bandTextColor: string;
   /** Vertical center ratio (0..1) reserved for physical degassing valve if present */
   valveClearCenterRatio?: number;
+  /** Composite exact coffee bean bed from uploaded Front 250g master over lower pouch area */
+  useMasterBeans?: boolean;
 }
 
 export interface NaturalMockupLayoutSpec {
@@ -61,7 +63,7 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
         { x: 81.5, y: 81.3 },
         { x: 52.3, y: 78.6 },
       ],
-      topPadPct: 7.0,
+      topPadPct: 11.5,
       bandRatioTop: 0.892,
       bandRatioH: 0.108,
       bandTextColor: '#1E130D',
@@ -97,7 +99,7 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
         { x: 88.4, y: 79.8 },
         { x: 54.6, y: 79.8 },
       ],
-      topPadPct: 14.5,
+      topPadPct: 18.5,
       bandRatioTop: 0.888,
       bandRatioH: 0.11,
       bandTextColor: '#1E130D',
@@ -132,7 +134,7 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
         { x: 87.8, y: 83.8 },
         { x: 61.5, y: 86.4 },
       ],
-      topPadPct: 7.5,
+      topPadPct: 12.0,
       bandRatioTop: 0.902,
       bandRatioH: 0.098,
       bandTextColor: '#1E130D',
@@ -167,7 +169,7 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
         { x: 93.8, y: 82.0 },
         { x: 61.4, y: 84.2 },
       ],
-      topPadPct: 7.5,
+      topPadPct: 12.0,
       bandRatioTop: 0.905,
       bandRatioH: 0.095,
       bandTextColor: '#1E130D',
@@ -190,6 +192,7 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
       bandRatioTop: 0.876,
       bandRatioH: 0.124,
       bandTextColor: '#FAF5EB',
+      useMasterBeans: true,
     },
     rear: {
       x: 52.0,
@@ -202,7 +205,7 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
         { x: 72.2, y: 85.6 },
         { x: 52.0, y: 81.2 },
       ],
-      topPadPct: 7.5,
+      topPadPct: 12.0,
       bandRatioTop: 0.872,
       bandRatioH: 0.128,
       bandTextColor: '#FAF5EB',
@@ -225,6 +228,7 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
       bandRatioTop: 0.888,
       bandRatioH: 0.112,
       bandTextColor: '#1E130D',
+      useMasterBeans: true,
     },
     rear: {
       x: 52.2,
@@ -237,7 +241,7 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
         { x: 77.6, y: 86.2 },
         { x: 52.2, y: 83.4 },
       ],
-      topPadPct: 6.5,
+      topPadPct: 11.5,
       bandRatioTop: 0.835,
       bandRatioH: 0.165,
       bandTextColor: '#1E130D',
@@ -280,7 +284,7 @@ export const STUDIO_DOYPACK_LAYOUT: {
       { x: 75.4, y: 93.2 },
       { x: 24.2, y: 93.2 },
     ],
-    topPadPct: 14.5,
+    topPadPct: 17.5,
     bandRatioTop: 0.896,
     bandRatioH: 0.102,
     bandTextColor: '#1E130D',

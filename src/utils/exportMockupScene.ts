@@ -1,6 +1,7 @@
 import {
   BEAN_VARIANTS,
   isTallGusset,
+  ORIGINAL_UPLOADS,
   PackagingConfig,
   ROAST_LEVELS,
 } from '../types/packaging';
@@ -11,6 +12,7 @@ import {
   STUDIO_DOYPACK_LAYOUT,
 } from '../data/mockupSceneLayouts';
 import { getWibDateKey } from './dateUtils';
+import { drawArunikaKawiWordmarkCanvas } from './arunikaWordmarkPaths';
 import { renderPrintSheetCanvas, loadImage } from './exportPrintArtwork';
 import { downloadCanvas } from './exportSingleElement';
 import { drawCanvasQuadWarp } from './perspectiveHomography';
@@ -310,38 +312,106 @@ function warpOverlayRect(
   drawCanvasQuadWarp(destCtx, offCanvas, tl, tr, br, bl, 14, 24);
 }
 
+function drawMasterBeansOverlay(
+  ctx: CanvasRenderingContext2D,
+  beanRefImg: HTMLImageElement,
+  bw: number,
+  bh: number,
+  bandRatioTop: number,
+  isCopper: boolean
+) {
+  const dstTop = bh * 0.485;
+  const dstH = Math.max(40, bh * (bandRatioTop - 0.485 - 0.014));
+
+  const temp = document.createElement('canvas');
+  temp.width = bw;
+  temp.height = Math.round(dstH);
+  const tctx = temp.getContext('2d');
+  if (!tctx) return;
+
+  tctx.fillStyle = '#150C08';
+  tctx.fillRect(0, 0, temp.width, temp.height);
+
+  const sw = beanRefImg.naturalWidth;
+  const sh = beanRefImg.naturalHeight;
+  tctx.drawImage(beanRefImg, 0, sh * 0.5, sw, sh * 0.382, 0, 0, temp.width, temp.height);
+
+  // Matte cylindrical lighting sheen matching pouch face
+  const sheen = tctx.createLinearGradient(0, 0, temp.width, temp.height * 0.25);
+  sheen.addColorStop(0, 'rgba(255, 248, 234, 0.08)');
+  sheen.addColorStop(0.36, 'rgba(255, 255, 255, 0)');
+  sheen.addColorStop(1, 'rgba(0, 0, 0, 0.22)');
+  tctx.fillStyle = sheen;
+  tctx.fillRect(0, 0, temp.width, temp.height);
+
+  // Smooth top-edge fade so the bean bed blends seamlessly into dark espresso gradient
+  tctx.globalCompositeOperation = 'destination-in';
+  const maskGrad = tctx.createLinearGradient(0, 0, 0, temp.height);
+  maskGrad.addColorStop(0, 'rgba(0,0,0,0)');
+  maskGrad.addColorStop(0.2, 'rgba(0,0,0,0.88)');
+  maskGrad.addColorStop(0.34, 'rgba(0,0,0,1)');
+  maskGrad.addColorStop(1, 'rgba(0,0,0,1)');
+  tctx.fillStyle = maskGrad;
+  tctx.fillRect(0, 0, temp.width, temp.height);
+
+  ctx.save();
+  if (isCopper) {
+    ctx.beginPath();
+    ctx.moveTo(bw * 0.075, dstTop);
+    ctx.lineTo(bw, dstTop);
+    ctx.lineTo(bw, dstTop + dstH * 0.24);
+    ctx.lineTo(bw * 0.25, dstTop + dstH);
+    ctx.lineTo(bw * 0.075, dstTop + dstH);
+    ctx.closePath();
+    ctx.clip();
+  }
+  ctx.drawImage(temp, 0, dstTop);
+  ctx.restore();
+}
+
 function drawFrontOverlayCanvas(
   destCtx: CanvasRenderingContext2D,
   config: PackagingConfig,
   sceneW: number,
   sceneH: number,
   rect: PanelOverlayRect,
-  variantStyle: 'classic' | 'doypack' | 'heritage-mandala' | 'botanical' | 'copper' | 'minimal'
+  variantStyle: 'classic' | 'doypack' | 'heritage-mandala' | 'botanical' | 'copper' | 'minimal',
+  beanRefImg?: HTMLImageElement | null
 ) {
   const variant = BEAN_VARIANTS[config.beanVariant];
   const roast = ROAST_LEVELS[config.roastLevel];
   const hasValve = Boolean(rect.valveClearCenterRatio);
   const isCopper = variantStyle === 'copper';
+  const isBotanical = variantStyle === 'botanical';
   const isDoypack = variantStyle === 'doypack';
   const isHeritage = variantStyle === 'heritage-mandala';
+
+  const topPadPct = hasValve ? 5.5 : isBotanical ? 14.5 : isCopper ? 14.0 : 12.2;
+  const titleGapPct = hasValve ? 14.5 : isBotanical ? 9.0 : isCopper ? 10.0 : 9.5;
+  const subGapPct = hasValve ? 5.2 : isCopper ? 8.5 : 8.4;
 
   warpOverlayRect(destCtx, sceneW, sceneH, rect, (ctx, bw, bh) => {
     const cx = bw / 2;
     const cqi = bw / 100;
+    const usableH = bh * rect.bandRatioTop;
+
+    if (rect.useMasterBeans && beanRefImg) {
+      drawMasterBeansOverlay(ctx, beanRefImg, bw, bh, rect.bandRatioTop, isCopper);
+    }
 
     ctx.save();
     ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
     ctx.shadowBlur = Math.max(4, cqi * 1.8);
     ctx.shadowOffsetY = 1;
 
-    const crestY = (isDoypack ? 0.115 : isCopper ? 0.21 : 0.15) * bh;
-    const crestR = (isCopper ? 7.6 : isDoypack ? 6.2 : 7.0) * cqi;
+    const crestR = (isCopper ? 6.6 : isDoypack ? 5.5 : 6.1) * cqi;
+    const crestY = usableH * (topPadPct / 100) + crestR;
     drawSunBeanCrest(ctx, cx, crestY, crestR);
 
     ctx.textAlign = 'center';
     ctx.fillStyle = '#D8B474';
     ctx.font = `700 ${Math.round((isCopper ? 6.0 : isDoypack ? 4.5 : 5.1) * cqi)}px "Plus Jakarta Sans", sans-serif`;
-    const coffeY = crestY + crestR + 4.0 * cqi;
+    const coffeY = crestY + crestR + 4.4 * cqi;
     ctx.fillText('COFFE BEAN', cx, coffeY);
 
     ctx.fillStyle = '#FAF5EB';
@@ -360,19 +430,14 @@ function drawFrontOverlayCanvas(
     ctx.lineTo(cx + lineHalf, estY - 1.2 * cqi);
     ctx.stroke();
 
-    const valveSkip = hasValve ? bh * 0.125 : bh * 0.045;
-    const titleSize = Math.round((isDoypack ? 14.2 : isCopper ? 16.0 : 14.8) * cqi);
-    const arunikaY = estY + valveSkip + titleSize * 0.85;
-    ctx.fillStyle = '#D8B474';
-    ctx.font = `700 ${titleSize}px "Cormorant Garamond", Georgia, serif`;
-    ctx.fillText('ARUNIKA', cx, arunikaY);
-    const kawiY = arunikaY + titleSize * 0.94;
-    ctx.fillText('KAWI', cx, kawiY);
+    const wordmarkW = (isDoypack ? 58 : isCopper ? 65 : 62) * cqi;
+    const wordmarkTopY = estY + usableH * (titleGapPct / 100) + 1.5 * cqi;
+    const wordmarkH = drawArunikaKawiWordmarkCanvas(ctx, cx, wordmarkTopY, wordmarkW);
 
     const subSize = Math.round((isDoypack ? 4.5 : isCopper ? 5.2 : 4.7) * cqi);
     ctx.fillStyle = '#FAF5EB';
     ctx.font = `600 ${subSize}px "Plus Jakarta Sans", sans-serif`;
-    const sub1Y = kawiY + (hasValve ? 7.5 : 8.5) * cqi;
+    const sub1Y = wordmarkTopY + wordmarkH + usableH * (subGapPct / 100) + subSize * 0.75;
     ctx.fillText(roast.subtitle, cx, sub1Y);
     ctx.fillText(variant.frontLabel, cx, sub1Y + subSize * 1.32);
 
@@ -443,7 +508,7 @@ function drawRearOverlayCanvas(
         { text: 'Diolah secara tradisional (', color: '#F4ECE0', font: normalFont },
         { text: 'Goreng Kreweng', color: '#F4ECE0', font: italicFont },
         {
-          text: ') oleh Kelompok Tani Hutan. Dipetik langsung dari lereng Gunung Kawi. Setiap seduhan menghadirkan karakter',
+          text: ') oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter',
           color: '#F4ECE0',
           font: normalFont,
         },
@@ -462,7 +527,7 @@ function drawRearOverlayCanvas(
       ctx,
       [
         { text: 'Arunika Kawi Coffee', color: '#D8B474', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
-        { text: 'Harum dan Nikmat', color: '#FAF5EB', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
+        { text: 'harum dan nikmat', color: '#FAF5EB', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
       ],
       cx,
       afterStoryY + 2.8 * cqi,
@@ -689,7 +754,10 @@ export async function renderMockupSceneCanvas(
 
   // Natural Scenic Presentation (Exact Original 6 Blank Mockup Bases)
   const layout = NATURAL_MOCKUP_LAYOUTS[config.pouchShape];
-  const baseImg = await loadImage(layout.baseImage).catch(() => null);
+  const [baseImg, beanRefImg] = await Promise.all([
+    loadImage(layout.baseImage).catch(() => null),
+    layout.front.useMasterBeans ? loadImage(ORIGINAL_UPLOADS.revisedFront250).catch(() => null) : Promise.resolve(null),
+  ]);
 
   ctx.fillStyle = '#18100C';
   ctx.fillRect(0, 0, width, height);
@@ -698,7 +766,7 @@ export async function renderMockupSceneCanvas(
     drawCover(ctx, baseImg, 0, 0, width, height);
   }
 
-  drawFrontOverlayCanvas(ctx, config, width, height, layout.front, layout.variantStyle);
+  drawFrontOverlayCanvas(ctx, config, width, height, layout.front, layout.variantStyle, beanRefImg);
   drawRearOverlayCanvas(ctx, config, width, height, layout.rear, layout.variantStyle);
 
   return canvas;
