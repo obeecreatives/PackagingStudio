@@ -308,17 +308,17 @@ function RearTextOverlay({
               <span className="text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
               <span className="text-[#FAF5EB]">harum dan nikmat</span>
             </p>
-          </div>
 
-          {/* Middle Composition Line — Anchored vertically in the middle open space matching master */}
-          <div className="flex-1 flex items-center justify-center text-center pt-[2%]">
             <p
-              className="font-sans font-semibold tracking-[0.025em] uppercase text-[#FAF5EB] drop-shadow-[0_1px_5px_rgba(0,0,0,0.92)]"
+              className="mt-[7.5cqi] font-sans font-semibold tracking-[0.025em] uppercase text-[#FAF5EB] drop-shadow-[0_1px_5px_rgba(0,0,0,0.92)]"
               style={{ fontSize: isCopper ? '3.15cqi' : '2.95cqi' }}
             >
               KOMPOSISI {config.beanVariant === 'robusta-100' ? '100 % BIJI KOPI ROBUSTA' : variant.frontLabel.toUpperCase()}
             </p>
           </div>
+
+          {/* Open breathing space before footer */}
+          <div className="flex-1 min-h-[4cqi]" aria-hidden="true" />
 
           {/* Footer Legal Row */}
           <div className="shrink-0 flex items-end justify-between gap-[3%]">

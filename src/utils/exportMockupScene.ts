@@ -538,8 +538,8 @@ function drawRearOverlayCanvas(
     // 5. Legal Footer (reserve bottom ~20.5% of usable height)
     const footTop = usableH - 17.5 * cqi;
 
-    // Center KOMPOSISI cleanly halfway between afterTagY and footTop (eliminates middle void!)
-    const compY = afterTagY + Math.max(4.5 * cqi, (footTop - afterTagY - 2 * cqi) * 0.48);
+    // Position KOMPOSISI tightly below tagline (eliminates excessive vertical gap)
+    const compY = Math.min(footTop - 6.5 * cqi, afterTagY + 7.5 * cqi);
     ctx.fillStyle = '#FAF5EB';
     ctx.textAlign = 'center';
     ctx.font = `600 ${Math.round((isCopper ? 3.15 : 2.95) * cqi)}px "Plus Jakarta Sans", sans-serif`;

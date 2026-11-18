@@ -638,7 +638,7 @@ export function BackPanel({ config, backgroundOnly = false }: PanelProps) {
         <div className="flex-1" />
       ) : (
         <div
-          className={`relative z-10 flex-1 flex flex-col justify-between pt-[12%] pb-[4.5%] ${
+          className={`relative z-10 flex-1 flex flex-col justify-between pt-[14.5%] pb-[4.5%] ${
             isCopper ? 'pl-[11%] pr-[7%]' : 'px-[7%]'
           }`}
         >
