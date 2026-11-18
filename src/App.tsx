@@ -42,7 +42,10 @@ const ALL_ALTERNATIVE_IDS: PouchShapeId[] = [
   'tall-heritage',
   'tall-botanical',
   'tall-copper',
+  'tall-minimal',
 ];
+
+type CompareDisplayMode = MockupSceneMode | '3d-single';
 
 export default function App() {
   const [config, setConfig] = useState<PackagingConfig>({
@@ -57,6 +60,7 @@ export default function App() {
   });
 
   const [viewMode, setViewMode] = useState<PrintViewMode>('compare');
+  const [compareMode, setCompareMode] = useState<CompareDisplayMode>('natural-kawi');
   const [heroScene, setHeroScene] = useState<MockupSceneMode>('natural-kawi');
   const [previewBgOnly, setPreviewBgOnly] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -131,10 +135,10 @@ export default function App() {
                     langsung memperbarui seluruh mockup di halaman ini secara bersamaan.
                   </p>
 
-                  {/* Quick 5-Alternative Switcher */}
+                  {/* Quick 6-Alternative Switcher */}
                   <div className="mt-6">
                     <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#574D47] mb-2">
-                      Pilih Fokus Pratinjau (5 Alternatif Tersedia)
+                      Pilih Fokus Pratinjau (6 Alternatif Tersedia)
                     </p>
                     <div className="flex flex-wrap items-center gap-1.5 p-1.5 bg-[#E7E2D8] rounded-lg">
                       {(Object.keys(POUCH_SHAPES) as PouchShapeId[]).map((shapeId) => {
@@ -179,7 +183,7 @@ export default function App() {
                       href="#semua-alternatif"
                       className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 text-sm font-semibold text-[#1A1412] bg-[#EFECE6] hover:bg-[#E5E0D7] border border-[#1A1412]/15 rounded-md transition-colors whitespace-nowrap shrink-0"
                     >
-                      Bandingkan Semua 5 Alternatif
+                      Bandingkan Semua 6 Alternatif
                     </a>
                     <a
                       href="#full-print"
@@ -304,7 +308,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* All 5 Alternatives Side-by-Side Comparison Gallery */}
+            {/* All 6 Alternatives Side-by-Side Comparison Gallery */}
             <div id="semua-alternatif" className="mt-14 pt-10 border-t border-[#1A1412]/10">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
                 <div>
@@ -312,7 +316,7 @@ export default function App() {
                     Katalog Pembanding Lengkap · Live Sinkronisasi ({config.netWeight} · {activeVariantMeta.frontLabel})
                   </p>
                   <h2 className="mt-1 font-serif text-2xl sm:text-3xl font-semibold text-[#1A1412]">
-                    5 Alternatif Kemasan Arunika Kawi (Versi Awal hingga Terbaru)
+                    6 Alternatif Kemasan Arunika Kawi (Versi Awal hingga Terbaru)
                   </h2>
                 </div>
                 <p className="text-xs text-[#574D47]">
@@ -320,7 +324,7 @@ export default function App() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                 {ALL_ALTERNATIVE_IDS.map((shapeId) => {
                   const meta = POUCH_SHAPES[shapeId];
                   const cardWeightSpecs = getWeightSpecs(shapeId, config.netWeight);
@@ -387,7 +391,7 @@ export default function App() {
                 </p>
                 <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-semibold text-[#1A1412] leading-tight">
                   {viewMode === 'compare'
-                    ? `Perbandingan Langsung 5 Bentuk Kemasan (${config.netWeight})`
+                    ? `Perbandingan Langsung 6 Bentuk Kemasan (${config.netWeight})`
                     : `${activeShapeMeta.code} · ${activeShapeMeta.label} (${config.netWeight})`}
                 </h2>
                 <p className="mt-2 text-[15px] text-[#574D47]">
@@ -399,7 +403,7 @@ export default function App() {
               <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
                 <div className="inline-flex flex-wrap items-center gap-1 p-1 bg-[#DED9CE] rounded-lg">
                   {[
-                    { id: 'compare' as const, label: 'Bandingkan 5 Bentuk' },
+                    { id: 'compare' as const, label: 'Bandingkan 6 Bentuk' },
                     { id: 'pouch-3d' as const, label: 'Mockup 3D' },
                     { id: 'dieline' as const, label: isDoypack ? 'Dieline Doypack' : 'Full Print 360°' },
                     { id: 'front' as const, label: 'Panel Depan' },
@@ -576,42 +580,101 @@ export default function App() {
             {/* Active Artwork Viewport */}
             <div className="mt-6">
               {viewMode === 'compare' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {ALL_ALTERNATIVE_IDS.map((shapeId) => {
-                    const meta = POUCH_SHAPES[shapeId];
-                    const specs = getWeightSpecs(shapeId, config.netWeight);
-                    return (
-                      <div key={shapeId} className="flex flex-col">
-                        <div className="flex items-center justify-between mb-2 px-1 gap-2">
-                          <div className="min-w-0">
-                            <p className="text-xs font-semibold text-[#1A1412] leading-snug">
-                              {meta.code} · {meta.shortLabel}
-                            </p>
-                            <p className="font-mono text-[10px] text-[#574D47] tabular-nums">
-                              {specs.dimensions} · {config.netWeight}
-                            </p>
-                            <p className="text-[10.5px] text-[#8A6429] leading-snug">
-                              {meta.fonts.tagline.replace('Plus Jakarta Sans · ', '')}
-                            </p>
+                <div className="space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3 bg-[#F6F5F2] px-4 py-2.5 rounded-lg border border-[#1A1412]/10">
+                    <span className="text-xs font-medium text-[#574D47]">
+                      Sudut Tampilan Pembanding (Selaras dengan Galeri Atas)
+                    </span>
+                    <div className="inline-flex flex-wrap items-center gap-1 p-1 bg-[#E4DFD6] rounded-lg">
+                      {(
+                        [
+                          { id: 'natural-kawi', label: 'Suasana Natural' },
+                          { id: 'studio-front', label: 'Studio Depan' },
+                          { id: 'studio-rear', label: 'Studio Belakang' },
+                          { id: '3d-single', label: '3D Tunggal' },
+                        ] as const
+                      ).map((mode) => (
+                        <button
+                          key={mode.id}
+                          type="button"
+                          onClick={() => setCompareMode(mode.id)}
+                          className={`px-3 py-1.5 min-h-[38px] text-xs font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+                            compareMode === mode.id
+                              ? 'bg-[#1A1412] text-[#FAF5EB]'
+                              : 'text-[#574D47] hover:text-[#1A1412]'
+                          }`}
+                        >
+                          {mode.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {ALL_ALTERNATIVE_IDS.map((shapeId) => {
+                      const meta = POUCH_SHAPES[shapeId];
+                      const specs = getWeightSpecs(shapeId, config.netWeight);
+                      const isActive = config.pouchShape === shapeId;
+                      return (
+                        <div
+                          key={shapeId}
+                          className={`flex flex-col bg-[#F6F5F2] p-3 rounded-xl border transition-all ${
+                            isActive ? 'border-[#8A6429] ring-1 ring-[#8A6429]' : 'border-[#1A1412]/10'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-2.5 px-0.5 gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setConfig((prev) => ({ ...prev, pouchShape: shapeId }))}
+                              className="min-w-0 text-left cursor-pointer"
+                            >
+                              <p className="text-xs font-semibold text-[#1A1412] leading-snug">
+                                {meta.code} · {meta.shortLabel}
+                                {isActive ? ' · Aktif' : ''}
+                              </p>
+                              <p className="font-mono text-[10px] text-[#574D47] tabular-nums">
+                                {specs.dimensions} · {config.netWeight}
+                              </p>
+                              <p className="text-[10.5px] text-[#8A6429] leading-snug">
+                                {meta.fonts.tagline.replace('Plus Jakarta Sans · ', '')}
+                              </p>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setConfig((prev) => ({ ...prev, pouchShape: shapeId }));
+                                setViewMode('dieline');
+                              }}
+                              className="min-h-[44px] px-2.5 flex items-center text-xs font-medium text-[#8A6429] hover:underline whitespace-nowrap shrink-0 cursor-pointer"
+                            >
+                              Lihat Dieline
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setConfig((prev) => ({ ...prev, pouchShape: shapeId }));
-                              setViewMode('dieline');
-                            }}
-                            className="min-h-[44px] px-2.5 flex items-center text-xs font-medium text-[#8A6429] hover:underline whitespace-nowrap shrink-0 cursor-pointer"
-                          >
-                            Lihat Dieline
-                          </button>
+
+                          {compareMode === '3d-single' ? (
+                            <InteractivePouch3D
+                              config={{ ...config, pouchShape: shapeId }}
+                              backgroundOnly={previewBgOnly}
+                            />
+                          ) : (
+                            <div
+                              onClick={() => setConfig((prev) => ({ ...prev, pouchShape: shapeId }))}
+                              className={`aspect-[3/4] w-full overflow-hidden rounded-xl border border-[#C99C52]/20 cursor-pointer ${
+                                compareMode === 'natural-kawi' ? 'bg-[#1D120D]' : 'bg-white'
+                              }`}
+                            >
+                              <LiveMockupScene
+                                config={{ ...config, pouchShape: shapeId }}
+                                scene={compareMode}
+                                size="card"
+                                backgroundOnly={previewBgOnly}
+                              />
+                            </div>
+                          )}
                         </div>
-                        <InteractivePouch3D
-                          config={{ ...config, pouchShape: shapeId }}
-                          backgroundOnly={previewBgOnly}
-                        />
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Coffee, Droplets, Flame, Mountain } from 'lucide-react';
+import { Mountain } from 'lucide-react';
 import {
   BEAN_VARIANTS,
   GENERATED_ASSETS,
@@ -12,7 +12,6 @@ import {
 import {
   ArunikaSunBeanCrest,
   BotanicalCornerArt,
-  Ean13Barcode,
   KthEastJavaSeal,
   MandalaHeritageCrest,
   RoastProfileCrest,
@@ -124,7 +123,7 @@ function NaturalArtworkLayers({ config, isBack = false }: { config: PackagingCon
         </>
       )}
 
-      {/* Copper Geometric Diagonal Sash & Vertical Gold Pinstripe for Alternatif 05 */}
+      {/* Copper Geometric Diagonal Sash & Vertical Gold Pinstripe for Alternatif 05 (Clean Tanpa Daun) */}
       {isCopper && !isBack && (
         <>
           <div className="absolute inset-y-0 left-[7.5%] w-[1.5px] gold-foil-gradient opacity-85" />
@@ -136,8 +135,6 @@ function NaturalArtworkLayers({ config, isBack = false }: { config: PackagingCon
               opacity: 0.92,
             }}
           />
-          <BotanicalCornerArt className="absolute bottom-[11%] -right-2 w-28 h-28 scale-[-1] opacity-90" />
-          <BotanicalCornerArt className="absolute bottom-[12%] left-[5%] w-24 h-24 -scale-y-100 opacity-50" />
         </>
       )}
 
@@ -189,6 +186,7 @@ export function FrontPanel({
   const isHeritage = config.pouchShape === 'tall-heritage';
   const isBotanical = config.pouchShape === 'tall-botanical';
   const isCopper = config.pouchShape === 'tall-copper';
+  const isMinimal = config.pouchShape === 'tall-minimal';
 
   const isUploadedFinal = config.artworkSource === 'uploaded-final';
   const hasTextOverride = config.beanVariant !== 'robusta-100' || config.roastLevel !== 'traditional';
@@ -274,34 +272,39 @@ export function FrontPanel({
                   opacity: 0.9,
                 }}
               />
-              <BotanicalCornerArt className="absolute bottom-[11%] -right-1 w-[24cqi] h-[24cqi] scale-[-1] opacity-90 pointer-events-none" />
             </>
           )}
 
           {/* Brand & Typography Matching Arunika Kawi Revised Master (100% Uncropped in Tall Width) */}
           <div
-            className={`relative z-10 pt-[14%] flex flex-col items-center text-center ${
+            className={`relative z-10 pt-[13%] flex flex-col items-center text-center ${
               isCopper ? 'pl-[11%] pr-[7%]' : 'px-[8%]'
             }`}
           >
-            <ArunikaSunBeanCrest className="w-[16cqi] h-[16cqi]" />
-            <div className="mt-[4%] flex items-center justify-center gap-[4%] w-[82%]">
-              <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#D8B474]/80" />
+            <ArunikaSunBeanCrest className="w-[15.5cqi] h-[15.5cqi]" />
+            <p
+              className="mt-[3.5%] font-sans font-bold uppercase tracking-[0.12em] text-[#D8B474] whitespace-nowrap"
+              style={{ fontSize: '6cqi' }}
+            >
+              COFFE BEAN
+            </p>
+            <div className="mt-[1.5%] flex items-center justify-center gap-[5%] w-[62%]">
+              <span className="h-px flex-1 bg-[#FAF5EB]/55" />
               <span
-                className="font-sans font-semibold uppercase tracking-[0.16em] text-[#D8B474] whitespace-nowrap"
-                style={{ fontSize: '4.4cqi' }}
+                className="font-sans font-medium uppercase tracking-[0.14em] text-[#FAF5EB] whitespace-nowrap"
+                style={{ fontSize: '3.9cqi' }}
               >
-                COFFE BEAN · EST. 2024
+                EST 2024
               </span>
-              <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#D8B474]/80" />
+              <span className="h-px flex-1 bg-[#FAF5EB]/55" />
             </div>
 
             <h2
-              className="mt-[9%] font-serif font-bold tracking-[0.04em] leading-[0.96] text-[#D8B474] drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)]"
+              className="mt-[8.5%] font-serif font-bold tracking-[0.04em] leading-[0.95] text-[#D8B474] drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)]"
               style={{ fontSize: '15.5cqi' }}
             >
               ARUNIKA
-              <span className="block tracking-[0.08em]">KAWI</span>
+              <span className="block tracking-[0.07em]">KAWI</span>
             </h2>
 
             <p
@@ -449,16 +452,23 @@ export function FrontPanel({
           {isDoypack ? (
         <div className="relative z-10 pt-[14%] px-[10%] flex flex-col items-center text-center">
           <ArunikaSunBeanCrest className={compact ? 'w-7 h-7' : 'w-9 h-9'} />
-          <div className="mt-1.5 flex items-center justify-center gap-2 w-full max-w-[180px]">
-            <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#C99C52]/80" />
+          <p
+            className={`mt-1.5 font-sans font-bold uppercase tracking-[0.16em] text-[#D8B474] whitespace-nowrap ${
+              compact ? 'text-[7px]' : 'text-[10px]'
+            }`}
+          >
+            COFFE BEAN
+          </p>
+          <div className="mt-1 flex items-center justify-center gap-2 w-full max-w-[140px]">
+            <span className="h-px flex-1 bg-[#FAF5EB]/55" />
             <span
-              className={`font-sans font-semibold uppercase tracking-[0.26em] text-[#D8B474] whitespace-nowrap ${
-                compact ? 'text-[6px]' : 'text-[8.5px]'
+              className={`font-sans uppercase tracking-[0.18em] text-[#FAF5EB] whitespace-nowrap ${
+                compact ? 'text-[5.5px]' : 'text-[8px]'
               }`}
             >
-              COFFEE BEAN · EST. 2024
+              EST 2024
             </span>
-            <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#C99C52]/80" />
+            <span className="h-px flex-1 bg-[#FAF5EB]/55" />
           </div>
 
           <div className={`${compact ? 'my-2' : 'my-3'} flex items-center justify-center`}>
@@ -472,27 +482,25 @@ export function FrontPanel({
           </div>
 
           <h2
-            className={`font-serif font-bold tracking-[0.06em] leading-[0.95] text-[#FAF5EB] drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)] ${
+            className={`font-serif font-bold tracking-[0.06em] leading-[0.95] text-[#D8B474] drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)] ${
               compact ? 'text-[22px]' : 'text-[31px]'
             }`}
           >
             ARUNIKA
-            <span className="block tracking-[0.14em] text-[#E9C98E]">KAWI</span>
+            <span className="block tracking-[0.1em] text-[#D8B474]">KAWI</span>
           </h2>
 
-          <div className="mt-2 w-[74%] h-[1.5px] gold-foil-gradient opacity-90" />
-
           <p
-            className={`mt-1.5 font-serif italic tracking-[0.04em] text-[#EFE3D0] ${
-              compact ? 'text-[9.5px]' : 'text-[13px]'
+            className={`mt-3 font-sans font-semibold tracking-[0.01em] text-[#FAF5EB] ${
+              compact ? 'text-[9px]' : 'text-[12.5px]'
             }`}
           >
             {roast.subtitle}
           </p>
 
           <p
-            className={`mt-1 font-sans font-medium tracking-[0.14em] text-[#F5ECD9] ${
-              compact ? 'text-[8px]' : 'text-[10.5px]'
+            className={`mt-0.5 font-sans font-semibold text-[#FAF5EB] ${
+              compact ? 'text-[8.5px]' : 'text-[12px]'
             }`}
           >
             {variant.frontLabel}
@@ -503,23 +511,30 @@ export function FrontPanel({
         <div className="relative z-10 pt-[10%] px-[9%] flex flex-col items-center text-center">
           <ArunikaSunBeanCrest className={compact ? 'w-7 h-7' : 'w-10 h-10'} />
           <p
-            className={`mt-1.5 font-sans font-semibold uppercase tracking-[0.32em] text-[#D8B474] ${
-              compact ? 'text-[6.5px]' : 'text-[9.5px]'
+            className={`mt-1.5 font-sans font-bold uppercase tracking-[0.16em] text-[#D8B474] ${
+              compact ? 'text-[7px]' : 'text-[10px]'
             }`}
           >
-            COFFEE BEAN
+            COFFE BEAN
           </p>
+          <div className="mt-1 flex items-center justify-center gap-2 w-full max-w-[130px]">
+            <span className="h-px flex-1 bg-[#FAF5EB]/55" />
+            <span className={`font-sans uppercase tracking-[0.16em] text-[#FAF5EB] ${compact ? 'text-[5.5px]' : 'text-[8px]'}`}>
+              EST 2024
+            </span>
+            <span className="h-px flex-1 bg-[#FAF5EB]/55" />
+          </div>
           <h2
-            className={`mt-2 font-serif font-bold tracking-[0.06em] leading-[0.92] text-[#E9C98E] drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)] ${
+            className={`mt-2 font-serif font-bold tracking-[0.06em] leading-[0.92] text-[#D8B474] drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)] ${
               compact ? 'text-[20px]' : 'text-[31px]'
             }`}
           >
             ARUNIKA
-            <span className="block tracking-[0.12em]">KAWI</span>
+            <span className="block tracking-[0.1em]">KAWI</span>
           </h2>
           <p
-            className={`mt-1.5 font-serif italic tracking-[0.03em] text-[#EFE3D0] ${
-              compact ? 'text-[8.5px]' : 'text-[12px]'
+            className={`mt-2 font-sans font-semibold text-[#FAF5EB] ${
+              compact ? 'text-[8.5px]' : 'text-[11.5px]'
             }`}
           >
             {roast.subtitle}
@@ -533,8 +548,8 @@ export function FrontPanel({
             />
           </div>
         </div>
-      ) : isBotanical || isCopper ? (
-        /* Alternatif 04 & 05: Tall Botanical Foil / Copper Geometric */
+      ) : isBotanical || isCopper || isMinimal ? (
+        /* Alternatif 04 (Botanical), 05 (Copper Clean) & 06 (Minimalis Clean) */
         <div
           className={`relative z-10 pt-[11%] flex flex-col items-center text-center ${
             isCopper ? 'pl-[13%] pr-[8%]' : 'px-[10%]'
@@ -542,45 +557,47 @@ export function FrontPanel({
         >
           <ArunikaSunBeanCrest className={compact ? 'w-7 h-7' : 'w-10 h-10'} />
           <p
-            className={`mt-1.5 font-sans font-semibold uppercase tracking-[0.3em] text-[#D8B474] ${
-              compact ? 'text-[6px]' : 'text-[9px]'
+            className={`mt-1.5 font-sans font-bold uppercase tracking-[0.16em] text-[#D8B474] ${
+              compact ? 'text-[7px]' : 'text-[10px]'
             }`}
           >
-            COFFEE BEAN · EST. 2024
+            COFFE BEAN
           </p>
+          <div className="mt-1 flex items-center justify-center gap-2 w-full max-w-[130px]">
+            <span className="h-px flex-1 bg-[#FAF5EB]/55" />
+            <span
+              className={`font-sans uppercase tracking-[0.16em] text-[#FAF5EB] whitespace-nowrap ${
+                compact ? 'text-[5.5px]' : 'text-[8px]'
+              }`}
+            >
+              EST 2024
+            </span>
+            <span className="h-px flex-1 bg-[#FAF5EB]/55" />
+          </div>
 
           <h2
-            className={`mt-2.5 font-serif font-bold tracking-[0.06em] leading-[0.94] drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)] ${
+            className={`mt-2.5 font-serif font-bold tracking-[0.06em] leading-[0.94] text-[#D8B474] drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)] ${
               compact ? 'text-[20px]' : 'text-[30px]'
             }`}
           >
-            <span className="text-[#FAF5EB]">ARUNIKA</span>
-            <span className="block tracking-[0.14em] text-[#E9C98E]">KAWI</span>
+            ARUNIKA
+            <span className="block tracking-[0.1em]">KAWI</span>
           </h2>
 
-          <div className="mt-2 w-[68%] h-[1.5px] gold-foil-gradient opacity-85" />
-
           <p
-            className={`mt-1.5 font-serif italic tracking-[0.04em] text-[#EFE3D0] ${
+            className={`mt-3 font-sans font-semibold text-[#FAF5EB] ${
               compact ? 'text-[8.5px]' : 'text-[12px]'
             }`}
           >
             {roast.subtitle}
           </p>
-
-          <div
-            className={`mt-4 rounded-full border border-[#D8B474]/75 bg-[#190F0B]/70 flex items-center justify-center text-center px-3 ${
-              compact ? 'w-16 h-16' : 'w-24 h-24'
+          <p
+            className={`mt-0.5 font-sans font-semibold text-[#FAF5EB] ${
+              compact ? 'text-[8px]' : 'text-[11.5px]'
             }`}
           >
-            <span
-              className={`font-sans font-medium leading-tight text-[#FAF5EB] ${
-                compact ? 'text-[7px]' : 'text-[10px]'
-              }`}
-            >
-              {variant.frontLabel}
-            </span>
-          </div>
+            {variant.frontLabel}
+          </p>
         </div>
       ) : (
         /* Versi 01: Box Pouch Gusset */
@@ -588,51 +605,45 @@ export function FrontPanel({
           <ArunikaSunBeanCrest className={compact ? 'w-8 h-8' : 'w-11 h-11'} />
 
           <p
-            className={`mt-2 font-sans font-semibold uppercase tracking-[0.34em] text-[#D8B474] ${
-              compact ? 'text-[7px]' : 'text-[10px]'
+            className={`mt-2 font-sans font-bold uppercase tracking-[0.16em] text-[#D8B474] ${
+              compact ? 'text-[7.5px]' : 'text-[10.5px]'
             }`}
           >
-            COFFEE BEAN
+            COFFE BEAN
           </p>
 
-          <div className="mt-1 flex items-center justify-center gap-2.5 w-full max-w-[170px]">
-            <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#C99C52]/80" />
+          <div className="mt-1 flex items-center justify-center gap-2.5 w-full max-w-[150px]">
+            <span className="h-px flex-1 bg-[#FAF5EB]/55" />
             <span
-              className={`font-sans tracking-[0.22em] text-[#E6D7C0]/90 ${
-                compact ? 'text-[6.5px]' : 'text-[8.5px]'
+              className={`font-sans tracking-[0.16em] text-[#FAF5EB] ${
+                compact ? 'text-[6px]' : 'text-[8.5px]'
               }`}
             >
-              EST. 2024
+              EST 2024
             </span>
-            <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#C99C52]/80" />
+            <span className="h-px flex-1 bg-[#FAF5EB]/55" />
           </div>
 
           <h2
-            className={`mt-2.5 font-serif font-bold tracking-[0.06em] leading-[0.95] text-[#FAF5EB] drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)] ${
+            className={`mt-3 font-serif font-bold tracking-[0.06em] leading-[0.95] text-[#D8B474] drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)] ${
               compact ? 'text-[22px]' : 'text-[34px]'
             }`}
           >
             ARUNIKA
-            <span className="block tracking-[0.14em] text-[#E9C98E]">KAWI</span>
+            <span className="block tracking-[0.1em]">KAWI</span>
           </h2>
 
-          <div className="mt-2.5 w-[72%] h-[1.5px] gold-foil-gradient opacity-90" />
-
           <p
-            className={`mt-2 font-serif italic tracking-[0.04em] text-[#EFE3D0] ${
-              compact ? 'text-[9.5px]' : 'text-[13.5px]'
+            className={`mt-3.5 font-sans font-semibold text-[#FAF5EB] ${
+              compact ? 'text-[9.5px]' : 'text-[13px]'
             }`}
           >
             {roast.subtitle}
           </p>
 
-          <div className={compact ? 'mt-2.5 w-24' : 'mt-3.5 w-36'}>
-            <RoastProfileCrest topText={roast.crestTop} bottomText={roast.crestBottom} className="w-full h-auto" />
-          </div>
-
           <p
-            className={`mt-1.5 font-sans font-medium tracking-[0.14em] text-[#F5ECD9] ${
-              compact ? 'text-[8px]' : 'text-[11px]'
+            className={`mt-1 font-sans font-semibold text-[#FAF5EB] ${
+              compact ? 'text-[8.5px]' : 'text-[12px]'
             }`}
           >
             {variant.frontLabel}
@@ -922,52 +933,65 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
 
               <p
                 className="mt-[5%] text-[#F4ECE0] leading-[1.35]"
-                style={{ fontSize: '3.6cqi' }}
+                style={{ fontSize: '3.55cqi' }}
               >
-                Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari
-                lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter{' '}
+                Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan. Dipetik langsung dari
+                lereng Gunung Kawi. Setiap seduhan menghadirkan karakter{' '}
                 <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span>{' '}
-                {roast.storyRoast}{' '}
-                <span className="font-semibold text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
-                <span className="font-semibold">harum dan nikmat</span>
+                {roast.storyRoast}
               </p>
 
               <p
-                className="mt-[7%] font-sans font-semibold tracking-[0.03em] uppercase text-[#FAF5EB]"
-                style={{ fontSize: '3.3cqi' }}
+                className="mt-[4%] font-sans font-semibold leading-tight whitespace-nowrap"
+                style={{ fontSize: '3.75cqi' }}
+              >
+                <span className="text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
+                <span className="text-[#FAF5EB]">Harum dan Nikmat</span>
+              </p>
+
+              <p
+                className="mt-[6.5%] font-sans font-semibold tracking-[0.03em] uppercase text-[#FAF5EB]"
+                style={{ fontSize: '3.25cqi' }}
               >
                 KOMPOSISI {variant.frontLabel.toUpperCase()}
               </p>
             </div>
 
-            {/* Bottom Legal Block: Green Seal, KUPS Himatarian Blitar, PIRT, Kode Produksi & Expiry */}
+            {/* Bottom Legal Block: Green Seal + PIRT Underneath, KUPS Himatarian Blitar, Kode Produksi & Expiry */}
             <div className="flex items-end justify-between gap-[3%] pt-[4%]">
-              <div className="flex items-start gap-[2.5cqi] min-w-0 flex-[1.25]">
+              <div className="flex items-start gap-[2.5cqi] min-w-0 flex-[1.3]">
                 {config.sealPlacement === 'back' && (
-                  <KthEastJavaSeal variant="original-green" className="w-[12cqi] h-[12cqi] shrink-0 mt-[1cqi]" />
+                  <div className="flex flex-col items-center shrink-0">
+                    <KthEastJavaSeal variant="original-green" className="w-[12cqi] h-[12cqi] mt-[0.6cqi]" />
+                    <span className="text-[#FAF5EB] font-medium leading-[1.1] mt-[1.2cqi]" style={{ fontSize: '2.5cqi' }}>
+                      PIRT
+                    </span>
+                  </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-[#D8B474] leading-[1.15]" style={{ fontSize: '3.3cqi' }}>
+                  <p className="font-semibold text-[#D8B474] leading-[1.15]" style={{ fontSize: '3.25cqi' }}>
                     Diproduksi Oleh
                   </p>
-                  <p className="text-[#FAF5EB] leading-[1.2] mt-[1cqi]" style={{ fontSize: '2.7cqi' }}>
+                  <p className="text-[#FAF5EB] leading-[1.2] mt-[1cqi]" style={{ fontSize: '2.65cqi' }}>
                     KUPS Himatarian Blitar
                     <br />
                     Jawa Timur – INDONESIA
                   </p>
-                  <p className="text-[#FAF5EB] font-medium leading-[1.1] mt-[1.5cqi]" style={{ fontSize: '2.6cqi' }}>
-                    PIRT
-                  </p>
-                  <div className="mt-[1cqi] w-full h-[3.2cqi] bg-white rounded-[1px]" />
+                  {config.sealPlacement !== 'back' && (
+                    <p className="text-[#FAF5EB] font-medium leading-[1.1] mt-[1cqi]" style={{ fontSize: '2.5cqi' }}>
+                      PIRT
+                    </p>
+                  )}
+                  <div className="mt-[1.6cqi] w-full h-[3.2cqi] bg-white rounded-[1px]" />
                 </div>
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className="text-[#FAF5EB] font-medium leading-[1.1]" style={{ fontSize: '2.6cqi' }}>
+                <p className="text-[#FAF5EB] font-medium leading-[1.1]" style={{ fontSize: '2.5cqi' }}>
                   Kode Produksi
                 </p>
                 <div className="mt-[1cqi] w-full h-[3cqi] bg-white rounded-[1px]" />
-                <p className="text-[#FAF5EB] font-medium leading-[1.1] mt-[2.2cqi]" style={{ fontSize: '2.5cqi' }}>
+                <p className="text-[#FAF5EB] font-medium leading-[1.1] mt-[2.2cqi]" style={{ fontSize: '2.4cqi' }}>
                   Baik Digunakan Sebelum
                 </p>
                 <div className="mt-[1cqi] w-full h-[3cqi] bg-white rounded-[1px]" />
@@ -1026,13 +1050,18 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
                   'radial-gradient(ellipse 49% 47% at 50% 50%, rgba(0,0,0,1) 66%, rgba(0,0,0,0.88) 84%, rgba(0,0,0,0) 100%)',
               }}
             />
-            <p className={`relative z-10 text-[#F4ECE0] leading-relaxed ${compact ? 'text-[6.2px]' : 'text-[10.5px]'}`}>
-              Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari
-              lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter{' '}
-              <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span>{' '}
-              {roast.storyRoast}{' '}
-              <span className="font-semibold text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
-              <span className="font-semibold">harum dan nikmat</span>
+            <p className={`relative z-10 text-[#F4ECE0] leading-relaxed ${compact ? 'text-[6px]' : 'text-[10px]'}`}>
+              Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan. Dipetik langsung dari lereng
+              Gunung Kawi. Setiap seduhan menghadirkan karakter{' '}
+              <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span> {roast.storyRoast}
+            </p>
+            <p
+              className={`relative z-10 mt-1.5 font-sans font-semibold leading-tight ${
+                compact ? 'text-[6.2px]' : 'text-[10.5px]'
+              }`}
+            >
+              <span className="text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
+              <span className="text-[#FAF5EB]">Harum dan Nikmat</span>
             </p>
             <p
               className={`relative z-10 mt-3 font-sans font-semibold tracking-[0.04em] uppercase text-[#FAF5EB] ${
@@ -1066,139 +1095,93 @@ export function BackPanel({ config, compact = false, backgroundOnly = false }: P
       ) : (
         <div
           className={`relative z-10 flex-1 flex flex-col justify-between ${
-            compact ? 'pt-[11%] px-3.5 pb-2' : 'pt-[11%] px-6 pb-3.5'
+            compact ? 'pt-[11%] px-3.5 pb-2.5' : 'pt-[11%] px-6 pb-4'
           }`}
         >
-        <div className="text-center">
-          <p className={`font-sans uppercase tracking-[0.28em] text-[#D8B474] ${compact ? 'text-[5.5px]' : 'text-[8.5px]'}`}>
-            WARISAN LERENG GUNUNG KAWI
-          </p>
-          <h3 className={`mt-1 font-serif font-semibold text-[#FAF5EB] ${compact ? 'text-[12px]' : 'text-[20px]'}`}>
-            Cahaya Pagi dalam Setiap Seduhan
-          </h3>
-          <p
-            className={`mt-1.5 text-[#E0D2C0]/90 leading-relaxed mx-auto max-w-[94%] ${
-              compact ? 'text-[5.5px]' : 'text-[8.5px]'
-            }`}
-          >
-            Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan dari lereng Gunung Kawi (
-            {variant.altitude}) untuk menjaga aroma khas kopi Robusta Jawa Timur yang harum dan nikmat.
-          </p>
-        </div>
-
-        {isDoypack && (
-          <div className="my-1 py-1.5 border-y border-[#C99C52]/25 grid grid-cols-3 gap-2 text-center">
-            <div>
-              <p className={`text-[#D8B474] uppercase tracking-wider ${compact ? 'text-[5px]' : 'text-[7px]'}`}>
-                Elevasi
-              </p>
-              <p className={`font-mono text-[#FAF5EB] tabular-nums ${compact ? 'text-[5.5px]' : 'text-[8px]'}`}>
-                {variant.altitude}
-              </p>
+          <div className="flex flex-col items-center text-center">
+            <div className={compact ? 'w-16' : 'w-24'}>
+              <RoastProfileCrest topText={roast.crestTop} bottomText={roast.crestBottom} className="w-full h-auto" />
             </div>
-            <div>
-              <p className={`text-[#D8B474] uppercase tracking-wider ${compact ? 'text-[5px]' : 'text-[7px]'}`}>
-                Proses
-              </p>
-              <p className={`text-[#FAF5EB] ${compact ? 'text-[5.5px]' : 'text-[8px]'}`}>
-                {variant.process}
-              </p>
-            </div>
-            <div>
-              <p className={`text-[#D8B474] uppercase tracking-wider ${compact ? 'text-[5px]' : 'text-[7px]'}`}>
-                Intensitas Body
-              </p>
-              <p className={`font-mono text-[#FAF5EB] tabular-nums ${compact ? 'text-[5.5px]' : 'text-[8px]'}`}>
-                {roast.bodyScore} / 5 Bold
-              </p>
-            </div>
-          </div>
-        )}
 
-        {!isDoypack && (
-          <div className="h-px bg-gradient-to-r from-transparent via-[#C99C52]/45 to-transparent my-1.5" />
-        )}
+            <h3
+              className={`mt-2 font-sans font-semibold text-[#D8B474] ${
+                compact ? 'text-[11px]' : 'text-[17px]'
+              }`}
+            >
+              Arunika Kawi Coffee
+            </h3>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <p className={`font-sans font-semibold uppercase tracking-[0.18em] text-[#D8B474] mb-1.5 ${compact ? 'text-[5px]' : 'text-[8px]'}`}>
-              Saran Penyajian
+            <p
+              className={`mt-2.5 text-[#FAF5EB] leading-relaxed mx-auto max-w-[96%] ${
+                compact ? 'text-[6px]' : 'text-[9.5px]'
+              }`}
+            >
+              Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan. Dipetik langsung dari lereng
+              Gunung Kawi. Setiap seduhan menghadirkan karakter{' '}
+              <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span> {roast.storyRoast}
             </p>
-            <div className="space-y-1.5">
-              <div className="flex items-start gap-1.5">
-                <Coffee className={`${compact ? 'w-2.5 h-2.5' : 'w-3.5 h-3.5'} text-[#D8B474] shrink-0 mt-0.5`} />
-                <div>
-                  <p className={`font-semibold text-[#FAF5EB] ${compact ? 'text-[5px]' : 'text-[8px]'}`}>Tubruk Klasik</p>
-                  <p className={`text-[#CBBBA8] ${compact ? 'text-[4.5px]' : 'text-[7px]'}`}>12g kopi · 180ml · 92°C</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-1.5">
-                <Droplets className={`${compact ? 'w-2.5 h-2.5' : 'w-3.5 h-3.5'} text-[#D8B474] shrink-0 mt-0.5`} />
-                <div>
-                  <p className={`font-semibold text-[#FAF5EB] ${compact ? 'text-[5px]' : 'text-[8px]'}`}>Pour Over / V60</p>
-                  <p className={`text-[#CBBBA8] ${compact ? 'text-[4.5px]' : 'text-[7px]'}`}>15g kopi · 225ml · 90°C</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-1.5">
-                <Flame className={`${compact ? 'w-2.5 h-2.5' : 'w-3.5 h-3.5'} text-[#D8B474] shrink-0 mt-0.5`} />
-                <div>
-                  <p className={`font-semibold text-[#FAF5EB] ${compact ? 'text-[5px]' : 'text-[8px]'}`}>Espresso / Moka</p>
-                  <p className={`text-[#CBBBA8] ${compact ? 'text-[4.5px]' : 'text-[7px]'}`}>18g halus · 36ml · 27 dtk</p>
-                </div>
-              </div>
-            </div>
+
+            <p
+              className={`mt-2.5 font-sans font-semibold leading-tight ${
+                compact ? 'text-[6.5px]' : 'text-[10.5px]'
+              }`}
+            >
+              <span className="text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
+              <span className="text-[#FAF5EB]">Harum dan Nikmat</span>
+            </p>
+
+            <p
+              className={`mt-4 font-sans font-semibold tracking-[0.03em] uppercase text-[#FAF5EB] ${
+                compact ? 'text-[5.5px]' : 'text-[8.5px]'
+              }`}
+            >
+              KOMPOSISI {variant.frontLabel.toUpperCase()}
+            </p>
           </div>
 
-          <div>
-            <p className={`font-sans font-semibold uppercase tracking-[0.18em] text-[#D8B474] mb-1.5 ${compact ? 'text-[5px]' : 'text-[8px]'}`}>
-              Catatan Rasa
-            </p>
-            <div className="space-y-1">
-              {variant.notes.map((note) => (
-                <div
-                  key={note}
-                  className={`border-b border-[#C99C52]/20 pb-0.5 text-[#F2E6D5] ${
-                    compact ? 'text-[5px]' : 'text-[8px]'
-                  }`}
-                >
-                  {note}
+          <div className="mt-3 pt-2 flex items-end justify-between gap-2.5">
+            <div className="flex items-start gap-2 min-w-0 flex-[1.3]">
+              {config.sealPlacement === 'back' && (
+                <div className="flex flex-col items-center shrink-0">
+                  <KthEastJavaSeal
+                    variant="original-green"
+                    className={compact ? 'w-7 h-7' : 'w-11 h-11'}
+                  />
+                  <span className={`font-medium text-[#FAF5EB] mt-1 ${compact ? 'text-[4.5px]' : 'text-[7px]'}`}>
+                    PIRT
+                  </span>
                 </div>
-              ))}
-              <div className="pt-1">
-                <p className={`text-[#CBBBA8] ${compact ? 'text-[4.5px]' : 'text-[7px]'}`}>
-                  Komposisi: 100% Biji Kopi {variant.label} Pilihan.
+              )}
+              <div className="min-w-0 flex-1">
+                <p className={`font-semibold text-[#D8B474] leading-tight ${compact ? 'text-[5.5px]' : 'text-[8.5px]'}`}>
+                  Diproduksi Oleh
                 </p>
+                <p className={`text-[#FAF5EB] leading-tight mt-0.5 ${compact ? 'text-[4.5px]' : 'text-[7px]'}`}>
+                  KUPS Himatarian Blitar
+                  <br />
+                  Jawa Timur – INDONESIA
+                </p>
+                {config.sealPlacement !== 'back' && (
+                  <p className={`font-medium text-[#FAF5EB] mt-0.5 ${compact ? 'text-[4.5px]' : 'text-[7px]'}`}>
+                    PIRT
+                  </p>
+                )}
+                <div className={`mt-1.5 w-full bg-white rounded-[1px] ${compact ? 'h-2' : 'h-3'}`} />
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="mt-2 pt-2 border-t border-[#C99C52]/25 flex items-end justify-between gap-2">
-          <div className="flex items-center gap-2">
-            {config.sealPlacement === 'back' && (
-              <KthEastJavaSeal
-                variant="gold-heritage"
-                className={compact ? 'w-8 h-8 shrink-0' : 'w-12 h-12 shrink-0'}
-              />
-            )}
-            <div className="space-y-0.5">
-              <p className={`font-semibold text-[#E9C98E] ${compact ? 'text-[5px]' : 'text-[7.5px]'}`}>
-                Diproduksi oleh:
+            <div className="flex-1 min-w-0">
+              <p className={`font-medium text-[#FAF5EB] leading-tight ${compact ? 'text-[4.5px]' : 'text-[7px]'}`}>
+                Kode Produksi
               </p>
-              <p className={`text-[#E5D7C6] leading-tight ${compact ? 'text-[4.5px]' : 'text-[7px]'}`}>
-                KUPS Himatarian Blitar
-                <br />
-                Jawa Timur — Indonesia
+              <div className={`mt-1 w-full bg-white rounded-[1px] ${compact ? 'h-2' : 'h-2.5'}`} title={batchCode} />
+              <p className={`font-medium text-[#FAF5EB] leading-tight mt-1.5 ${compact ? 'text-[4.2px]' : 'text-[6.8px]'}`}>
+                Baik Digunakan Sebelum
               </p>
-              <p className={`font-mono text-[#B7A693] pt-0.5 tabular-nums ${compact ? 'text-[4px]' : 'text-[6.5px]'}`}>
-                EXP: {expiryLabel} · BATCH {batchCode}
-              </p>
+              <div className={`mt-1 w-full bg-white rounded-[1px] ${compact ? 'h-2' : 'h-2.5'}`} title={expiryLabel} />
             </div>
           </div>
-
-          <Ean13Barcode className={compact ? 'w-14 h-6 shrink-0' : 'w-24 h-10 shrink-0'} />
         </div>
-      </div>
       )}
 
       <div

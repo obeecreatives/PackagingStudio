@@ -4,7 +4,7 @@ import { Layers, LayoutGrid, Package, Ruler, SlidersHorizontal } from 'lucide-re
 export const MobileBottomNav: React.FC = () => {
   const items = [
     { href: '#mockup-studio', label: 'Hero', icon: Package },
-    { href: '#semua-alternatif', label: '5 Desain', icon: LayoutGrid },
+    { href: '#semua-alternatif', label: '6 Desain', icon: LayoutGrid },
     { href: '#full-print', label: 'Studio', icon: SlidersHorizontal },
     { href: '#panduan-ukuran', label: 'Ukuran', icon: Ruler },
     { href: '#spesifikasi-cetak', label: 'Cetak', icon: Layers },

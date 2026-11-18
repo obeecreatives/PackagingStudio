@@ -375,11 +375,11 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
   const copyBlocks = [
     {
       label: 'DEPAN (JUDUL & VARIAN)',
-      val: `ARUNIKA KAWI · COFFEE BEAN EST. 2024 · ${roast.subtitle} · ${variant.frontLabel} · Isi Bersih : ${config.netWeight} (Depan Saja)`,
+      val: `ARUNIKA KAWI · COFFE BEAN EST 2024 · ${roast.subtitle} · ${variant.frontLabel} · Isi Bersih : ${config.netWeight} (Depan Saja)`,
     },
     {
       label: 'BELAKANG (NARASI GORENG KREWENG)',
-      val: `Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast} Arunika Kawi Coffee harum dan nikmat`,
+      val: `Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan. Dipetik langsung dari lereng Gunung Kawi. Setiap seduhan menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast} Arunika Kawi Coffee Harum dan Nikmat`,
     },
     {
       label: 'KOMPOSISI, PRODUSEN & PITA BAWAH BELAKANG',
@@ -603,7 +603,9 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
           ? 'mockup-tall-heritage'
           : config.pouchShape === 'tall-botanical'
             ? 'mockup-tall-botanical'
-            : 'mockup-tall-copper';
+            : config.pouchShape === 'tall-copper'
+              ? 'mockup-tall-copper'
+              : 'mockup-tall-minimal';
 
   const curatedPhotoEntries = [
     {
@@ -685,13 +687,13 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
     y += pCardH + 3.5;
   });
 
-  // Catalog note for all 12 assets
+  // Catalog note for all studio assets
   doc.setFillColor(239, 236, 230);
   doc.roundedRect(MARGIN, y + 1, CONTENT_W, 18, 2, 2, 'F');
   doc.setTextColor(26, 20, 18);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
-  doc.text(pdfSafe('Daftar Lengkap Aset Studio Tersedia (12 Aset Master & Mockup):'), MARGIN + 4, y + 6.5);
+  doc.text(pdfSafe(`Daftar Lengkap Aset Studio Tersedia (${PHOTO_ASSETS.length} Aset Master & Mockup):`), MARGIN + 4, y + 6.5);
   doc.setTextColor(87, 77, 71);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7.3);

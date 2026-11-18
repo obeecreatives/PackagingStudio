@@ -22,8 +22,8 @@ export function DesignCritiqueSection({ config }: { config: PackagingConfig }) {
   const improvements = [
     {
       index: '01.',
-      title: 'Lima Alternatif Lengkap Tanpa Menghilangkan Versi Awal',
-      detail: `Semua bentuk kemasan—Box Pouch Gusset (Versi 01), Stand-Up Doypack + Valve (Alternatif 02), hingga 3 gaya Tall Gusset—otomatis menyesuaikan berat ${config.netWeight} (${weightSpecs.dimensions}), ${variant.frontLabel}, dan profil ${roast.label}.`,
+      title: 'Enam Alternatif Lengkap Tanpa Menghilangkan Versi Awal',
+      detail: `Semua bentuk kemasan—Box Pouch Gusset (Versi 01), Stand-Up Doypack + Valve (Alternatif 02), hingga 4 gaya Tall Gusset (Classic, Botanical Berornamen, Copper Clean, dan Minimalis Bersih)—otomatis menyesuaikan berat ${config.netWeight} (${weightSpecs.dimensions}), ${variant.frontLabel}, dan profil ${roast.label}.`,
     },
     {
       index: '02.',
@@ -49,6 +49,7 @@ export function DesignCritiqueSection({ config }: { config: PackagingConfig }) {
       const tallShape =
         config.pouchShape === 'tall-botanical' ||
         config.pouchShape === 'tall-copper' ||
+        config.pouchShape === 'tall-minimal' ||
         config.pouchShape === 'tall-heritage'
           ? config.pouchShape
           : 'tall-heritage';
@@ -123,7 +124,7 @@ export function DesignCritiqueSection({ config }: { config: PackagingConfig }) {
             Analisis &amp; Penyempurnaan Grafis
           </p>
           <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-semibold text-[#1A1412] leading-tight">
-            Evolusi dari Seluruh Referensi Menuju Lima Alternatif Siap Cetak
+            Evolusi dari Seluruh Referensi Menuju Enam Alternatif Siap Cetak
           </h2>
           <p className="mt-3 text-[15px] text-[#574D47] leading-relaxed">
             Bandingkan setiap draf dan gambar referensi yang Anda kirimkan dengan hasil implementasi langsung untuk{' '}

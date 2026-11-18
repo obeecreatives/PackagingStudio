@@ -101,7 +101,7 @@ export const VECTOR_ELEMENTS_META: VectorElementMeta[] = [
   {
     slug: 'arunika-botani-daun-kopi',
     title: 'Garis Botani Daun & Ceri Kopi',
-    description: 'Ornamen sudut daun dan buah ceri kopi emas untuk Alternatif 04 & 05.',
+    description: 'Ornamen sudut daun dan buah ceri kopi emas khusus Alternatif 04 Tall Botanical Foil.',
     format: 'SVG Vektor · PNG 1200×1200',
   },
   {
@@ -216,18 +216,26 @@ export const PHOTO_ASSETS: PhotoAssetMeta[] = [
   },
   {
     id: 'mockup-tall-botanical',
-    title: 'Mockup Final · Alternatif 04 Tall Botanical',
-    usage: 'Foto tall gusset dengan ilustrasi botani daun & ceri kopi foil emas',
+    title: 'Mockup Final · Alternatif 04 Tall Botanical (Ornamen Daun)',
+    usage: 'Foto tall gusset dengan ilustrasi botani daun & ceri kopi foil emas — dipertahankan sebagai opsi berornamen',
     src: GENERATED_ASSETS.tallBotanical,
     filename: 'arunika-mockup-04-tall-botanical.jpg',
     dims: 'High-Res Studio',
   },
   {
     id: 'mockup-tall-copper',
-    title: 'Mockup Final · Alternatif 05 Tall Copper',
-    usage: 'Foto tall gusset dengan garis emas vertikal & bidang diagonal tembaga',
+    title: 'Mockup Final · Alternatif 05 Tall Copper Clean (Tanpa Daun)',
+    usage: 'Foto tall gusset bersih tanpa ornamen daun dengan garis emas vertikal & bidang diagonal tembaga',
     src: GENERATED_ASSETS.tallCopper,
-    filename: 'arunika-mockup-05-tall-copper.jpg',
+    filename: 'arunika-mockup-05-tall-copper-clean.jpg',
+    dims: 'High-Res Studio',
+  },
+  {
+    id: 'mockup-tall-minimal',
+    title: 'Mockup Final · Alternatif 06 Tall Minimalis Bersih',
+    usage: 'Foto tall gusset gaya minimalis bersih tanpa bingkai dan tanpa ornamen daun dengan pita foil emas bawah',
+    src: GENERATED_ASSETS.tallMinimal,
+    filename: 'arunika-mockup-06-tall-minimalis.jpg',
     dims: 'High-Res Studio',
   },
 ];
@@ -264,9 +272,15 @@ export function getNaturalMockupAssetForShape(shape: PouchShapeId): {
       };
     case 'tall-copper':
       return {
-        title: 'Mockup Natural · Alternatif 05 Tall Copper Sash',
+        title: 'Mockup Natural · Alternatif 05 Tall Copper Clean (Tanpa Daun)',
         src: GENERATED_ASSETS.tallCopper,
-        usage: 'Tall Flat-Bottom Gusset dengan garis emas vertikal & bidang diagonal tembaga terakota',
+        usage: 'Tall Flat-Bottom Gusset bersih tanpa daun dengan garis emas vertikal & bidang diagonal tembaga terakota',
+      };
+    case 'tall-minimal':
+      return {
+        title: 'Mockup Natural · Alternatif 06 Tall Minimalis Bersih',
+        src: GENERATED_ASSETS.tallMinimal,
+        usage: 'Tall Flat-Bottom Gusset minimalis murni tanpa bingkai dan tanpa daun dengan pita foil emas bawah',
       };
   }
 }
@@ -313,8 +327,10 @@ export function getPrintSpecificationRows(config: PackagingConfig): Array<{ labe
             label: 'Finishing Mewah (Spot)',
             value:
               config.pouchShape === 'tall-copper'
-                ? 'Metallic Copper Ink + Spot Gold Pinstripe & Botanical Foil'
-                : 'Hot-Foil Stamping Champagne Gold (Ornamen & Emblem)',
+                ? 'Metallic Copper Ink + Spot Gold Pinstripe (Bersih Tanpa Daun)'
+                : config.pouchShape === 'tall-minimal'
+                  ? 'Matte Velvet Film Minimalis Tanpa Ornamen + Hot-Foil Champagne Gold'
+                  : 'Hot-Foil Stamping Champagne Gold (Ornamen & Emblem)',
           },
         ]
       : [

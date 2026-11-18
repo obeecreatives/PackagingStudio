@@ -8,7 +8,7 @@ import {
   PouchShapeId,
   ROAST_LEVELS,
 } from '../types/packaging';
-import { KthEastJavaSeal } from './BrandCrests';
+import { KthEastJavaSeal, RoastProfileCrest } from './BrandCrests';
 import { BackPanel, FrontPanel, SideGussetPanel } from './PackagingPanels';
 
 export type MockupSceneMode = 'natural-kawi' | 'studio-front' | 'studio-rear';
@@ -21,7 +21,7 @@ interface LiveMockupSceneProps {
 }
 
 interface PhotoOverlaySpec {
-  weightBox: { left: string; top: string; width: string; height: string; skew?: string };
+  weightBox: { left: string; top: string; width: string; height: string; skew?: string; darkBand?: boolean };
   subtitleBox: {
     left: string;
     top: string;
@@ -50,6 +50,33 @@ interface PhotoOverlaySpec {
     skew?: string;
     gradient: string;
   };
+  rearCodeBox?: {
+    left: string;
+    top: string;
+    width: string;
+    height: string;
+    skew?: string;
+    gradient: string;
+  };
+  rearBottomBand?: {
+    left: string;
+    top: string;
+    width: string;
+    height: string;
+    skew?: string;
+    darkBand?: boolean;
+  };
+  rearCrestBox?: {
+    left: string;
+    top: string;
+    width: string;
+    skew?: string;
+  };
+  rearSealBox?: {
+    left: string;
+    top: string;
+    skew?: string;
+  };
 }
 
 const NATURAL_PHOTO_SPECS: Record<PouchShapeId, PhotoOverlaySpec> = {
@@ -66,13 +93,13 @@ const NATURAL_PHOTO_SPECS: Record<PouchShapeId, PhotoOverlaySpec> = {
     frontSealPos: { left: '40.0%', top: '65.8%' },
     rearPirtBox: { left: '57.3%', top: '72.4%', width: '9.8%', height: '1.5%', skew: 'skewY(2.2deg)' },
     rearStoryBox: {
-      left: '52.8%',
-      top: '42.4%',
-      width: '30.8%',
-      height: '20.6%',
+      left: '52.2%',
+      top: '41.6%',
+      width: '31.8%',
+      height: '22.4%',
       skew: 'skewY(2.2deg)',
-      storyFontCqi: 1.24,
-      compFontCqi: 1.12,
+      storyFontCqi: 1.18,
+      compFontCqi: 1.06,
       gradient:
         'linear-gradient(90deg, rgba(64,45,32,0.99) 0%, rgba(45,31,22,0.99) 55%, rgba(30,19,13,0.98) 100%)',
     },
@@ -84,6 +111,15 @@ const NATURAL_PHOTO_SPECS: Record<PouchShapeId, PhotoOverlaySpec> = {
       skew: 'skewY(2.2deg)',
       gradient:
         'linear-gradient(90deg, rgba(36,24,17,0.99) 0%, rgba(30,19,13,0.99) 60%, rgba(25,16,11,0.98) 100%)',
+    },
+    rearCodeBox: {
+      left: '70.4%',
+      top: '69.0%',
+      width: '12.6%',
+      height: '6.4%',
+      skew: 'skewY(2.2deg)',
+      gradient:
+        'linear-gradient(90deg, rgba(28,18,12,0.99) 0%, rgba(24,15,10,0.99) 60%, rgba(20,12,8,0.98) 100%)',
     },
   },
   'doypack-valve': {
@@ -99,12 +135,12 @@ const NATURAL_PHOTO_SPECS: Record<PouchShapeId, PhotoOverlaySpec> = {
     frontSealPos: { left: '39.5%', top: '64.2%' },
     rearPirtBox: { left: '60.8%', top: '74.3%', width: '11.8%', height: '1.6%' },
     rearStoryBox: {
-      left: '54.8%',
-      top: '44.6%',
-      width: '33.6%',
-      height: '17.4%',
-      storyFontCqi: 1.32,
-      compFontCqi: 1.16,
+      left: '54.2%',
+      top: '43.6%',
+      width: '34.6%',
+      height: '19.4%',
+      storyFontCqi: 1.24,
+      compFontCqi: 1.1,
       gradient:
         'linear-gradient(90deg, rgba(50,35,26,0.99) 0%, rgba(36,24,17,0.99) 55%, rgba(27,17,12,0.98) 100%)',
     },
@@ -115,6 +151,14 @@ const NATURAL_PHOTO_SPECS: Record<PouchShapeId, PhotoOverlaySpec> = {
       height: '3.1%',
       gradient:
         'linear-gradient(90deg, rgba(35,23,16,0.99) 0%, rgba(30,20,14,0.99) 60%, rgba(26,17,12,0.98) 100%)',
+    },
+    rearCodeBox: {
+      left: '75.5%',
+      top: '70.3%',
+      width: '12.5%',
+      height: '6.0%',
+      gradient:
+        'linear-gradient(90deg, rgba(28,18,12,0.99) 0%, rgba(25,16,11,0.99) 60%, rgba(22,14,9,0.98) 100%)',
     },
   },
   'tall-heritage': {
@@ -130,13 +174,13 @@ const NATURAL_PHOTO_SPECS: Record<PouchShapeId, PhotoOverlaySpec> = {
     frontSealPos: { left: '40.5%', top: '72.0%' },
     rearPirtBox: { left: '64.3%', top: '77.8%', width: '10.2%', height: '1.5%', skew: 'skewY(-3deg)' },
     rearStoryBox: {
-      left: '60.6%',
-      top: '39.2%',
-      width: '25.8%',
-      height: '21.4%',
+      left: '59.8%',
+      top: '38.4%',
+      width: '27.0%',
+      height: '23.4%',
       skew: 'skewY(-3deg)',
-      storyFontCqi: 1.06,
-      compFontCqi: 0.96,
+      storyFontCqi: 1.0,
+      compFontCqi: 0.9,
       gradient:
         'linear-gradient(90deg, rgba(45,30,22,0.99) 0%, rgba(36,24,17,0.99) 55%, rgba(50,35,25,0.98) 100%)',
     },
@@ -148,6 +192,15 @@ const NATURAL_PHOTO_SPECS: Record<PouchShapeId, PhotoOverlaySpec> = {
       skew: 'skewY(-3deg)',
       gradient:
         'linear-gradient(90deg, rgba(35,23,16,0.99) 0%, rgba(31,20,14,0.99) 60%, rgba(28,18,13,0.98) 100%)',
+    },
+    rearCodeBox: {
+      left: '76.8%',
+      top: '72.0%',
+      width: '10.5%',
+      height: '6.2%',
+      skew: 'skewY(-3deg)',
+      gradient:
+        'linear-gradient(90deg, rgba(31,21,15,0.99) 0%, rgba(28,19,13,0.99) 60%, rgba(25,16,11,0.98) 100%)',
     },
   },
   'tall-botanical': {
@@ -164,13 +217,13 @@ const NATURAL_PHOTO_SPECS: Record<PouchShapeId, PhotoOverlaySpec> = {
     frontSealPos: { left: '42.5%', top: '70.5%' },
     rearPirtBox: { left: '66.7%', top: '74.5%', width: '10.5%', height: '1.5%', skew: 'skewY(-2deg)' },
     rearStoryBox: {
-      left: '60.8%',
-      top: '36.0%',
-      width: '30.4%',
-      height: '21.8%',
+      left: '60.2%',
+      top: '35.2%',
+      width: '31.2%',
+      height: '23.4%',
       skew: 'skewY(-2deg)',
-      storyFontCqi: 1.2,
-      compFontCqi: 1.08,
+      storyFontCqi: 1.12,
+      compFontCqi: 1.0,
       gradient:
         'linear-gradient(90deg, rgba(44,30,22,0.99) 0%, rgba(37,25,18,0.99) 55%, rgba(50,34,24,0.98) 100%)',
     },
@@ -183,40 +236,105 @@ const NATURAL_PHOTO_SPECS: Record<PouchShapeId, PhotoOverlaySpec> = {
       gradient:
         'linear-gradient(90deg, rgba(34,23,16,0.99) 0%, rgba(30,20,14,0.99) 60%, rgba(27,18,12,0.98) 100%)',
     },
+    rearCodeBox: {
+      left: '79.6%',
+      top: '69.0%',
+      width: '10.8%',
+      height: '6.2%',
+      skew: 'skewY(-2deg)',
+      gradient:
+        'linear-gradient(90deg, rgba(30,20,14,0.99) 0%, rgba(27,18,12,0.99) 60%, rgba(24,15,10,0.98) 100%)',
+    },
   },
   'tall-copper': {
-    weightBox: { left: '21.6%', top: '81.5%', width: '31.0%', height: '4.6%', skew: 'skewY(-3.6deg)' },
+    weightBox: { left: '19.0%', top: '79.0%', width: '28.5%', height: '4.6%', darkBand: true },
     subtitleBox: {
-      left: '20.2%',
-      top: '52.0%',
-      width: '32.2%',
-      height: '7.0%',
-      skew: 'skewY(-2.4deg)',
+      left: '19.5%',
+      top: '54.4%',
+      width: '28.0%',
+      height: '6.4%',
       gradient:
-        'linear-gradient(90deg, rgba(42,28,20,0.99) 0%, rgba(52,35,25,0.99) 55%, rgba(66,44,31,0.98) 100%)',
+        'linear-gradient(90deg, rgba(34,22,16,0.99) 0%, rgba(28,18,13,0.99) 55%, rgba(24,15,10,0.98) 100%)',
     },
-    frontSealPos: { left: '43.5%', top: '70.0%' },
-    rearPirtBox: { left: '64.5%', top: '74.5%', width: '10.5%', height: '1.5%', skew: 'skewY(-3deg)' },
+    frontSealPos: { left: '39.5%', top: '68.0%' },
+    rearPirtBox: { left: '57.6%', top: '73.2%', width: '6.5%', height: '1.2%', skew: 'skewY(2.2deg)' },
     rearStoryBox: {
-      left: '59.6%',
-      top: '37.2%',
-      width: '27.6%',
-      height: '21.8%',
-      skew: 'skewY(-3deg)',
-      storyFontCqi: 1.12,
-      compFontCqi: 1.0,
+      left: '52.2%',
+      top: '36.0%',
+      width: '19.4%',
+      height: '26.5%',
+      skew: 'skewY(2.2deg)',
+      storyFontCqi: 0.78,
+      compFontCqi: 0.72,
       gradient:
-        'linear-gradient(90deg, rgba(44,30,21,0.99) 0%, rgba(38,25,18,0.99) 55%, rgba(52,35,25,0.98) 100%)',
+        'linear-gradient(90deg, rgba(72,53,42,0.96) 0%, rgba(58,41,32,0.96) 55%, rgba(42,29,22,0.95) 100%)',
     },
     rearProducerBox: {
-      left: '63.6%',
-      top: '70.0%',
-      width: '13.0%',
-      height: '3.2%',
-      skew: 'skewY(-3deg)',
+      left: '55.5%',
+      top: '67.5%',
+      width: '9.0%',
+      height: '4.5%',
+      skew: 'skewY(2.2deg)',
       gradient:
-        'linear-gradient(90deg, rgba(34,22,15,0.99) 0%, rgba(30,20,14,0.99) 60%, rgba(27,18,12,0.98) 100%)',
+        'linear-gradient(90deg, rgba(48,34,26,0.98) 0%, rgba(40,28,21,0.98) 60%, rgba(34,23,17,0.98) 100%)',
     },
+    rearCodeBox: {
+      left: '64.8%',
+      top: '67.8%',
+      width: '7.0%',
+      height: '6.4%',
+      skew: 'skewY(2.2deg)',
+      gradient:
+        'linear-gradient(90deg, rgba(36,24,17,0.98) 0%, rgba(30,20,14,0.98) 60%, rgba(25,16,11,0.98) 100%)',
+    },
+    rearCrestBox: { left: '57.6%', top: '28.5%', width: '8.5%', skew: 'skewY(2.2deg)' },
+    rearSealBox: { left: '52.4%', top: '68.0%', skew: 'skewY(2.2deg)' },
+    rearBottomBand: { left: '52.2%', top: '78.2%', width: '19.6%', height: '4.6%', skew: 'skewY(2.2deg)', darkBand: true },
+  },
+  'tall-minimal': {
+    weightBox: { left: '15.0%', top: '81.8%', width: '31.5%', height: '5.0%' },
+    subtitleBox: {
+      left: '16.5%',
+      top: '56.6%',
+      width: '28.5%',
+      height: '6.6%',
+      gradient:
+        'linear-gradient(90deg, rgba(40,26,19,0.99) 0%, rgba(32,21,15,0.99) 55%, rgba(26,16,11,0.98) 100%)',
+    },
+    frontSealPos: { left: '39.0%', top: '70.0%' },
+    rearPirtBox: { left: '59.2%', top: '72.4%', width: '7.4%', height: '1.3%', skew: 'skewY(2.6deg)' },
+    rearStoryBox: {
+      left: '53.2%',
+      top: '38.0%',
+      width: '22.8%',
+      height: '25.0%',
+      skew: 'skewY(2.6deg)',
+      storyFontCqi: 0.9,
+      compFontCqi: 0.82,
+      gradient:
+        'linear-gradient(90deg, rgba(84,64,51,0.98) 0%, rgba(68,50,39,0.98) 55%, rgba(50,36,28,0.98) 100%)',
+    },
+    rearProducerBox: {
+      left: '56.8%',
+      top: '67.0%',
+      width: '10.6%',
+      height: '4.8%',
+      skew: 'skewY(2.6deg)',
+      gradient:
+        'linear-gradient(90deg, rgba(72,53,42,0.99) 0%, rgba(60,44,34,0.99) 60%, rgba(48,34,26,0.99) 100%)',
+    },
+    rearCodeBox: {
+      left: '67.6%',
+      top: '67.2%',
+      width: '8.4%',
+      height: '6.4%',
+      skew: 'skewY(2.6deg)',
+      gradient:
+        'linear-gradient(90deg, rgba(56,41,32,0.99) 0%, rgba(46,33,25,0.99) 60%, rgba(38,27,20,0.99) 100%)',
+    },
+    rearCrestBox: { left: '59.6%', top: '30.5%', width: '9.5%', skew: 'skewY(2.6deg)' },
+    rearSealBox: { left: '53.4%', top: '67.2%', skew: 'skewY(2.6deg)' },
+    rearBottomBand: { left: '52.4%', top: '79.4%', width: '23.8%', height: '5.2%', skew: 'skewY(2.6deg)' },
   },
 };
 
@@ -238,6 +356,8 @@ function getNaturalPhotoForShape(shape: PouchShapeId): string {
       return GENERATED_ASSETS.tallBotanical;
     case 'tall-copper':
       return GENERATED_ASSETS.tallCopper;
+    case 'tall-minimal':
+      return GENERATED_ASSETS.tallMinimal;
   }
 }
 
@@ -384,18 +504,22 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
                 />
                 <p
                   className="relative z-10 font-sans text-[#FAF5EB] leading-[1.32]"
+                  style={{ fontSize: '1.72cqi' }}
+                >
+                  Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan. Dipetik langsung dari
+                  lereng Gunung Kawi. Setiap seduhan menghadirkan karakter{' '}
+                  <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span> {roast.storyRoast}
+                </p>
+                <p
+                  className="relative z-10 mt-2 font-sans font-semibold leading-tight"
                   style={{ fontSize: '1.78cqi' }}
                 >
-                  Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari
-                  lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter{' '}
-                  <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span>{' '}
-                  {roast.storyRoast}{' '}
-                  <span className="font-semibold text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
-                  <span className="font-semibold">harum dan nikmat</span>
+                  <span className="text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
+                  <span className="text-[#FAF5EB]">Harum dan Nikmat</span>
                 </p>
                 <p
                   className="relative z-10 mt-2.5 font-sans font-semibold tracking-[0.04em] text-[#FAF5EB] whitespace-nowrap"
-                  style={{ fontSize: '1.6cqi' }}
+                  style={{ fontSize: '1.58cqi' }}
                 >
                   {rearCompositionText}
                 </p>
@@ -526,20 +650,45 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
               aria-hidden="true"
               className="absolute inset-0"
               style={{
-                background: 'linear-gradient(105deg, #D5B26E 0%, #E7CE97 50%, #BF934B 100%)',
+                background: spec.weightBox.darkBand
+                  ? 'linear-gradient(105deg, #241610 0%, #1B100B 50%, #140B07 100%)'
+                  : 'linear-gradient(105deg, #D5B26E 0%, #E7CE97 50%, #BF934B 100%)',
                 maskImage: GOLD_BAND_FEATHER_MASK,
                 WebkitMaskImage: GOLD_BAND_FEATHER_MASK,
               }}
             />
             <span
-              className="relative z-10 font-sans font-bold text-[#140B07] tabular-nums whitespace-nowrap"
+              className={`relative z-10 font-sans font-bold tabular-nums whitespace-nowrap ${
+                spec.weightBox.darkBand ? 'text-[#FAF5EB]' : 'text-[#140B07]'
+              }`}
               style={{ fontSize: '2.15cqi' }}
             >
               Isi Bersih : {config.netWeight}
             </span>
           </div>
 
-          {/* Rear Pouch (All 5 Mockups): Clean Goreng Kreweng Story + Komposisi replacing legacy AI text */}
+          {/* Rear Top Crest & Subtitle (for clean tall-copper & tall-minimal back panels) */}
+          {spec.rearCrestBox && (
+            <div
+              className="absolute flex flex-col items-center text-center pointer-events-none"
+              style={{
+                left: spec.rearCrestBox.left,
+                top: spec.rearCrestBox.top,
+                width: spec.rearCrestBox.width,
+                transform: spec.rearCrestBox.skew,
+              }}
+            >
+              <RoastProfileCrest topText={roast.crestTop} bottomText={roast.crestBottom} className="w-full h-auto" />
+              <p
+                className="mt-[4%] font-sans font-bold text-[#D8B474] whitespace-nowrap"
+                style={{ fontSize: '1.1cqi' }}
+              >
+                Arunika Kawi Coffee
+              </p>
+            </div>
+          )}
+
+          {/* Rear Pouch (All 6 Mockups): Exact Confirmed Goreng Kreweng Story + Signature + Komposisi */}
           <div
             className="absolute flex flex-col items-center justify-center text-center pointer-events-none px-[1%]"
             style={{
@@ -563,10 +712,16 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
               className="relative z-10 font-sans text-[#FAF5EB] leading-[1.24]"
               style={{ fontSize: `${spec.rearStoryBox.storyFontCqi}cqi` }}
             >
-              Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari lereng
-              Gunung Kawi. Menghadirkan <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span>{' '}
-              {roast.storyRoast} <span className="font-semibold text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
-              <span className="font-semibold">harum dan nikmat</span>
+              Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan. Dipetik langsung dari lereng
+              Gunung Kawi. Setiap seduhan menghadirkan karakter{' '}
+              <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span> {roast.storyRoast}
+            </p>
+            <p
+              className="relative z-10 mt-[2.2%] font-sans font-semibold leading-tight whitespace-nowrap"
+              style={{ fontSize: `${spec.rearStoryBox.storyFontCqi * 1.05}cqi` }}
+            >
+              <span className="text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
+              <span className="text-[#FAF5EB]">Harum dan Nikmat</span>
             </p>
             <p
               className="relative z-10 mt-[2.5%] font-sans font-semibold tracking-[0.03em] text-[#FAF5EB] whitespace-nowrap"
@@ -576,7 +731,27 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
             </p>
           </div>
 
-          {/* Rear Pouch (All 5 Mockups): Clean KUPS Himatarian Blitar producer text replacing AI typos */}
+          {/* Rear Seal & PIRT Label for newly generated clean tall-copper & tall-minimal */}
+          {spec.rearSealBox && config.sealPlacement === 'back' && (
+            <div
+              className="absolute flex flex-col items-center pointer-events-none"
+              style={{
+                left: spec.rearSealBox.left,
+                top: spec.rearSealBox.top,
+                transform: spec.rearSealBox.skew,
+              }}
+            >
+              <KthEastJavaSeal
+                variant="original-green"
+                className={size === 'hero' ? 'w-5 h-5 sm:w-6 sm:h-6' : 'w-3.5 h-3.5'}
+              />
+              <span className="mt-[2%] font-sans font-semibold text-[#FAF5EB]" style={{ fontSize: '0.78cqi' }}>
+                PIRT
+              </span>
+            </div>
+          )}
+
+          {/* Rear Pouch (All 6 Mockups): Clean KUPS Himatarian Blitar producer text replacing AI typos */}
           <div
             className="absolute flex flex-col justify-center text-left pointer-events-none px-[0.6%]"
             style={{
@@ -596,19 +771,69 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
                 WebkitMaskImage: FEATHERED_PATCH_MASK,
               }}
             />
+            {spec.rearCrestBox && (
+              <p
+                className="relative z-10 font-sans font-semibold text-[#D8B474] leading-[1.15] whitespace-nowrap"
+                style={{ fontSize: '0.96cqi' }}
+              >
+                Diproduksi Oleh
+              </p>
+            )}
             <p
               className="relative z-10 font-sans font-medium text-[#FAF5EB] leading-[1.2] whitespace-nowrap"
-              style={{ fontSize: '1.08cqi' }}
+              style={{ fontSize: spec.rearCrestBox ? '0.82cqi' : '1.08cqi' }}
             >
               KUPS Himatarian Blitar
             </p>
             <p
               className="relative z-10 font-sans font-medium text-[#FAF5EB] leading-[1.2] whitespace-nowrap"
-              style={{ fontSize: '1.08cqi' }}
+              style={{ fontSize: spec.rearCrestBox ? '0.82cqi' : '1.08cqi' }}
             >
               Jawa Timur – INDONESIA
             </p>
           </div>
+
+          {/* Rear Pouch: Crisp Kode Produksi & Baik Digunakan Sebelum replacing blurry AI text */}
+          {spec.rearCodeBox && (
+            <div
+              className="absolute flex flex-col justify-between text-left pointer-events-none px-[0.5%] py-[0.3%]"
+              style={{
+                left: spec.rearCodeBox.left,
+                top: spec.rearCodeBox.top,
+                width: spec.rearCodeBox.width,
+                height: spec.rearCodeBox.height,
+                transform: spec.rearCodeBox.skew,
+              }}
+            >
+              <div
+                aria-hidden="true"
+                className="absolute inset-0"
+                style={{
+                  background: spec.rearCodeBox.gradient,
+                  maskImage: FEATHERED_PATCH_MASK,
+                  WebkitMaskImage: FEATHERED_PATCH_MASK,
+                }}
+              />
+              <div className="relative z-10 w-full">
+                <p
+                  className="font-sans font-medium text-[#FAF5EB] leading-[1.1] whitespace-nowrap"
+                  style={{ fontSize: spec.rearCrestBox ? '0.72cqi' : '0.85cqi' }}
+                >
+                  Kode Produksi
+                </p>
+                <div className="mt-[2%] w-[92%] h-[0.95cqi] bg-white/95" />
+              </div>
+              <div className="relative z-10 w-full">
+                <p
+                  className="font-sans font-medium text-[#FAF5EB] leading-[1.1] whitespace-nowrap"
+                  style={{ fontSize: spec.rearCrestBox ? '0.68cqi' : '0.8cqi' }}
+                >
+                  Baik Digunakan Sebelum
+                </p>
+                <div className="mt-[2%] w-[92%] h-[0.95cqi] bg-white/95" />
+              </div>
+            </div>
+          )}
 
           {/* Rear Pouch: White PIRT stamp box matching latest Arunika_Kawi_rear */}
           <div
@@ -621,6 +846,40 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
               transform: spec.rearPirtBox.skew,
             }}
           />
+
+          {/* Rear Bottom Band for new clean tall-copper & tall-minimal (NO net weight on rear!) */}
+          {spec.rearBottomBand && (
+            <div
+              className="absolute flex items-center justify-center pointer-events-none"
+              style={{
+                left: spec.rearBottomBand.left,
+                top: spec.rearBottomBand.top,
+                width: spec.rearBottomBand.width,
+                height: spec.rearBottomBand.height,
+                transform: spec.rearBottomBand.skew,
+              }}
+            >
+              <div
+                aria-hidden="true"
+                className="absolute inset-0"
+                style={{
+                  background: spec.rearBottomBand.darkBand
+                    ? 'linear-gradient(105deg, #241610 0%, #1B100B 50%, #140B07 100%)'
+                    : 'linear-gradient(105deg, #D5B26E 0%, #E7CE97 50%, #BF934B 100%)',
+                  maskImage: GOLD_BAND_FEATHER_MASK,
+                  WebkitMaskImage: GOLD_BAND_FEATHER_MASK,
+                }}
+              />
+              <span
+                className={`relative z-10 font-sans font-bold uppercase whitespace-nowrap ${
+                  spec.rearBottomBand.darkBand ? 'text-[#FAF5EB]' : 'text-[#140B07]'
+                }`}
+                style={{ fontSize: '1.25cqi' }}
+              >
+                100 % KOPI ASLI INDONESIA
+              </span>
+            </div>
+          )}
 
           {/* Dynamic Front KTH Seal if user toggles sealPlacement === 'front' */}
           {config.sealPlacement === 'front' && (

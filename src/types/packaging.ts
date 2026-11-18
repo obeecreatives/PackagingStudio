@@ -3,7 +3,8 @@ export type PouchShapeId =
   | 'doypack-valve'
   | 'tall-heritage'
   | 'tall-botanical'
-  | 'tall-copper';
+  | 'tall-copper'
+  | 'tall-minimal';
 
 export type BeanVariantId = 'robusta-100' | 'robusta-honey' | 'robusta-peaberry';
 export type RoastLevelId = 'traditional' | 'medium-dark' | 'bold-espresso';
@@ -111,10 +112,10 @@ export const POUCH_SHAPES: Record<
     shortLabel: 'Tall Botanical Foil',
     dimensions: '100 × 240 × 65 mm',
     description:
-      'Kemasan tinggi dengan bingkai garis halus daun dan buah ceri kopi foil emas membingkai artwork depan Anda.',
+      'Varian khusus dengan ornamen daun dan buah ceri kopi foil emas — dipertahankan sebagai opsi desain berornamen botani.',
     fonts: {
       display: 'Swash Display Serif (ARUNIKA) + Bold Sans (KAWI)',
-      tagline: 'Plus Jakarta Sans · SemiBold (Framing Botani Foil)',
+      tagline: 'Plus Jakarta Sans · SemiBold (Opsi Ornamen Botani)',
       body: 'Plus Jakarta Sans · Regular–Bold (Deskripsi & KUPS Blitar)',
       mono: 'IBM Plex Mono · Medium 500 (Data Teknis)',
       summary: 'Swash Display Serif · Plus Jakarta Sans · IBM Plex Mono',
@@ -123,13 +124,28 @@ export const POUCH_SHAPES: Record<
   'tall-copper': {
     code: 'Alternatif 05',
     label: 'Tall Gusset · Copper Geometric Sash',
-    shortLabel: 'Tall Copper Sash',
+    shortLabel: 'Tall Copper Clean',
     dimensions: '100 × 240 × 65 mm',
     description:
-      'Gaya kontemporer dengan garis vertikal emas tipis & bidang diagonal tembaga terakota pada artwork depan & belakang Anda.',
+      'Gaya kontemporer bersih tanpa ornamen daun dengan garis vertikal emas tipis & bidang diagonal tembaga terakota.',
     fonts: {
       display: 'Swash Display Serif (ARUNIKA) + Bold Sans (KAWI)',
-      tagline: 'Plus Jakarta Sans · SemiBold (Aksen Diagonal Tembaga)',
+      tagline: 'Plus Jakarta Sans · SemiBold (Copper Bersih Tanpa Daun)',
+      body: 'Plus Jakarta Sans · Regular–Bold (Deskripsi & KUPS Blitar)',
+      mono: 'IBM Plex Mono · Medium 500 (Data Teknis)',
+      summary: 'Swash Display Serif · Plus Jakarta Sans · IBM Plex Mono',
+    },
+  },
+  'tall-minimal': {
+    code: 'Alternatif 06',
+    label: 'Tall Gusset · Minimalis Bersih Tanpa Daun',
+    shortLabel: 'Tall Minimalis Bersih',
+    dimensions: '100 × 240 × 65 mm',
+    description:
+      'Gaya bersih minimalis tanpa bingkai maupun ornamen daun, menerapkan desain revisi murni dengan pita foil emas bawah.',
+    fonts: {
+      display: 'Swash Display Serif (ARUNIKA) + Bold Sans (KAWI)',
+      tagline: 'Plus Jakarta Sans · SemiBold (Minimalis Tanpa Ornamen)',
       body: 'Plus Jakarta Sans · Regular–Bold (Deskripsi & KUPS Blitar)',
       mono: 'IBM Plex Mono · Medium 500 (Data Teknis)',
       summary: 'Swash Display Serif · Plus Jakarta Sans · IBM Plex Mono',
@@ -138,7 +154,12 @@ export const POUCH_SHAPES: Record<
 };
 
 export function isTallGusset(shape: PouchShapeId): boolean {
-  return shape === 'tall-heritage' || shape === 'tall-botanical' || shape === 'tall-copper';
+  return (
+    shape === 'tall-heritage' ||
+    shape === 'tall-botanical' ||
+    shape === 'tall-copper' ||
+    shape === 'tall-minimal'
+  );
 }
 
 export function getWeightSpecs(shape: PouchShapeId, weight: WeightOption): WeightAdjustedSpecs {
@@ -317,7 +338,7 @@ export const ROAST_LEVELS: Record<
     bodyScore: 5,
     bitternessScore: 4,
     aromaScore: 4,
-    storyRoast: 'Proses sangrai tradisionalnya menghasilkan aroma khas',
+    storyRoast: 'Proses sangrai tradisional menghasilkan aroma khas.',
   },
   'medium-dark': {
     label: 'Medium-Dark Roast',
@@ -384,7 +405,8 @@ export const GENERATED_ASSETS = {
   doypackNatural: '/src/assets/images/arunika_doypack_exact_natural_pair_1794899799953.jpg',
   tallHeritage: '/src/assets/images/arunika_v2_tall_heritage_1794898865922.jpg',
   tallBotanical: '/src/assets/images/arunika_v2_tall_botanical_1794898868139.jpg',
-  tallCopper: '/src/assets/images/arunika_v2_tall_copper_1794898867985.jpg',
+  tallCopper: '/src/assets/images/tall_copper_clean_1794970254810.jpg',
+  tallMinimal: '/src/assets/images/tall_minimal_clean_1794970258179.jpg',
   beansCluster: '/src/assets/images/natural_coffee_beans_cluster_1794878296922.jpg',
   kawiMist: '/src/assets/images/natural_kawi_mist_landscape_1794878296610.jpg',
   coffeeCherries: '/src/assets/images/natural_coffee_cherries_branch_1794878297817.jpg',

@@ -13,9 +13,11 @@ import {
   getWeightSpecs,
   PackagingConfig,
   POUCH_SHAPES,
+  PouchShapeId,
   ROAST_LEVELS,
 } from '../types/packaging';
-import { COLOR_TOKENS, PHOTO_ASSETS } from '../data/packagingSpecs';
+import { COLOR_TOKENS, getNaturalMockupAssetForShape, PHOTO_ASSETS } from '../data/packagingSpecs';
+import { LiveMockupScene, MockupSceneMode } from './LiveMockupScene';
 import { BackPanel, FrontPanel } from './PackagingPanels';
 import { ExportScope } from '../utils/exportPrintArtwork';
 import {
@@ -24,6 +26,17 @@ import {
   downloadSvgElement,
 } from '../utils/exportSingleElement';
 import { getWibBatchAndExpiry, getWibFormattedDate } from '../utils/dateUtils';
+
+const PHOTO_LIVE_SCENE_MAP: Record<string, { shape: PouchShapeId; scene: MockupSceneMode }> = {
+  'mockup-box': { shape: 'box-gusset', scene: 'natural-kawi' },
+  'mockup-doypack-studio': { shape: 'doypack-valve', scene: 'studio-front' },
+  'mockup-doypack-studio-rear': { shape: 'doypack-valve', scene: 'studio-rear' },
+  'mockup-doypack-natural': { shape: 'doypack-valve', scene: 'natural-kawi' },
+  'mockup-tall-heritage': { shape: 'tall-heritage', scene: 'natural-kawi' },
+  'mockup-tall-botanical': { shape: 'tall-botanical', scene: 'natural-kawi' },
+  'mockup-tall-copper': { shape: 'tall-copper', scene: 'natural-kawi' },
+  'mockup-tall-minimal': { shape: 'tall-minimal', scene: 'natural-kawi' },
+};
 
 function VectorElementCard({
   title,
@@ -90,7 +103,8 @@ interface DesignElementsKitProps {
 export function DesignElementsKit({ config, onExport, isExporting }: DesignElementsKitProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [photoPage, setPhotoPage] = useState<number>(0);
-  const PHOTOS_PER_PAGE = 6;
+  const [activeKitScene, setActiveKitScene] = useState<MockupSceneMode>('natural-kawi');
+  const PHOTOS_PER_PAGE = 7;
   const totalPhotoPages = Math.ceil(PHOTO_ASSETS.length / PHOTOS_PER_PAGE);
   const visiblePhotos = PHOTO_ASSETS.slice(
     photoPage * PHOTOS_PER_PAGE,
@@ -100,6 +114,7 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
   const roast = ROAST_LEVELS[config.roastLevel];
   const shapeMeta = POUCH_SHAPES[config.pouchShape];
   const weightSpecs = getWeightSpecs(config.pouchShape, config.netWeight);
+  const activeNaturalMeta = getNaturalMockupAssetForShape(config.pouchShape);
   const { batchCode, expiryCompact } = getWibBatchAndExpiry(12);
   const wibDateLabel = getWibFormattedDate();
 
@@ -115,26 +130,19 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
 
   const fullCopyText = [
     `JUDUL MEREK: ARUNIKA KAWI`,
-    `SUB-JUDUL: COFFEE BEAN · EST. 2024`,
+    `SUB-JUDUL: COFFE BEAN · EST 2024`,
     `TAGLINE: ${roast.subtitle}`,
     `VARIAN: ${variant.frontLabel}`,
     `BERAT BERSIH (DEPAN SAJA): Isi Bersih : ${config.netWeight} (${weightSpecs.dimensions})`,
     ``,
     `JUDUL BELAKANG: Arunika Kawi Coffee (${roast.crestTop} ${roast.crestBottom})`,
     `CERITA PANEL BELAKANG:`,
-    `Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast} Arunika Kawi Coffee harum dan nikmat`,
+    `Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan. Dipetik langsung dari lereng Gunung Kawi. Setiap seduhan menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast}`,
+    `Arunika Kawi Coffee Harum dan Nikmat`,
     ``,
-    `KOMPOSISI: ${config.beanVariant === 'robusta-100' ? '100 % BIJI KOPI ROBUSTA' : variant.frontLabel.toUpperCase()}`,
-    `ELEVASI & PROSES: ${variant.altitude} · ${variant.process} · Panen Petik Merah Selektif`,
-    ``,
-    `SARAN PENYAJIAN:`,
-    `- Tubruk Klasik: 12g kopi · 180ml · 92°C`,
-    `- Pour Over / V60: 15g kopi · 225ml · 90°C`,
-    `- Espresso / Moka: 18g halus · 36ml · 27 dtk`,
-    ``,
-    `CATATAN RASA: ${variant.notes.join(', ')}`,
-    `DIPRODUKSI OLEH: KUPS Himatarian Blitar, Jawa Timur – INDONESIA (Kotak PIRT)`,
-    `KODE PRODUKSI / BAIK DIGUNAKAN SEBELUM: ${batchCode} · EXP ${expiryCompact} (WIB GMT+7 · ${wibDateLabel})`,
+    `KOMPOSISI: ${config.beanVariant === 'robusta-100' ? 'KOMPOSISI 100 % BIJI KOPI ROBUSTA' : `KOMPOSISI ${variant.frontLabel.toUpperCase()}`}`,
+    `DIPRODUKSI OLEH: KUPS Himatarian Blitar, Jawa Timur – INDONESIA (Stempel KTH Hijau + PIRT di bawah stempel + Kotak PIRT)`,
+    `KODE PRODUKSI & BAIK DIGUNAKAN SEBELUM: Kotak Putih Cetak Tanggal (${batchCode} · EXP ${expiryCompact} · WIB GMT+7 ${wibDateLabel})`,
     `PITA BAWAH BELAKANG: 100 % KOPI ASLI INDONESIA (Tanpa Berat Bersih)`,
   ].join('\n');
 
@@ -276,7 +284,7 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
 
             <VectorElementCard
               title="Garis Botani Daun & Ceri Kopi"
-              description="Ornamen sudut daun dan buah ceri kopi emas untuk Alternatif 04 & 05."
+              description="Ornamen sudut daun dan buah ceri kopi emas khusus Alternatif 04 Tall Botanical."
               fileSlug="arunika-botani-daun-kopi"
             >
               <BotanicalCornerArt className="w-32 h-32" />
@@ -338,43 +346,137 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {visiblePhotos.map((asset) => (
-              <div
-                key={asset.id}
-                className="bg-[#F6F5F2] rounded-xl border border-[#1A1412]/10 overflow-hidden flex flex-col"
-              >
-                <div className="aspect-[16/10] bg-[#18100C] overflow-hidden">
-                  <img
-                    src={asset.src}
-                    alt={asset.title}
-                    referrerPolicy="no-referrer"
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover"
-                  />
+          {/* Dynamic Featured Active Mockup Final Card (Always Tracks Active Alternative & Weight) */}
+          <div className="mb-6 bg-[#F6F5F2] rounded-xl border border-[#8A6429]/40 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+            <div
+              className={`lg:col-span-5 aspect-[4/3] lg:aspect-auto lg:min-h-[320px] ${
+                activeKitScene === 'natural-kawi' ? 'bg-[#18100C]' : 'bg-white'
+              } overflow-hidden`}
+            >
+              <LiveMockupScene config={config} scene={activeKitScene} size="card" />
+            </div>
+            <div className="lg:col-span-7 p-5 sm:p-6 flex flex-col justify-between gap-4">
+              <div>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8A6429]">
+                    Mockup Final Aktif · Otomatis Mengikuti Pilihan
+                  </span>
+                  <div className="inline-flex items-center gap-1 p-1 bg-[#E4DFD6] rounded-lg">
+                    {(
+                      [
+                        { id: 'natural-kawi', label: 'Suasana Natural' },
+                        { id: 'studio-front', label: 'Studio Depan' },
+                        { id: 'studio-rear', label: 'Studio Belakang' },
+                      ] as const
+                    ).map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => setActiveKitScene(s.id)}
+                        className={`px-2.5 py-1.5 min-h-[38px] text-[11px] font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${
+                          activeKitScene === s.id
+                            ? 'bg-[#1A1412] text-[#FAF5EB]'
+                            : 'text-[#574D47] hover:text-[#1A1412]'
+                        }`}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="p-4 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between gap-2">
-                      <h4 className="font-serif text-lg font-semibold text-[#1A1412]">{asset.title}</h4>
-                    </div>
-                    <p className="mt-1 text-xs text-[#574D47] leading-relaxed">{asset.usage}</p>
-                  </div>
-                  <div className="mt-4 pt-3 border-t border-[#1A1412]/10 flex items-center justify-between gap-3">
-                    <span className="font-mono text-[11px] text-[#8A6429] tabular-nums">{asset.dims}</span>
-                    <button
-                      type="button"
-                      onClick={() => downloadImageAsset(asset.src, asset.filename)}
-                      className="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[#1A1412] text-[#FAF5EB] hover:bg-[#31221B] rounded-md transition-colors cursor-pointer whitespace-nowrap shrink-0"
-                    >
-                      <Download className="w-3.5 h-3.5 text-[#D8B474]" />
-                      <span>{asset.filename.endsWith('.png') ? 'Unduh PNG' : 'Unduh JPG'}</span>
-                    </button>
-                  </div>
+
+                <h4 className="mt-3 font-serif text-2xl font-semibold text-[#1A1412]">
+                  Mockup Final · {shapeMeta.code} {shapeMeta.shortLabel} ({config.netWeight})
+                </h4>
+                <p className="mt-1.5 text-sm text-[#574D47] leading-relaxed">
+                  {activeNaturalMeta.usage} · {variant.frontLabel} · {roast.label}.
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-[#1A1412]/10 flex flex-wrap items-center justify-between gap-3">
+                <span className="font-mono text-xs text-[#8A6429] tabular-nums">
+                  {weightSpecs.dimensions} · {config.netWeight}
+                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={isExporting}
+                    onClick={() => onExport('full-dieline')}
+                    className="min-h-[44px] inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-[#8A6429] hover:bg-[#73511D] disabled:opacity-60 text-[#FAF5EB] rounded-md transition-colors cursor-pointer whitespace-nowrap"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Unduh Sheet Full Print</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      downloadImageAsset(
+                        activeNaturalMeta.src,
+                        `arunika-mockup-${config.pouchShape}-${config.netWeight.replace(/\s+/g, '')}.jpg`
+                      )
+                    }
+                    className="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[#1A1412] text-[#FAF5EB] hover:bg-[#31221B] rounded-md transition-colors cursor-pointer whitespace-nowrap"
+                  >
+                    <Download className="w-3.5 h-3.5 text-[#D8B474]" />
+                    <span>Unduh Foto Dasar JPG</span>
+                  </button>
                 </div>
               </div>
-            ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {visiblePhotos.map((asset) => {
+              const liveSpec = PHOTO_LIVE_SCENE_MAP[asset.id];
+              return (
+                <div
+                  key={asset.id}
+                  className="bg-[#F6F5F2] rounded-xl border border-[#1A1412]/10 overflow-hidden flex flex-col"
+                >
+                  <div
+                    className={`aspect-[16/10] ${
+                      liveSpec && liveSpec.scene !== 'natural-kawi' ? 'bg-white' : 'bg-[#18100C]'
+                    } overflow-hidden`}
+                  >
+                    {liveSpec ? (
+                      <LiveMockupScene
+                        config={{ ...config, pouchShape: liveSpec.shape }}
+                        scene={liveSpec.scene}
+                        size="card"
+                      />
+                    ) : (
+                      <img
+                        src={asset.src}
+                        alt={asset.title}
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
+                  <div className="p-4 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="font-serif text-lg font-semibold text-[#1A1412]">{asset.title}</h4>
+                      </div>
+                      <p className="mt-1 text-xs text-[#574D47] leading-relaxed">{asset.usage}</p>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-[#1A1412]/10 flex items-center justify-between gap-3">
+                      <span className="font-mono text-[11px] text-[#8A6429] tabular-nums">{asset.dims}</span>
+                      <button
+                        type="button"
+                        onClick={() => downloadImageAsset(asset.src, asset.filename)}
+                        className="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[#1A1412] text-[#FAF5EB] hover:bg-[#31221B] rounded-md transition-colors cursor-pointer whitespace-nowrap shrink-0"
+                      >
+                        <Download className="w-3.5 h-3.5 text-[#D8B474]" />
+                        <span>{asset.filename.endsWith('.png') ? 'Unduh PNG' : 'Unduh JPG'}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -453,8 +555,8 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
                   <p className="text-xs font-medium text-[#8A6429]">
                     Sub-Judul &amp; Informasi · {shapeMeta.fonts.body}
                   </p>
-                  <p className="mt-1 font-sans text-xs font-semibold uppercase tracking-[0.26em] text-[#1A1412]">
-                    COFFEE BEAN · EST. 2024
+                  <p className="mt-1 font-sans text-xs font-semibold uppercase tracking-[0.22em] text-[#1A1412]">
+                    COFFE BEAN · EST 2024
                   </p>
                   <p className="mt-1 font-sans text-sm text-[#574D47]">
                     {variant.frontLabel} · Depan: Isi Bersih : {config.netWeight} ({weightSpecs.dimensions})
@@ -463,10 +565,16 @@ export function DesignElementsKit({ config, onExport, isExporting }: DesignEleme
 
                 <div>
                   <p className="text-xs font-medium text-[#8A6429]">
-                    Data Teknis &amp; Barcode · {shapeMeta.fonts.mono}
+                    Copywriting Belakang &amp; Data Legal · {shapeMeta.fonts.mono}
                   </p>
-                  <p className="mt-1 font-mono text-xs text-[#1A1412] tabular-nums">
-                    8 997024 192504 · {variant.altitude} · {config.netWeight} · EXP {expiryCompact} (WIB)
+                  <p className="mt-1 text-xs text-[#1A1412] leading-relaxed">
+                    Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan. Dipetik langsung dari
+                    lereng Gunung Kawi. Setiap seduhan menghadirkan karakter {variant.storyCharacter}{' '}
+                    {roast.storyRoast} <strong className="font-semibold text-[#8A6429]">Arunika Kawi Coffee</strong>{' '}
+                    <strong className="font-semibold">Harum dan Nikmat</strong>
+                  </p>
+                  <p className="mt-1.5 font-mono text-[11px] text-[#574D47] tabular-nums">
+                    KUPS Himatarian Blitar · Stempel KTH + PIRT · Kode Produksi &amp; Baik Digunakan Sebelum
                   </p>
                 </div>
               </div>
