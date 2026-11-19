@@ -168,7 +168,7 @@ function addPageChrome(
   doc.setTextColor(216, 180, 116);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8.5);
-  doc.text(pdfSafe('PackagingStudio · Dossier Desain & Produksi'), MARGIN, 8.2);
+  doc.text(pdfSafe('obeecreatives · PackagingStudio · Dossier Desain & Produksi'), MARGIN, 8.2);
 
   doc.setTextColor(250, 245, 235);
   doc.setFont('helvetica', 'normal');
@@ -184,6 +184,9 @@ function addPageChrome(
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7.5);
   doc.text(pdfSafe(`Diekspor pada ${timestampWib}`), MARGIN, PAGE_H - 6);
+  doc.text(pdfSafe('obeecreatives Allright Reserved'), PAGE_W / 2, PAGE_H - 6, {
+    align: 'center',
+  });
   doc.text(pdfSafe(`Halaman ${pageNum} dari ${totalPages}`), PAGE_W - MARGIN, PAGE_H - 6, {
     align: 'right',
   });
