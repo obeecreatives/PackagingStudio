@@ -68,6 +68,7 @@ function DegassingValveVisual({
 function NaturalArtworkLayers({ config, isBack = false }: { config: PackagingConfig; isBack?: boolean }) {
   const isCopper = config.pouchShape === 'tall-copper';
   const isBotanical = config.pouchShape === 'tall-botanical';
+  const isMinimal = config.pouchShape === 'tall-minimal';
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -114,33 +115,10 @@ function NaturalArtworkLayers({ config, isBack = false }: { config: PackagingCon
         </div>
       )}
 
-      {isBotanical && !isBack && (
-        <>
-          <BotanicalCornerArt className="absolute -top-[1%] -left-[1%] z-[5] w-[34cqi] h-[38cqi] opacity-90" />
-          <BotanicalCornerArt className="absolute -top-[1%] -right-[1%] z-[5] w-[34cqi] h-[38cqi] -scale-x-100 opacity-90" />
-          <BotanicalCornerArt className="absolute bottom-[11.2%] -left-[1%] z-[5] w-[34cqi] h-[38cqi] -scale-y-100 opacity-85" />
-          <BotanicalCornerArt className="absolute bottom-[11.2%] -right-[1%] z-[5] w-[34cqi] h-[38cqi] scale-[-1] opacity-85" />
-        </>
-      )}
-
-      {isCopper && !isBack && (
-        <>
-          <div className="absolute inset-y-0 left-[6.8%] w-[1.5px] gold-foil-gradient opacity-90" />
-          <div
-            className="absolute inset-x-0 bottom-[10.5%] h-[34%]"
-            style={{
-              background: 'linear-gradient(135deg, #9C4F2B 0%, #B86339 55%, #78391D 100%)',
-              clipPath: 'polygon(26% 100%, 100% 18%, 100% 100%)',
-              opacity: 0.9,
-            }}
-          />
-        </>
-      )}
-
       {!isBack && (
         <div
           className={`absolute inset-x-0 ${
-            isCopper ? 'bottom-[11%] h-[32%] opacity-78' : 'bottom-[10.8%] h-[36%]'
+            isCopper ? 'bottom-[11.2%] h-[32%] opacity-82' : 'bottom-[11.2%] h-[36%]'
           } overflow-hidden`}
           style={{
             maskImage:
@@ -158,6 +136,33 @@ function NaturalArtworkLayers({ config, isBack = false }: { config: PackagingCon
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#1A0F0A]/70 via-transparent to-[#140B07]/35" />
         </div>
+      )}
+
+      {isBotanical && !isBack && (
+        <>
+          <BotanicalCornerArt className="absolute -top-[0.5%] -left-[1%] z-[5] w-[35cqi] h-[38.89cqi] opacity-[0.92]" />
+          <BotanicalCornerArt className="absolute -top-[0.5%] -right-[1%] z-[5] w-[35cqi] h-[38.89cqi] -scale-x-100 opacity-[0.92]" />
+          <BotanicalCornerArt className="absolute bottom-[11.2%] -left-[1%] z-[5] w-[35cqi] h-[38.89cqi] -scale-y-100 opacity-[0.86]" />
+          <BotanicalCornerArt className="absolute bottom-[11.2%] -right-[1%] z-[5] w-[35cqi] h-[38.89cqi] scale-[-1] opacity-[0.86]" />
+        </>
+      )}
+
+      {isCopper && !isBack && (
+        <>
+          <div
+            className="absolute inset-x-0 bottom-[11.2%] z-[4] h-[32%]"
+            style={{
+              background: 'linear-gradient(135deg, #9C4F2B 0%, #B86339 55%, #78391D 100%)',
+              clipPath: 'polygon(26% 100%, 100% 18%, 100% 100%)',
+              opacity: 0.94,
+            }}
+          />
+          <div className="absolute inset-y-0 left-[6.8%] z-[5] w-[1.5px] gold-foil-gradient opacity-90" />
+        </>
+      )}
+
+      {isMinimal && (
+        <div className="absolute inset-x-0 bottom-[12.1%] z-[5] h-px bg-[#D8B474]/65" />
       )}
 
       <div
@@ -237,8 +242,8 @@ export function FrontPanel({
     >
       <NaturalArtworkLayers config={config} />
 
-      {!backgroundOnly && isHeritage && (
-        <div className="absolute inset-[3.5%] border border-[#D8B474]/50 pointer-events-none z-10" />
+      {isHeritage && (
+        <div className="absolute inset-x-[3.5%] top-[3.5%] bottom-[11.2%] border border-b-0 border-[#D8B474]/55 pointer-events-none z-10" />
       )}
 
       {backgroundOnly ? (
@@ -413,7 +418,7 @@ export function FrontPanel({
       )}
 
       {isCopper ? (
-        <div className="relative z-10 w-full h-[11%] bg-[#1B100B] border-t border-[#E6B89A]/55 flex items-center justify-center text-[#FAF5EB] px-[5%]">
+        <div className="relative z-10 w-full h-[11.2%] bg-[#1B100B] border-t border-[#E6B89A]/65 flex items-center justify-center text-[#FAF5EB] px-[5%]">
           {!backgroundOnly && (
             <span className="font-sans font-bold tabular-nums whitespace-nowrap" style={{ fontSize: '5cqi' }}>
               Isi Bersih : {config.netWeight}
@@ -441,46 +446,48 @@ export function SideGussetPanel({
   const variant = BEAN_VARIANTS[config.beanVariant];
   const roast = ROAST_LEVELS[config.roastLevel];
   const isCopper = config.pouchShape === 'tall-copper';
+  const isHeritage = config.pouchShape === 'tall-heritage';
+  const isBotanical = config.pouchShape === 'tall-botanical';
+  const isMinimal = config.pouchShape === 'tall-minimal';
 
   return (
     <div
-      className="relative w-full h-full overflow-hidden select-none text-[#FAF5EB] flex flex-col justify-between border-x border-[#C99C52]/15"
-      style={{ containerType: 'inline-size' }}
+      className={`relative w-full h-full overflow-hidden select-none flex flex-col justify-between border-x border-[#C99C52]/15 ${
+        isHeritage ? 'text-[#1E130D]' : 'text-[#FAF5EB]'
+      }`}
+      style={{
+        containerType: 'inline-size',
+        background: isHeritage
+          ? 'linear-gradient(90deg, #A88446 0%, #DFC389 48%, #8F6D36 52%, #C9A96A 100%)'
+          : undefined,
+      }}
     >
-      <div className="absolute inset-0 pouch-matte-surface" />
-      <div
-        className="absolute inset-x-0 bottom-[11.2%] h-[36%] opacity-65"
-        style={{
-          maskImage: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.35) 70%, rgba(0,0,0,0) 100%)',
-          WebkitMaskImage:
-            'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.35) 70%, rgba(0,0,0,0) 100%)',
-        }}
-      >
-        <img
-          src={GENERATED_ASSETS.beansCluster}
-          alt=""
-          decoding="async"
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-bottom"
-        />
-      </div>
+      {!isHeritage && <div className="absolute inset-0 pouch-matte-surface" />}
 
-      {config.pouchShape === 'tall-botanical' && (
+      {isBotanical && (
         <BotanicalCornerArt
-          className={`absolute bottom-[11.2%] z-[5] w-[52cqi] h-[58cqi] opacity-75 pointer-events-none ${
+          className={`absolute bottom-[11.2%] z-[5] w-[54cqi] h-[60cqi] opacity-[0.78] pointer-events-none ${
             side === 'left' ? '-right-[4%] scale-[-1]' : '-left-[4%] -scale-y-100'
           }`}
         />
       )}
 
+      {isMinimal && <div className="absolute inset-x-0 bottom-[12.1%] z-[5] h-px bg-[#D8B474]/65" />}
+
       {!backgroundOnly ? (
         <>
-          <div className="absolute inset-y-0 left-1/2 -translate-x-px w-px border-l border-dashed border-[#D8B474]/20 pointer-events-none" />
+          <div
+            className={`absolute inset-y-0 left-1/2 -translate-x-px w-px border-l border-dashed pointer-events-none ${
+              isHeritage ? 'border-[#1E130D]/20' : 'border-[#D8B474]/20'
+            }`}
+          />
 
           <div className="relative z-10 flex flex-col items-center text-center pt-[14%] px-[8%]">
-            <Mountain className="w-[15cqi] h-[15cqi] text-[#D8B474]" />
+            <Mountain className={`w-[15cqi] h-[15cqi] ${isHeritage ? 'text-[#2D1C12]' : 'text-[#D8B474]'}`} />
             <p
-              className="mt-[4%] font-sans uppercase tracking-[0.16em] text-[#D8B474]"
+              className={`mt-[4%] font-sans font-bold uppercase tracking-[0.16em] ${
+                isHeritage ? 'text-[#2D1C12]' : 'text-[#D8B474]'
+              }`}
               style={{ fontSize: '9cqi' }}
             >
               {side === 'left' ? 'ORIGIN' : 'TASTING'}
@@ -489,28 +496,48 @@ export function SideGussetPanel({
             {side === 'left' ? (
               <div className="mt-[10%] space-y-[10%] w-full">
                 <div>
-                  <p className="text-[#B9A795] uppercase tracking-wider" style={{ fontSize: '7.5cqi' }}>
+                  <p
+                    className={`uppercase tracking-wider ${isHeritage ? 'text-[#4B321C]' : 'text-[#B9A795]'}`}
+                    style={{ fontSize: '7.5cqi' }}
+                  >
                     Elevasi
                   </p>
-                  <p className="font-mono text-[#F5ECD9] tabular-nums" style={{ fontSize: '8.5cqi' }}>
+                  <p
+                    className={`font-mono tabular-nums font-semibold ${
+                      isHeritage ? 'text-[#1E130D]' : 'text-[#F5ECD9]'
+                    }`}
+                    style={{ fontSize: '8.5cqi' }}
+                  >
                     {variant.altitude}
                   </p>
                 </div>
-                <div className="h-px bg-[#C99C52]/25 mx-[8%]" />
+                <div className={`h-px mx-[8%] ${isHeritage ? 'bg-[#1E130D]/20' : 'bg-[#C99C52]/25'}`} />
                 <div>
-                  <p className="text-[#B9A795] uppercase tracking-wider" style={{ fontSize: '7.5cqi' }}>
+                  <p
+                    className={`uppercase tracking-wider ${isHeritage ? 'text-[#4B321C]' : 'text-[#B9A795]'}`}
+                    style={{ fontSize: '7.5cqi' }}
+                  >
                     Proses
                   </p>
-                  <p className="text-[#F5ECD9] leading-snug" style={{ fontSize: '8cqi' }}>
+                  <p
+                    className={`leading-snug font-medium ${isHeritage ? 'text-[#1E130D]' : 'text-[#F5ECD9]'}`}
+                    style={{ fontSize: '8cqi' }}
+                  >
                     {variant.process}
                   </p>
                 </div>
-                <div className="h-px bg-[#C99C52]/25 mx-[8%]" />
+                <div className={`h-px mx-[8%] ${isHeritage ? 'bg-[#1E130D]/20' : 'bg-[#C99C52]/25'}`} />
                 <div>
-                  <p className="text-[#B9A795] uppercase tracking-wider" style={{ fontSize: '7.5cqi' }}>
+                  <p
+                    className={`uppercase tracking-wider ${isHeritage ? 'text-[#4B321C]' : 'text-[#B9A795]'}`}
+                    style={{ fontSize: '7.5cqi' }}
+                  >
                     Panen
                   </p>
-                  <p className="text-[#F5ECD9] leading-snug" style={{ fontSize: '8cqi' }}>
+                  <p
+                    className={`leading-snug font-medium ${isHeritage ? 'text-[#1E130D]' : 'text-[#F5ECD9]'}`}
+                    style={{ fontSize: '8cqi' }}
+                  >
                     Petik Merah Selektif
                   </p>
                 </div>
@@ -523,7 +550,12 @@ export function SideGussetPanel({
                   { label: 'Boldness', score: roast.bitternessScore },
                 ].map((item) => (
                   <div key={item.label} className="flex flex-col items-center gap-[3cqi]">
-                    <span className="text-[#D6C5B2] uppercase tracking-wider" style={{ fontSize: '7.5cqi' }}>
+                    <span
+                      className={`uppercase tracking-wider font-medium ${
+                        isHeritage ? 'text-[#3A2516]' : 'text-[#D6C5B2]'
+                      }`}
+                      style={{ fontSize: '7.5cqi' }}
+                    >
                       {item.label}
                     </span>
                     <div className="flex items-center gap-[3cqi]">
@@ -531,7 +563,13 @@ export function SideGussetPanel({
                         <span
                           key={n}
                           className={`w-[5.5cqi] h-[5.5cqi] rounded-full ${
-                            n <= item.score ? 'bg-[#D8B474]' : 'bg-[#D8B474]/20'
+                            isHeritage
+                              ? n <= item.score
+                                ? 'bg-[#1E130D]'
+                                : 'bg-[#1E130D]/20'
+                              : n <= item.score
+                                ? 'bg-[#D8B474]'
+                                : 'bg-[#D8B474]/20'
                           }`}
                         />
                       ))}
@@ -544,7 +582,9 @@ export function SideGussetPanel({
 
           <div className="relative z-10 flex-1 flex items-center justify-center">
             <span
-              className="font-serif tracking-[0.28em] uppercase text-[#E4C58A]/70 whitespace-nowrap -rotate-90"
+              className={`font-serif tracking-[0.28em] uppercase whitespace-nowrap -rotate-90 font-semibold ${
+                isHeritage ? 'text-[#1E130D]/75' : 'text-[#E4C58A]/70'
+              }`}
               style={{ fontSize: '12cqi' }}
             >
               ARUNIKA KAWI
@@ -556,10 +596,10 @@ export function SideGussetPanel({
       )}
 
       <div
-        className={`relative z-10 w-full flex items-center justify-center ${
+        className={`relative z-10 w-full h-[11.2%] flex items-center justify-center ${
           isCopper
-            ? 'h-[11%] bg-[#9C4F2B] border-t border-[#E6B89A]/45 text-[#FAF5EB]'
-            : 'h-[11.2%] gold-foil-gradient border-t border-[#F7E8C6]/60 text-[#1E130D]'
+            ? 'bg-[#1B100B] border-t border-[#E6B89A]/65 text-[#FAF5EB]'
+            : 'gold-foil-gradient border-t border-[#F7E8C6]/60 text-[#1E130D]'
         }`}
       >
         {!backgroundOnly && (
@@ -580,8 +620,7 @@ export function BackPanel({ config, backgroundOnly = false }: PanelProps) {
   const roast = ROAST_LEVELS[config.roastLevel];
   const tall = isTallGusset(config.pouchShape);
   const isCopper = config.pouchShape === 'tall-copper';
-  const isBotanical = config.pouchShape === 'tall-botanical';
-  const isHeritage = config.pouchShape === 'tall-heritage';
+  const isMinimal = config.pouchShape === 'tall-minimal';
   const isUploadedFinal = config.artworkSource === 'uploaded-final';
   const { batchCode, expiryLabel } = getWibBatchAndExpiry(12);
 
@@ -633,29 +672,14 @@ export function BackPanel({ config, backgroundOnly = false }: PanelProps) {
         )}
       </div>
 
-      {!backgroundOnly && isHeritage && (
-        <div className="absolute inset-[3.5%] border border-[#D8B474]/50 pointer-events-none z-10" />
-      )}
-
-      {!backgroundOnly && isBotanical && (
-        <>
-          <BotanicalCornerArt className="absolute -top-[1%] -left-[1%] z-[5] w-[26cqi] h-[29cqi] opacity-75 pointer-events-none" />
-          <BotanicalCornerArt className="absolute -top-[1%] -right-[1%] z-[5] w-[26cqi] h-[29cqi] -scale-x-100 opacity-75 pointer-events-none" />
-        </>
-      )}
-
-      {!backgroundOnly && isCopper && (
-        <div className="absolute inset-y-0 left-[6.8%] w-[1.5px] gold-foil-gradient opacity-85 pointer-events-none z-10" />
+      {isMinimal && (
+        <div className="absolute inset-x-0 bottom-[12.1%] z-[5] h-px bg-[#D8B474]/65 pointer-events-none" />
       )}
 
       {backgroundOnly ? (
         <div className="flex-1" />
       ) : (
-        <div
-          className={`relative z-10 flex-1 flex flex-col justify-between pt-[14.5%] pb-[4.5%] ${
-            isCopper ? 'pl-[11%] pr-[7%]' : 'px-[7%]'
-          }`}
-        >
+        <div className="relative z-10 flex-1 flex flex-col justify-between pt-[14.5%] pb-[4.5%] px-[7%]">
           <div className="flex flex-col items-center text-center">
             <div className="w-[32cqi]">
               <RoastProfileCrest topText={roast.crestTop} bottomText={roast.crestBottom} className="w-full h-auto" />
@@ -733,10 +757,10 @@ export function BackPanel({ config, backgroundOnly = false }: PanelProps) {
       )}
 
       <div
-        className={`relative z-10 w-full flex items-center justify-center ${
+        className={`relative z-10 w-full h-[11.2%] flex items-center justify-center ${
           isCopper
-            ? 'h-[11%] bg-[#1B100B] border-t border-[#E6B89A]/55 text-[#FAF5EB]'
-            : 'h-[11.2%] gold-foil-gradient border-t border-[#F7E8C6]/60 text-[#1E130D]'
+            ? 'bg-[#1B100B] border-t border-[#E6B89A]/65 text-[#FAF5EB]'
+            : 'gold-foil-gradient border-t border-[#F7E8C6]/60 text-[#1E130D]'
         }`}
       >
         {!backgroundOnly && (
@@ -937,6 +961,8 @@ export function InteractivePouch3D({
   const tall = isTallGusset(config.pouchShape);
   const isCopper = config.pouchShape === 'tall-copper';
   const isHeritage = config.pouchShape === 'tall-heritage';
+  const isBotanical = config.pouchShape === 'tall-botanical';
+  const isMinimal = config.pouchShape === 'tall-minimal';
   const weightSpecs = getWeightSpecs(config.pouchShape, config.netWeight);
 
   if (isDoypack) {
@@ -1001,12 +1027,16 @@ export function InteractivePouch3D({
             boxShadow: 'inset -4px 0 10px rgba(0,0,0,0.45)',
           }}
         >
+          {isBotanical && (
+            <BotanicalCornerArt className="absolute bottom-[11.2%] right-0 w-[62px] h-[69px] scale-[-1] opacity-80 pointer-events-none" />
+          )}
+          {isMinimal && <div className="absolute inset-x-0 bottom-[12.1%] h-px bg-[#D8B474]/65 pointer-events-none" />}
           <div className="absolute inset-y-[16%] left-[48%] w-[2px] bg-black/55" />
           <div
-            className={`absolute inset-x-0 bottom-0 ${
+            className={`absolute inset-x-0 bottom-0 h-[11.2%] ${
               isCopper
-                ? 'h-[11%] bg-[#180E0A] border-t border-[#C47145]/75'
-                : 'h-[11.2%] gold-foil-gradient border-t border-[#F7E8C6]/65'
+                ? 'bg-[#180E0A] border-t border-[#E6B89A]/65'
+                : 'gold-foil-gradient border-t border-[#F7E8C6]/65'
             }`}
           />
         </div>

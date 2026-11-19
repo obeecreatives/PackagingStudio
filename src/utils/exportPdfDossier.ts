@@ -475,8 +475,12 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
 
   const bgDesc =
     config.pouchShape === 'tall-copper'
-      ? `Kanvas background murni khusus ${shapeMeta.code} (${config.netWeight} · ${weightSpecs.dimensions}) berisi gradasi Deep Espresso Matte (#1C100B -> #2B1912), lapisan atmosfer ${mood.label}, foto makro klaster biji kopi Robusta tanpa sambungan horizontal, garis vertikal gold foil, bidang diagonal Copper Terracotta (#9C4F2B), serta pita bawah bersih siap cetak ulang teks.`
-      : `Kanvas background murni untuk ${shapeMeta.code} (${config.netWeight} · ${weightSpecs.dimensions}) berisi dasar Deep Espresso Matte (#1C100B -> #2B1912), atmosfer ${mood.label}, taburan biji kopi Robusta sangrai bergradasi halus tanpa garis sambungan, serta pita Champagne Gold Foil (#D6B373) bawah yang sepenuhnya bersih tanpa teks, logo, stempel, maupun barcode.`;
+      ? `Kanvas background murni khusus ${shapeMeta.code} (${config.netWeight} · ${weightSpecs.dimensions}) berisi gradasi Deep Espresso Matte (#1C100B -> #2B1912), lapisan atmosfer ${mood.label}, foto makro klaster biji kopi Robusta tanpa sambungan horizontal pada panel depan, garis vertikal gold foil kiri, bidang diagonal Copper Terracotta (#9C4F2B), serta pita bawah gelap bergaris tembaga tanpa teks/logo.`
+      : config.pouchShape === 'tall-botanical'
+        ? `Kanvas background murni untuk ${shapeMeta.code} (${config.netWeight} · ${weightSpecs.dimensions}) berisi dasar Deep Espresso Matte, atmosfer ${mood.label}, klaster biji kopi depan tanpa sambungan, ornamen botanikal gold foil di 4 sudut panel depan dan sisi bawah gusset, panel belakang bersih, serta pita Champagne Gold Foil (#D6B373) tanpa teks/logo.`
+        : config.pouchShape === 'tall-heritage'
+          ? `Kanvas background murni untuk ${shapeMeta.code} (${config.netWeight} · ${weightSpecs.dimensions}) berisi dasar Deep Espresso Matte, atmosfer ${mood.label}, bingkai garis tipis Champagne Gold panel depan, gusset foil emas metalik penuh, panel belakang bersih, serta pita Champagne Gold Foil tanpa teks/logo.`
+          : `Kanvas background murni untuk ${shapeMeta.code} (${config.netWeight} · ${weightSpecs.dimensions}) berisi dasar Deep Espresso Matte (#1C100B -> #2B1912), atmosfer ${mood.label}, taburan biji kopi Robusta sangrai bergradasi halus tanpa garis sambungan, serta pita Champagne Gold Foil (#D6B373) bawah yang sepenuhnya bersih tanpa teks, logo, stempel, maupun barcode.`;
 
   doc.setTextColor(87, 77, 71);
   doc.setFont('helvetica', 'normal');

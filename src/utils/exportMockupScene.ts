@@ -13,6 +13,7 @@ import {
 } from '../data/mockupSceneLayouts';
 import { getWibDateKey } from './dateUtils';
 import { drawArunikaKawiWordmarkCanvas } from './arunikaWordmarkPaths';
+import { drawBotanicalCornerCanvas } from './botanicalPaths';
 import { drawRichCenteredParagraph } from './canvasRichText';
 import { renderPrintSheetCanvas, loadImage } from './exportPrintArtwork';
 import { downloadCanvas } from './exportSingleElement';
@@ -401,12 +402,12 @@ function drawRearOverlayCanvas(
         { text: 'Diolah secara tradisional (', color: '#F4ECE0', font: normalFont },
         { text: 'Goreng Kreweng', color: '#F4ECE0', font: italicFont },
         {
-          text: ') oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter',
+          text: ') oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter ',
           color: '#F4ECE0',
           font: normalFont,
         },
         { text: variant.storyCharacter, color: '#D8B474', font: goldBoldFont },
-        { text: roast.storyRoast, color: '#F4ECE0', font: normalFont },
+        { text: ` ${roast.storyRoast}`, color: '#F4ECE0', font: normalFont },
       ],
       cx,
       headY + 6.2 * cqi,
@@ -419,7 +420,7 @@ function drawRearOverlayCanvas(
     const afterTagY = drawRichCenteredParagraph(
       ctx,
       [
-        { text: 'Arunika Kawi Coffee', color: '#D8B474', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
+        { text: 'Arunika Kawi Coffee ', color: '#D8B474', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
         { text: 'harum dan nikmat', color: '#FAF5EB', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
       ],
       cx,
@@ -613,6 +614,26 @@ export async function renderMockupSceneCanvas(
       ctx.fillStyle = gusGrad;
       ctx.fillRect(gx, gy, gussetW, pouchH);
 
+      // Botanical or minimal accent on Studio 3D gusset
+      if (config.pouchShape === 'tall-botanical') {
+        const gw = gussetW * 0.82;
+        const gh = gw * (200 / 180);
+        const bandTopY = gy + pouchH * 0.888;
+        drawBotanicalCornerCanvas(ctx, fx - gw + gussetW * 0.04, bandTopY - gh, gw, gh, {
+          flipX: true,
+          flipY: true,
+          opacity: 0.8,
+        });
+      }
+      if (config.pouchShape === 'tall-minimal') {
+        ctx.strokeStyle = 'rgba(216, 180, 116, 0.65)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(gx, gy + pouchH * 0.879);
+        ctx.lineTo(fx, gy + pouchH * 0.879);
+        ctx.stroke();
+      }
+
       // Center V-fold crease
       ctx.fillStyle = 'rgba(0,0,0,0.55)';
       ctx.fillRect(gx + gussetW * 0.48, gy + pouchH * 0.16, 2, pouchH * 0.84);
@@ -620,9 +641,15 @@ export async function renderMockupSceneCanvas(
       // Bottom band wrap on gusset
       if (config.pouchShape === 'tall-copper') {
         ctx.fillStyle = '#180E0A';
-        ctx.fillRect(gx, gy + pouchH * 0.89, gussetW, pouchH * 0.11);
+        ctx.fillRect(gx, gy + pouchH * 0.888, gussetW, pouchH * 0.112);
+        ctx.strokeStyle = 'rgba(230, 184, 154, 0.65)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(gx, gy + pouchH * 0.888);
+        ctx.lineTo(fx, gy + pouchH * 0.888);
+        ctx.stroke();
       } else {
-        const bandG = ctx.createLinearGradient(gx, gy + pouchH * 0.89, fx, gy + pouchH);
+        const bandG = ctx.createLinearGradient(gx, gy + pouchH * 0.888, fx, gy + pouchH);
         bandG.addColorStop(0, '#9F7637');
         bandG.addColorStop(0.5, '#F2DFB3');
         bandG.addColorStop(1, '#8C6429');

@@ -214,6 +214,7 @@ export async function renderPrintSheetCanvas(
   const isHeritage = config.pouchShape === 'tall-heritage';
   const isBotanical = config.pouchShape === 'tall-botanical';
   const isCopper = config.pouchShape === 'tall-copper';
+  const isMinimal = config.pouchShape === 'tall-minimal';
   const weightSpecs = getWeightSpecs(config.pouchShape, config.netWeight);
   const bleedPx = 3 * scale;
 
@@ -305,26 +306,13 @@ export async function renderPrintSheetCanvas(
       );
     }
 
-    if (isCopper && !isBack) {
-      ctx.save();
-      ctx.fillStyle = '#9C4F2B';
-      ctx.beginPath();
-      ctx.moveTo(px, py + ph * 0.9);
-      ctx.lineTo(px + pw, py + ph * 0.64);
-      ctx.lineTo(px + pw, py + ph);
-      ctx.lineTo(px, py + ph);
-      ctx.closePath();
-      ctx.fill();
+    const bandH = ph * 0.112;
+    const bandY = py + ph - bandH;
 
-      ctx.fillStyle = drawGoldGradient(ctx, px + pw * 0.075, py, 3, ph);
-      ctx.fillRect(px + pw * 0.075, py, 3, ph);
-      ctx.restore();
-    }
-
-    // Seamless feathered roasted coffee beans (zero horizontal seam)
+    // Seamless feathered roasted coffee beans (zero horizontal seam, front panel only)
     if (!isBack && beansImg) {
-      const bh = ph * 0.38;
-      const by = py + ph - ph * 0.115 - bh;
+      const bh = ph * (isCopper ? 0.32 : 0.36);
+      const by = bandY - bh;
       drawFeatheredImage(
         ctx,
         beansImg,
@@ -338,9 +326,41 @@ export async function renderPrintSheetCanvas(
           { offset: 0.58, alpha: 0.95 },
           { offset: 1, alpha: 1 },
         ],
-        isCopper ? 0.72 : isBotanical ? 0.88 : 1,
+        isCopper ? 0.82 : isBotanical ? 0.88 : 1,
         'bottom'
       );
+    }
+
+    if (isCopper && !isBack) {
+      ctx.save();
+      const copperGrad = ctx.createLinearGradient(px + pw * 0.26, bandY - ph * 0.26, px + pw, bandY);
+      copperGrad.addColorStop(0, '#9C4F2B');
+      copperGrad.addColorStop(0.55, '#B86339');
+      copperGrad.addColorStop(1, '#78391D');
+      ctx.globalAlpha = 0.94;
+      ctx.fillStyle = copperGrad;
+      ctx.beginPath();
+      ctx.moveTo(px + pw * 0.26, bandY);
+      ctx.lineTo(px + pw, bandY - ph * 0.262);
+      ctx.lineTo(px + pw, bandY);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.globalAlpha = 0.92;
+      ctx.fillStyle = drawGoldGradient(ctx, px + pw * 0.068, py, 3, bandY - py);
+      ctx.fillRect(px + pw * 0.068, py, 2.5, bandY - py);
+      ctx.restore();
+    }
+
+    if (isMinimal) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(216, 180, 116, 0.65)';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(px, py + ph * 0.879);
+      ctx.lineTo(px + pw, py + ph * 0.879);
+      ctx.stroke();
+      ctx.restore();
     }
 
     // Subtle matte vignette matching live CSS radial vignette so gold botanical corners pop cleanly
@@ -358,12 +378,10 @@ export async function renderPrintSheetCanvas(
     ctx.fillStyle = vig;
     ctx.fillRect(px, py, pw, ph);
 
-    const bandH = ph * 0.118;
-    const bandY = py + ph - bandH;
     if (isCopper) {
-      ctx.fillStyle = 'rgba(32, 18, 12, 0.88)';
+      ctx.fillStyle = '#1B100B';
       ctx.fillRect(px, bandY, pw, bandH);
-      ctx.strokeStyle = 'rgba(230, 184, 154, 0.55)';
+      ctx.strokeStyle = 'rgba(230, 184, 154, 0.65)';
     } else {
       ctx.fillStyle = drawGoldGradient(ctx, px, bandY, pw, bandH);
       ctx.fillRect(px, bandY, pw, bandH);
@@ -410,16 +428,25 @@ export async function renderPrintSheetCanvas(
 
     drawPanelBase(px, py, pw, ph, false);
 
-    if (!isBackgroundOnly && isHeritage) {
-      ctx.strokeStyle = 'rgba(216, 180, 116, 0.5)';
+    if (isHeritage) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(216, 180, 116, 0.55)';
       ctx.lineWidth = 2;
-      ctx.strokeRect(px + pw * 0.035, py + ph * 0.035, pw * 0.93, ph * 0.93);
+      const frameY = py + ph * 0.035;
+      const bandTopY = py + ph * 0.888;
+      ctx.beginPath();
+      ctx.moveTo(px + pw * 0.035, bandTopY);
+      ctx.lineTo(px + pw * 0.035, frameY);
+      ctx.lineTo(px + pw * 0.965, frameY);
+      ctx.lineTo(px + pw * 0.965, bandTopY);
+      ctx.stroke();
+      ctx.restore();
     }
 
     if (isBotanical) {
       const bw = pw * 0.35;
       const bh = bw * (200 / 180);
-      const bandTopY = py + ph * 0.882;
+      const bandTopY = py + ph * 0.888;
       drawBotanicalCornerCanvas(ctx, px - pw * 0.01, py - ph * 0.005, bw, bh, {
         flipX: false,
         flipY: false,
@@ -543,7 +570,7 @@ export async function renderPrintSheetCanvas(
       drawKthGreenSealCanvas(ctx, px + pw * 0.84, py + ph * 0.8, pw * 0.085);
     }
 
-    const bandCenterY = py + ph * 0.945;
+    const bandCenterY = py + ph * 0.944;
     ctx.fillStyle = isCopper ? '#FAF5EB' : '#1E130D';
     ctx.textAlign = 'center';
     ctx.font = `700 ${Math.round(pw * 0.044)}px "Plus Jakarta Sans", sans-serif`;
@@ -551,31 +578,80 @@ export async function renderPrintSheetCanvas(
   };
 
   const drawGussetContent = (px: number, py: number, pw: number, ph: number, side: 'left' | 'right') => {
-    drawPanelBase(px, py, pw, ph, true);
+    const bandH = ph * 0.112;
+    const bandY = py + ph - bandH;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(px, py, pw, ph);
+    ctx.clip();
+
+    if (isHeritage) {
+      const gusGrad = ctx.createLinearGradient(px, py, px + pw, py);
+      gusGrad.addColorStop(0, '#A88446');
+      gusGrad.addColorStop(0.48, '#DFC389');
+      gusGrad.addColorStop(0.52, '#8F6D36');
+      gusGrad.addColorStop(1, '#C9A96A');
+      ctx.fillStyle = gusGrad;
+      ctx.fillRect(px, py, pw, ph);
+    } else {
+      const bgGrad = ctx.createLinearGradient(px, py, px + pw * 0.4, py + ph);
+      bgGrad.addColorStop(0, '#2B1912');
+      bgGrad.addColorStop(0.55, '#1C100B');
+      bgGrad.addColorStop(1, '#140B07');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(px, py, pw, ph);
+    }
+
     if (isBotanical) {
       const gw = pw * 0.54;
       const gh = gw * (200 / 180);
-      const bandTopY = py + ph * 0.882;
       drawBotanicalCornerCanvas(
         ctx,
         side === 'left' ? px + pw - gw + pw * 0.03 : px - pw * 0.03,
-        bandTopY - gh,
+        bandY - gh,
         gw,
         gh,
         { flipX: side === 'left', flipY: true, opacity: 0.78 }
       );
     }
+
+    if (isMinimal) {
+      ctx.strokeStyle = 'rgba(216, 180, 116, 0.65)';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(px, py + ph * 0.879);
+      ctx.lineTo(px + pw, py + ph * 0.879);
+      ctx.stroke();
+    }
+
+    if (isCopper) {
+      ctx.fillStyle = '#1B100B';
+      ctx.fillRect(px, bandY, pw, bandH);
+      ctx.strokeStyle = 'rgba(230, 184, 154, 0.65)';
+    } else {
+      ctx.fillStyle = drawGoldGradient(ctx, px, bandY, pw, bandH);
+      ctx.fillRect(px, bandY, pw, bandH);
+      ctx.strokeStyle = 'rgba(247, 232, 198, 0.7)';
+    }
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(px, bandY);
+    ctx.lineTo(px + pw, bandY);
+    ctx.stroke();
+    ctx.restore();
+
     if (isBackgroundOnly) return;
 
     const cx = px + pw / 2;
 
     ctx.save();
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#D8B474';
-    ctx.font = `600 ${Math.round(pw * 0.042)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillStyle = isHeritage ? '#2D1C12' : '#D8B474';
+    ctx.font = `700 ${Math.round(pw * 0.042)}px "Plus Jakarta Sans", sans-serif`;
     ctx.fillText(side === 'left' ? 'ORIGIN' : 'TASTING PROFILE', cx, py + ph * 0.14);
 
-    ctx.fillStyle = '#F5ECD9';
+    ctx.fillStyle = isHeritage ? '#1E130D' : '#F5ECD9';
     ctx.font = `500 ${Math.round(pw * 0.038)}px "Plus Jakarta Sans", sans-serif`;
     if (side === 'left') {
       ctx.fillText(variant.altitude, cx, py + ph * 0.21);
@@ -589,7 +665,7 @@ export async function renderPrintSheetCanvas(
 
     ctx.translate(cx, py + ph * 0.62);
     ctx.rotate(-Math.PI / 2);
-    ctx.fillStyle = 'rgba(228, 197, 138, 0.72)';
+    ctx.fillStyle = isHeritage ? 'rgba(30, 19, 13, 0.75)' : 'rgba(228, 197, 138, 0.72)';
     ctx.font = `600 ${Math.round(pw * 0.08)}px "Cormorant Garamond", Georgia, serif`;
     ctx.fillText('A R U N I K A   K A W I', 0, 0);
     ctx.restore();
@@ -597,7 +673,7 @@ export async function renderPrintSheetCanvas(
     ctx.fillStyle = isCopper ? '#FAF5EB' : '#1E130D';
     ctx.textAlign = 'center';
     ctx.font = `700 ${Math.round(pw * 0.056)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('JAWA TIMUR · ID', cx, py + ph * 0.945);
+    ctx.fillText('JAWA TIMUR · ID', cx, py + ph * 0.944);
   };
 
   const drawBackContent = (px: number, py: number, pw: number, ph: number) => {
@@ -621,25 +697,6 @@ export async function renderPrintSheetCanvas(
     }
 
     drawPanelBase(px, py, pw, ph, true);
-    if (!isBackgroundOnly && isHeritage) {
-      ctx.strokeStyle = 'rgba(216, 180, 116, 0.45)';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(px + pw * 0.035, py + ph * 0.035, pw * 0.93, ph * 0.93);
-    }
-    if (isBotanical) {
-      const bw = pw * 0.27;
-      const bh = bw * (200 / 180);
-      drawBotanicalCornerCanvas(ctx, px - pw * 0.01, py - ph * 0.005, bw, bh, {
-        flipX: false,
-        flipY: false,
-        opacity: 0.72,
-      });
-      drawBotanicalCornerCanvas(ctx, px + pw - bw + pw * 0.01, py - ph * 0.005, bw, bh, {
-        flipX: true,
-        flipY: false,
-        opacity: 0.72,
-      });
-    }
     if (isBackgroundOnly) return;
 
     const cx = px + pw / 2;
@@ -681,12 +738,12 @@ export async function renderPrintSheetCanvas(
         { text: 'Diolah secara tradisional (', color: '#F4ECE0', font: normalFont },
         { text: 'Goreng Kreweng', color: '#F4ECE0', font: italicFont },
         {
-          text: ') oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter',
+          text: ') oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter ',
           color: '#F4ECE0',
           font: normalFont,
         },
         { text: variant.storyCharacter, color: '#D8B474', font: goldBoldFont },
-        { text: roast.storyRoast, color: '#F4ECE0', font: normalFont },
+        { text: ` ${roast.storyRoast}`, color: '#F4ECE0', font: normalFont },
       ],
       cx,
       headY + pw * 0.075,
@@ -698,7 +755,7 @@ export async function renderPrintSheetCanvas(
     const afterTagY = drawRichCenteredParagraph(
       ctx,
       [
-        { text: 'Arunika Kawi Coffee', color: '#D8B474', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
+        { text: 'Arunika Kawi Coffee ', color: '#D8B474', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
         { text: 'harum dan nikmat', color: '#FAF5EB', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
       ],
       cx,
@@ -750,7 +807,7 @@ export async function renderPrintSheetCanvas(
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(boxX, py + ph * 0.822, boxW, ph * 0.032);
 
-    const bandCenterY = py + ph * 0.945;
+    const bandCenterY = py + ph * 0.944;
     ctx.fillStyle = isCopper ? '#FAF5EB' : '#140B07';
     ctx.textAlign = 'center';
     ctx.font = `700 ${Math.round(pw * 0.038)}px "Plus Jakarta Sans", sans-serif`;

@@ -18,6 +18,7 @@ import { getCompositedMockupUrl } from '../utils/exportMockupScene';
 import {
   ArunikaKawiWordmark,
   ArunikaSunBeanCrest,
+  BotanicalCornerArt,
   KthEastJavaSeal,
   MandalaHeritageCrest,
   RoastProfileCrest,
@@ -430,6 +431,8 @@ function StudioGussetPouch3D({
   const tall = isTallGusset(config.pouchShape);
   const isCopper = config.pouchShape === 'tall-copper';
   const isHeritage = config.pouchShape === 'tall-heritage';
+  const isBotanical = config.pouchShape === 'tall-botanical';
+  const isMinimal = config.pouchShape === 'tall-minimal';
   const scaleFactor = config.netWeight === '100 gram' ? 0.91 : 1;
 
   return (
@@ -455,14 +458,18 @@ function StudioGussetPouch3D({
             boxShadow: 'inset -3px 0 8px rgba(0,0,0,0.45)',
           }}
         >
+          {isBotanical && (
+            <BotanicalCornerArt className="absolute bottom-[11.2%] right-0 w-[82%] aspect-[180/200] scale-[-1] opacity-80 pointer-events-none" />
+          )}
+          {isMinimal && <div className="absolute inset-x-0 bottom-[12.1%] h-px bg-[#D8B474]/65 pointer-events-none" />}
           {/* Center V-Fold Vertical Shadow Crease */}
           <div className="absolute inset-y-[16%] left-[48%] w-[2px] bg-black/55" />
           {/* Bottom Wrap Foil / Copper Band */}
           <div
-            className={`absolute inset-x-0 bottom-0 ${
+            className={`absolute inset-x-0 bottom-0 h-[11.2%] ${
               isCopper
-                ? 'h-[11%] bg-[#180E0A] border-t border-[#C47145]/75'
-                : 'h-[11.2%] gold-foil-gradient border-t border-[#F7E8C6]/65'
+                ? 'bg-[#180E0A] border-t border-[#E6B89A]/65'
+                : 'gold-foil-gradient border-t border-[#F7E8C6]/65'
             }`}
           />
         </div>
