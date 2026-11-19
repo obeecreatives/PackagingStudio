@@ -374,21 +374,23 @@ export function DesignElementsKit({ config, onExport, isExporting, onExpand }: D
 
             <VectorElementCard
               title="Garis Botani Daun & Ceri Kopi"
-              description="Ornamen sudut daun dan buah ceri kopi emas khusus Alternatif 04 Tall Botanical."
+              description="Ornamen sudut daun, bunga & ceri kopi persis sesuai mockup Tall Botanical Foil."
               fileSlug="arunika-botani-daun-kopi"
+              pngSize={[1080, 1380]}
               onExpandClick={() =>
                 onExpand({
                   kind: 'vector',
                   title: 'Garis Botani Daun & Ceri Kopi',
-                  subtitle: 'SVG Vektor · PNG 1200×1200 Transparan',
+                  subtitle: 'SVG Vektor · PNG 1080×1380 Transparan',
                   slug: 'arunika-botani-daun-kopi',
+                  pngSize: [1080, 1380],
                   roastTop: roast.crestTop,
                   roastBottom: roast.crestBottom,
                   beanLabel: variant.frontLabel,
                 })
               }
             >
-              <BotanicalCornerArt className="w-32 h-32" />
+              <BotanicalCornerArt className="w-28 h-36" />
             </VectorElementCard>
 
             <VectorElementCard

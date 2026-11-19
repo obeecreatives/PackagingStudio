@@ -444,25 +444,25 @@ export async function renderPrintSheetCanvas(
     }
 
     if (isBotanical) {
-      const bw = pw * 0.35;
-      const bh = bw * (200 / 180);
+      const bw = pw * 0.38;
+      const bh = bw * (230 / 180);
       const bandTopY = py + ph * 0.888;
-      drawBotanicalCornerCanvas(ctx, px - pw * 0.01, py - ph * 0.005, bw, bh, {
+      drawBotanicalCornerCanvas(ctx, px - pw * 0.005, py - ph * 0.005, bw, bh, {
         flipX: false,
         flipY: false,
         opacity: 0.92,
       });
-      drawBotanicalCornerCanvas(ctx, px + pw - bw + pw * 0.01, py - ph * 0.005, bw, bh, {
+      drawBotanicalCornerCanvas(ctx, px + pw - bw + pw * 0.005, py - ph * 0.005, bw, bh, {
         flipX: true,
         flipY: false,
         opacity: 0.92,
       });
-      drawBotanicalCornerCanvas(ctx, px - pw * 0.01, bandTopY - bh, bw, bh, {
+      drawBotanicalCornerCanvas(ctx, px - pw * 0.005, bandTopY - bh, bw, bh, {
         flipX: false,
         flipY: true,
         opacity: 0.86,
       });
-      drawBotanicalCornerCanvas(ctx, px + pw - bw + pw * 0.01, bandTopY - bh, bw, bh, {
+      drawBotanicalCornerCanvas(ctx, px + pw - bw + pw * 0.005, bandTopY - bh, bw, bh, {
         flipX: true,
         flipY: true,
         opacity: 0.86,
@@ -604,15 +604,15 @@ export async function renderPrintSheetCanvas(
     }
 
     if (isBotanical) {
-      const gw = pw * 0.54;
-      const gh = gw * (200 / 180);
+      const gw = pw * 0.58;
+      const gh = gw * (230 / 180);
       drawBotanicalCornerCanvas(
         ctx,
         side === 'left' ? px + pw - gw + pw * 0.03 : px - pw * 0.03,
         bandY - gh,
         gw,
         gh,
-        { flipX: side === 'left', flipY: true, opacity: 0.78 }
+        { flipX: side === 'left', flipY: true, opacity: 0.82 }
       );
     }
 

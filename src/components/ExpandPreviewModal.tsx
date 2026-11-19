@@ -136,7 +136,7 @@ export function ExpandPreviewModal({ target, onClose }: ExpandPreviewModalProps)
       case 'arunika-mandala-heritage':
         return <MandalaHeritageCrest label={t.beanLabel} className="w-60 h-60" />;
       case 'arunika-botani-daun-kopi':
-        return <BotanicalCornerArt className="w-60 h-60" />;
+        return <BotanicalCornerArt className="w-56 h-72" />;
       case 'arunika-stempel-kth-emas':
         return <KthEastJavaSeal variant="gold-heritage" className="w-56 h-56" />;
       case 'arunika-stempel-kth-hijau':

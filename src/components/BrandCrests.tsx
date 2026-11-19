@@ -4,12 +4,7 @@ import {
   ARUNIKA_WORDMARK_VIEWBOX,
   KAWI_GLYPHS,
 } from '../utils/arunikaWordmarkPaths';
-import {
-  BOTANICAL_CHERRIES,
-  BOTANICAL_LEAF_SPECS,
-  BOTANICAL_STEM_PATHS,
-  BOTANICAL_VIEWBOX,
-} from '../utils/botanicalPaths';
+import { BOTANICAL_EXACT_PATH, BOTANICAL_VIEWBOX } from '../utils/botanicalPaths';
 
 export function ArunikaKawiWordmark({
   className = 'w-[62cqi] h-auto',
@@ -263,63 +258,14 @@ export function BotanicalCornerArt({ className = '' }: { className?: string }) {
   return (
     <svg viewBox={BOTANICAL_VIEWBOX} fill="none" className={className} aria-hidden="true">
       <defs>
-        <linearGradient id={gradId} x1="0" y1="0" x2="140" y2="180" gradientUnits="userSpaceOnUse">
+        <linearGradient id={gradId} x1="0" y1="0" x2="150" y2="200" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#F5E4BC" />
           <stop offset="45%" stopColor="#D8B474" />
           <stop offset="100%" stopColor="#9E7334" />
         </linearGradient>
       </defs>
 
-      {BOTANICAL_STEM_PATHS.map((d, idx) => (
-        <path
-          key={`stem-${idx}`}
-          d={d}
-          stroke={`url(#${gradId})`}
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      ))}
-
-      {BOTANICAL_LEAF_SPECS.map((leaf, idx) => (
-        <g key={`leaf-${idx}`}>
-          <path
-            d={leaf.outline}
-            fill="rgba(216, 180, 116, 0.11)"
-            stroke={`url(#${gradId})`}
-            strokeWidth="1.25"
-            strokeLinejoin="round"
-          />
-          <path d={leaf.midrib} stroke={`url(#${gradId})`} strokeWidth="0.9" strokeLinecap="round" />
-          {leaf.veins.map((v, vIdx) => (
-            <path
-              key={vIdx}
-              d={v}
-              stroke={`url(#${gradId})`}
-              strokeWidth="0.65"
-              strokeOpacity="0.7"
-              strokeLinecap="round"
-            />
-          ))}
-        </g>
-      ))}
-
-      {BOTANICAL_CHERRIES.map((ch, idx) => (
-        <g key={`cherry-${idx}`}>
-          {ch.stem && (
-            <path d={ch.stem} stroke={`url(#${gradId})`} strokeWidth="1.05" strokeLinecap="round" />
-          )}
-          <circle
-            cx={ch.cx}
-            cy={ch.cy}
-            r={ch.r}
-            fill="rgba(216, 180, 116, 0.2)"
-            stroke={`url(#${gradId})`}
-            strokeWidth="1.25"
-          />
-          <circle cx={ch.cx + ch.r * 0.34} cy={ch.cy + ch.r * 0.32} r={Math.max(0.9, ch.r * 0.16)} fill="#EBD39F" />
-        </g>
-      ))}
+      <path d={BOTANICAL_EXACT_PATH} fill={`url(#${gradId})`} fillRule="evenodd" />
     </svg>
   );
 }

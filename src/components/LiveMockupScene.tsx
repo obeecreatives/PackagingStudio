@@ -459,7 +459,7 @@ function StudioGussetPouch3D({
           }}
         >
           {isBotanical && (
-            <BotanicalCornerArt className="absolute bottom-[11.2%] right-0 w-[82%] aspect-[180/200] scale-[-1] opacity-80 pointer-events-none" />
+            <BotanicalCornerArt className="absolute bottom-[11.2%] right-0 w-[84%] aspect-[180/230] scale-[-1] opacity-82 pointer-events-none" />
           )}
           {isMinimal && <div className="absolute inset-x-0 bottom-[12.1%] h-px bg-[#D8B474]/65 pointer-events-none" />}
           {/* Center V-Fold Vertical Shadow Crease */}

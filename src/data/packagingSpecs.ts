@@ -107,8 +107,8 @@ export const VECTOR_ELEMENTS_META: VectorElementMeta[] = [
   {
     slug: 'arunika-botani-daun-kopi',
     title: 'Garis Botani Daun & Ceri Kopi',
-    description: 'Ornamen sudut daun dan buah ceri kopi emas khusus Alternatif 04 Tall Botanical Foil.',
-    format: 'SVG Vektor · PNG 1200×1200',
+    description: 'Ornamen sudut daun, bunga, dan buah ceri kopi persis sesuai mockup Alternatif 04 Tall Botanical Foil.',
+    format: 'SVG Vektor · PNG 1080×1380',
   },
   {
     slug: 'arunika-stempel-kth-emas',

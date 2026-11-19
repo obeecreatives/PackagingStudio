@@ -616,13 +616,13 @@ export async function renderMockupSceneCanvas(
 
       // Botanical or minimal accent on Studio 3D gusset
       if (config.pouchShape === 'tall-botanical') {
-        const gw = gussetW * 0.82;
-        const gh = gw * (200 / 180);
+        const gw = gussetW * 0.84;
+        const gh = gw * (230 / 180);
         const bandTopY = gy + pouchH * 0.888;
-        drawBotanicalCornerCanvas(ctx, fx - gw + gussetW * 0.04, bandTopY - gh, gw, gh, {
+        drawBotanicalCornerCanvas(ctx, fx - gw + gussetW * 0.03, bandTopY - gh, gw, gh, {
           flipX: true,
           flipY: true,
-          opacity: 0.8,
+          opacity: 0.82,
         });
       }
       if (config.pouchShape === 'tall-minimal') {

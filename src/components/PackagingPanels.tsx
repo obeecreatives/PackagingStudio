@@ -140,10 +140,10 @@ function NaturalArtworkLayers({ config, isBack = false }: { config: PackagingCon
 
       {isBotanical && !isBack && (
         <>
-          <BotanicalCornerArt className="absolute -top-[0.5%] -left-[1%] z-[5] w-[35cqi] h-[38.89cqi] opacity-[0.92]" />
-          <BotanicalCornerArt className="absolute -top-[0.5%] -right-[1%] z-[5] w-[35cqi] h-[38.89cqi] -scale-x-100 opacity-[0.92]" />
-          <BotanicalCornerArt className="absolute bottom-[11.2%] -left-[1%] z-[5] w-[35cqi] h-[38.89cqi] -scale-y-100 opacity-[0.86]" />
-          <BotanicalCornerArt className="absolute bottom-[11.2%] -right-[1%] z-[5] w-[35cqi] h-[38.89cqi] scale-[-1] opacity-[0.86]" />
+          <BotanicalCornerArt className="absolute -top-[0.5%] -left-[0.5%] z-[5] w-[38cqi] h-[48.55cqi] opacity-[0.92]" />
+          <BotanicalCornerArt className="absolute -top-[0.5%] -right-[0.5%] z-[5] w-[38cqi] h-[48.55cqi] -scale-x-100 opacity-[0.92]" />
+          <BotanicalCornerArt className="absolute bottom-[11.2%] -left-[0.5%] z-[5] w-[38cqi] h-[48.55cqi] -scale-y-100 opacity-[0.86]" />
+          <BotanicalCornerArt className="absolute bottom-[11.2%] -right-[0.5%] z-[5] w-[38cqi] h-[48.55cqi] scale-[-1] opacity-[0.86]" />
         </>
       )}
 
@@ -466,8 +466,8 @@ export function SideGussetPanel({
 
       {isBotanical && (
         <BotanicalCornerArt
-          className={`absolute bottom-[11.2%] z-[5] w-[54cqi] h-[60cqi] opacity-[0.78] pointer-events-none ${
-            side === 'left' ? '-right-[4%] scale-[-1]' : '-left-[4%] -scale-y-100'
+          className={`absolute bottom-[11.2%] z-[5] w-[58cqi] h-[74.1cqi] opacity-[0.82] pointer-events-none ${
+            side === 'left' ? '-right-[3%] scale-[-1]' : '-left-[3%] -scale-y-100'
           }`}
         />
       )}
@@ -1028,7 +1028,7 @@ export function InteractivePouch3D({
           }}
         >
           {isBotanical && (
-            <BotanicalCornerArt className="absolute bottom-[11.2%] right-0 w-[62px] h-[69px] scale-[-1] opacity-80 pointer-events-none" />
+            <BotanicalCornerArt className="absolute bottom-[11.2%] right-0 w-[62px] h-[79px] scale-[-1] opacity-82 pointer-events-none" />
           )}
           {isMinimal && <div className="absolute inset-x-0 bottom-[12.1%] h-px bg-[#D8B474]/65 pointer-events-none" />}
           <div className="absolute inset-y-[16%] left-[48%] w-[2px] bg-black/55" />
