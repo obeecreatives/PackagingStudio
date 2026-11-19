@@ -70,17 +70,25 @@ async function imageUrlToJpegData(
   }
 }
 
-async function rasterizeSvgBySlug(slug: string, sizePx = 320): Promise<string | null> {
+async function rasterizeSvgBySlug(slug: string, widthPx = 440, heightPx = 278): Promise<string | null> {
   if (typeof document === 'undefined') return null;
   const svg = document.querySelector(`[data-vector-slug="${slug}"] svg`) as SVGSVGElement | null;
   if (!svg) return null;
 
   try {
+    const viewBox = svg.viewBox?.baseVal;
+    const aspect =
+      viewBox && viewBox.width > 0 && viewBox.height > 0
+        ? viewBox.width / viewBox.height
+        : 1;
+
     const clone = svg.cloneNode(true) as SVGSVGElement;
     clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
-    clone.setAttribute('width', String(sizePx));
-    clone.setAttribute('height', String(sizePx));
+    const renderW = aspect >= 1 ? widthPx : Math.round(heightPx * aspect);
+    const renderH = aspect >= 1 ? Math.round(widthPx / aspect) : heightPx;
+    clone.setAttribute('width', String(renderW));
+    clone.setAttribute('height', String(renderH));
 
     const serializer = new XMLSerializer();
     const svgString = serializer.serializeToString(clone);
@@ -94,34 +102,26 @@ async function rasterizeSvgBySlug(slug: string, sizePx = 320): Promise<string | 
     });
 
     const canvas = document.createElement('canvas');
-    canvas.width = sizePx;
-    canvas.height = sizePx;
+    canvas.width = widthPx;
+    canvas.height = heightPx;
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
 
     ctx.fillStyle = '#18100C';
-    ctx.fillRect(0, 0, sizePx, sizePx);
+    ctx.fillRect(0, 0, widthPx, heightPx);
 
-    const pad = Math.round(sizePx * 0.12);
-    const boxSize = sizePx - pad * 2;
-    const viewBox = svg.viewBox?.baseVal;
-    const aspect =
-      viewBox && viewBox.width > 0 && viewBox.height > 0
-        ? viewBox.width / viewBox.height
-        : (img.naturalWidth || 1) / Math.max(1, img.naturalHeight || 1);
-
-    let drawW = boxSize;
-    let drawH = boxSize;
-    if (aspect > 1) {
-      drawH = Math.round(boxSize / aspect);
-    } else if (aspect < 1) {
-      drawW = Math.round(boxSize * aspect);
-    }
-    const dx = Math.round((sizePx - drawW) / 2);
-    const dy = Math.round((sizePx - drawH) / 2);
+    const padX = Math.round(widthPx * 0.08);
+    const padY = Math.round(heightPx * 0.11);
+    const maxW = widthPx - padX * 2;
+    const maxH = heightPx - padY * 2;
+    const scale = Math.min(maxW / Math.max(1, renderW), maxH / Math.max(1, renderH));
+    const drawW = Math.round(renderW * scale);
+    const drawH = Math.round(renderH * scale);
+    const dx = Math.round((widthPx - drawW) / 2);
+    const dy = Math.round((heightPx - drawH) / 2);
     ctx.drawImage(img, dx, dy, drawW, drawH);
 
-    return canvasToJpegDataUrl(canvas, 0.9);
+    return canvasToJpegDataUrl(canvas, 0.92);
   } catch {
     return null;
   }
@@ -251,7 +251,7 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
       config.naturalMood === 'cherries-beans' ? GENERATED_ASSETS.coffeeCherries : GENERATED_ASSETS.kawiMist,
       700
     ),
-    Promise.all(VECTOR_ELEMENTS_META.map((v) => rasterizeSvgBySlug(v.slug, 280))),
+    Promise.all(VECTOR_ELEMENTS_META.map((v) => rasterizeSvgBySlug(v.slug, 440, 278))),
   ]);
 
   const doc = new jsPDF({
@@ -380,7 +380,7 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
     },
     {
       label: 'BELAKANG (NARASI GORENG KREWENG)',
-      val: `Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan. Dipetik langsung dari lereng Gunung Kawi. Setiap seduhan menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast} Arunika Kawi Coffee Harum dan Nikmat`,
+      val: `Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast} Arunika Kawi Coffee harum dan nikmat`,
     },
     {
       label: 'KOMPOSISI, PRODUSEN & PITA BAWAH BELAKANG',
@@ -531,53 +531,54 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
   doc.setFontSize(8.5);
   doc.text(
     pdfSafe(
-      'Seluruh 7 komponen vektor di bawah ini tersedia untuk diunduh langsung dalam format SVG Vektor & PNG Transparan di bagian Kit Elemen.'
+      `Seluruh ${VECTOR_ELEMENTS_META.length} komponen vektor di bawah ini tersedia untuk diunduh dalam format SVG Vektor & PNG Transparan di bagian Kit Elemen.`
     ),
     MARGIN,
     y
   );
-  y += 7;
+  y += 6.5;
 
-  const vecCardH = 30;
+  const vecCardH = 26.5;
   VECTOR_ELEMENTS_META.forEach((vec, idx) => {
     const thumb = vectorThumbs[idx];
     doc.setFillColor(246, 245, 242);
     doc.setDrawColor(222, 217, 206);
     doc.roundedRect(MARGIN, y, CONTENT_W, vecCardH, 2, 2, 'FD');
 
-    const thumbSize = 24;
-    const tx = MARGIN + 3;
-    const ty = y + 3;
+    const thumbW = 34;
+    const thumbH = 21.5;
+    const tx = MARGIN + 2.5;
+    const ty = y + 2.5;
     doc.setFillColor(24, 16, 12);
-    doc.roundedRect(tx, ty, thumbSize, thumbSize, 1.5, 1.5, 'F');
+    doc.roundedRect(tx, ty, thumbW, thumbH, 1.5, 1.5, 'F');
     if (thumb) {
-      doc.addImage(thumb, 'JPEG', tx + 0.5, ty + 0.5, thumbSize - 1, thumbSize - 1, undefined, 'FAST');
+      doc.addImage(thumb, 'JPEG', tx + 0.5, ty + 0.5, thumbW - 1, thumbH - 1, undefined, 'FAST');
     } else {
       doc.setTextColor(216, 180, 116);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(7);
-      doc.text('SVG', tx + thumbSize / 2, ty + thumbSize / 2 + 1, { align: 'center' });
+      doc.text('SVG', tx + thumbW / 2, ty + thumbH / 2 + 1, { align: 'center' });
     }
 
-    const textX = tx + thumbSize + 5;
-    const textW = CONTENT_W - thumbSize - 12;
+    const textX = tx + thumbW + 4.5;
+    const textW = CONTENT_W - thumbW - 11;
     doc.setTextColor(26, 20, 18);
     doc.setFont('times', 'bold');
-    doc.setFontSize(11);
-    doc.text(pdfSafe(`01.${idx + 1} ${vec.title}`), textX, y + 8.5);
+    doc.setFontSize(10.5);
+    doc.text(pdfSafe(`01.${idx + 1} ${vec.title}`), textX, y + 8);
 
     doc.setTextColor(138, 100, 41);
     doc.setFont('courier', 'bold');
-    doc.setFontSize(7.5);
-    doc.text(pdfSafe(vec.format), PAGE_W - MARGIN - 4, y + 8.5, { align: 'right' });
+    doc.setFontSize(7.4);
+    doc.text(pdfSafe(vec.format), PAGE_W - MARGIN - 4, y + 8, { align: 'right' });
 
     doc.setTextColor(87, 77, 71);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.3);
+    doc.setFontSize(8.1);
     const vLines = doc.splitTextToSize(pdfSafe(vec.description), textW);
-    doc.text(vLines, textX, y + 14.5);
+    doc.text(vLines, textX, y + 13.8);
 
-    y += vecCardH + 3.5;
+    y += vecCardH + 3.0;
   });
 
   // ============================================================================
@@ -612,17 +613,17 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
     {
       meta: PHOTO_ASSETS.find((p) => p.id === selectedFrontId)!,
       img: frontMasterImg,
-      note: 'Varian berat bersih aktif ditampilkan eksklusif pada panel depan.',
+      desc: `${PHOTO_ASSETS.find((p) => p.id === selectedFrontId)!.usage}. Ditampilkan eksklusif pada panel depan.`,
     },
     {
       meta: PHOTO_ASSETS.find((p) => p.id === 'revised-rear')!,
       img: rearMasterImg,
-      note: 'Digunakan bersama untuk varian 100 gram & 250 gram (tanpa berat bersih).',
+      desc: `${PHOTO_ASSETS.find((p) => p.id === 'revised-rear')!.usage}. Berlaku untuk varian 100 gram & 250 gram.`,
     },
     {
       meta: PHOTO_ASSETS.find((p) => p.id === 'beans-cluster')!,
       img: beansImg,
-      note: 'Elemen fotografi makro biji kopi Robusta sangrai di bagian bawah kemasan.',
+      desc: 'Foto makro biji kopi Robusta sangrai dengan transisi gradasi halus untuk bagian bawah panel depan dan gusset samping.',
     },
     {
       meta:
@@ -630,19 +631,22 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
           ? {
               id: 'coffee-cherries',
               title: 'Foto Ranting Ceri Kopi Gunung Kawi',
-              usage: 'Latar atmosfer ceri merah berembun untuk mode Ceri Merah & Biji Sangrai.',
+              usage: 'Latar atmosfer ceri merah berembun',
               src: GENERATED_ASSETS.coffeeCherries,
               filename: 'natural_coffee_cherries_branch.jpg',
               dims: '1200 × 896 px',
             }
           : PHOTO_ASSETS.find((p) => p.id === 'kawi-mist')!,
       img: kawiOrCherryImg,
-      note: 'Atmosfer natural lereng Gunung Kawi ("Arunika") pada bagian atas kemasan.',
+      desc:
+        config.naturalMood === 'cherries-beans'
+          ? 'Atmosfer natural ranting ceri kopi merah berembun untuk bagian atas kemasan.'
+          : 'Foto lanskap kabut fajar lereng Gunung Kawi ("Arunika") sebagai atmosfer latar atas kemasan.',
     },
     {
       meta: PHOTO_ASSETS.find((p) => p.id === activeMockupId)!,
       img: naturalMockupImg,
-      note: `Mockup utama untuk alternatif terpilih: ${shapeMeta.code} (${shapeMeta.label}).`,
+      desc: `Mockup utama untuk alternatif terpilih: ${shapeMeta.code} (${shapeMeta.label}). ${PHOTO_ASSETS.find((p) => p.id === activeMockupId)!.usage}.`,
     },
   ];
 
@@ -682,7 +686,7 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
     doc.setTextColor(87, 77, 71);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.2);
-    const pLines = doc.splitTextToSize(pdfSafe(`${entry.meta.usage}. ${entry.note}`), tw);
+    const pLines = doc.splitTextToSize(pdfSafe(entry.desc), tw);
     doc.text(pLines, tx, y + 20);
 
     y += pCardH + 3.5;
@@ -718,12 +722,12 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
 
   // 2-column grid for 6 color swatches
   const swW = (CONTENT_W - 4) / 2;
-  const swH = 22;
+  const swH = 23.5;
   COLOR_TOKENS.forEach((token, idx) => {
     const col = idx % 2;
     const row = Math.floor(idx / 2);
     const sx = MARGIN + col * (swW + 4);
-    const sy = y + row * (swH + 3);
+    const sy = y + row * (swH + 2.8);
 
     doc.setFillColor(246, 245, 242);
     doc.setDrawColor(222, 217, 206);
@@ -731,26 +735,26 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
 
     doc.setFillColor(...token.rgb);
     doc.setDrawColor(190, 182, 168);
-    doc.roundedRect(sx + 3, sy + 4, 14, 14, 1.5, 1.5, 'FD');
+    doc.roundedRect(sx + 3, sy + 5, 13, 13, 1.5, 1.5, 'FD');
 
     doc.setTextColor(26, 20, 18);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8.2);
-    doc.text(pdfSafe(token.name), sx + 20, sy + 6.2);
+    doc.text(pdfSafe(token.name), sx + 18.5, sy + 6.2);
 
     doc.setTextColor(138, 100, 41);
     doc.setFont('courier', 'bold');
-    doc.setFontSize(7.2);
-    doc.text(pdfSafe(`${token.hex} · ${token.cmyk}`), sx + 20, sy + 10.6);
+    doc.setFontSize(7.1);
+    doc.text(pdfSafe(`${token.hex} · ${token.cmyk}`), sx + 18.5, sy + 10.6);
 
     doc.setTextColor(87, 77, 71);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(6.9);
-    const finishLines = doc.splitTextToSize(pdfSafe(`${token.role} · ${token.finish}`), swW - 23).slice(0, 2);
-    doc.text(finishLines, sx + 20, sy + 14.8);
+    doc.setFontSize(6.75);
+    const finishLines = doc.splitTextToSize(pdfSafe(`${token.role} · ${token.finish}`), swW - 21).slice(0, 2);
+    doc.text(finishLines, sx + 18.5, sy + 15.0);
   });
 
-  y += Math.ceil(COLOR_TOKENS.length / 2) * (swH + 3) + 5;
+  y += Math.ceil(COLOR_TOKENS.length / 2) * (swH + 2.8) + 4.5;
 
   y = drawSectionHeading(
     doc,
@@ -763,9 +767,9 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
 
   specRows.forEach((row, idx) => {
     doc.setFont('courier', 'normal');
-    doc.setFontSize(7.6);
+    doc.setFontSize(7.5);
     const valLines = doc.splitTextToSize(pdfSafe(row.value), 108).slice(0, 2);
-    const rowH = valLines.length > 1 ? 12.2 : 9.4;
+    const rowH = valLines.length > 1 ? 13.4 : 9.1;
 
     doc.setFillColor(idx % 2 === 0 ? 246 : 239, idx % 2 === 0 ? 245 : 236, idx % 2 === 0 ? 242 : 230);
     doc.rect(MARGIN, y, CONTENT_W, rowH, 'F');
@@ -775,12 +779,12 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
     doc.setTextColor(87, 77, 71);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.8);
-    doc.text(pdfSafe(row.label), MARGIN + 3, y + 6);
+    doc.text(pdfSafe(row.label), MARGIN + 3, y + (valLines.length > 1 ? 5.6 : 5.8));
 
     doc.setTextColor(26, 20, 18);
     doc.setFont('courier', 'normal');
-    doc.setFontSize(7.6);
-    doc.text(valLines, PAGE_W - MARGIN - 3, y + 5.6, { align: 'right' });
+    doc.setFontSize(7.5);
+    doc.text(valLines, PAGE_W - MARGIN - 3, y + 5.2, { align: 'right' });
 
     y += rowH;
   });

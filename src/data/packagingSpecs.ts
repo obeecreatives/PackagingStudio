@@ -81,6 +81,12 @@ export interface VectorElementMeta {
 
 export const VECTOR_ELEMENTS_META: VectorElementMeta[] = [
   {
+    slug: 'arunika-wordmark-utama',
+    title: 'Wordmark ARUNIKA KAWI',
+    description: "Tipografi utama 'ARUNIKA' swash display serif & 'KAWI' bold sans berlapis foil emas.",
+    format: 'SVG Vektor · PNG 1600×440',
+  },
+  {
     slug: 'arunika-emblem-utama',
     title: 'Emblem Arunika Sun & Bean',
     description: "Ikon dua biji kopi & sinar fajar ('Arunika') berlapis gradasi emas.",

@@ -144,8 +144,8 @@ export function DesignElementsKit({ config, onExport, isExporting, onExpand }: D
     ``,
     `JUDUL BELAKANG: Arunika Kawi Coffee (${roast.crestTop} ${roast.crestBottom})`,
     `CERITA PANEL BELAKANG:`,
-    `Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan. Dipetik langsung dari lereng Gunung Kawi. Setiap seduhan menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast}`,
-    `Arunika Kawi Coffee Harum dan Nikmat`,
+    `Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast}`,
+    `Arunika Kawi Coffee harum dan nikmat`,
     ``,
     `KOMPOSISI: ${config.beanVariant === 'robusta-100' ? 'KOMPOSISI 100 % BIJI KOPI ROBUSTA' : `KOMPOSISI ${variant.frontLabel.toUpperCase()}`}`,
     `DIPRODUKSI OLEH: KUPS Himatarian Blitar, Jawa Timur – INDONESIA (Stempel KTH Hijau + PIRT di bawah stempel + Kotak PIRT)`,
@@ -767,10 +767,10 @@ export function DesignElementsKit({ config, onExport, isExporting, onExpand }: D
                     Copywriting Belakang &amp; Data Legal · {shapeMeta.fonts.mono}
                   </p>
                   <p className="mt-1 text-xs text-[#1A1412] leading-relaxed">
-                    Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan. Dipetik langsung dari
-                    lereng Gunung Kawi. Setiap seduhan menghadirkan karakter {variant.storyCharacter}{' '}
+                    Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari
+                    lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter {variant.storyCharacter}{' '}
                     {roast.storyRoast} <strong className="font-semibold text-[#8A6429]">Arunika Kawi Coffee</strong>{' '}
-                    <strong className="font-semibold">Harum dan Nikmat</strong>
+                    <strong className="font-semibold">harum dan nikmat</strong>
                   </p>
                   <p className="mt-1.5 font-mono text-[11px] text-[#574D47] tabular-nums">
                     KUPS Himatarian Blitar · Stempel KTH + PIRT · Kode Produksi &amp; Baik Digunakan Sebelum

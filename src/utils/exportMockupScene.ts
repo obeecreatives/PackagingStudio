@@ -13,6 +13,7 @@ import {
 } from '../data/mockupSceneLayouts';
 import { getWibDateKey } from './dateUtils';
 import { drawArunikaKawiWordmarkCanvas } from './arunikaWordmarkPaths';
+import { drawRichCenteredParagraph } from './canvasRichText';
 import { renderPrintSheetCanvas, loadImage } from './exportPrintArtwork';
 import { downloadCanvas } from './exportSingleElement';
 import { drawCanvasQuadWarp } from './perspectiveHomography';
@@ -201,88 +202,6 @@ function drawMandalaCrest(ctx: CanvasRenderingContext2D, cx: number, cy: number,
   ctx.font = `600 ${Math.max(8, Math.round(r * 0.22))}px "Cormorant Garamond", Georgia, serif`;
   ctx.fillText(label, cx, cy + r * 0.06);
   ctx.restore();
-}
-
-interface RichRun {
-  text: string;
-  color: string;
-  font: string;
-}
-
-/**
- * Draws centered wrapped text supporting inline color/weight spans (e.g. gold highlight on rasa kopi robusta).
- */
-function drawRichCenteredParagraph(
-  ctx: CanvasRenderingContext2D,
-  runs: RichRun[],
-  cx: number,
-  startY: number,
-  maxWidth: number,
-  lineHeight: number
-): number {
-  interface WordToken {
-    word: string;
-    color: string;
-    font: string;
-    width: number;
-  }
-
-  const tokens: WordToken[] = [];
-  for (const run of runs) {
-    ctx.font = run.font;
-    const words = run.text.trim().split(/\s+/);
-    for (const w of words) {
-      if (!w) continue;
-      tokens.push({
-        word: w,
-        color: run.color,
-        font: run.font,
-        width: ctx.measureText(w).width,
-      });
-    }
-  }
-
-  const spaceW = ctx.measureText(' ').width;
-  const lines: WordToken[][] = [];
-  let currentLine: WordToken[] = [];
-  let currentWidth = 0;
-
-  for (const t of tokens) {
-    const addW = currentLine.length > 0 ? spaceW + t.width : t.width;
-    if (currentWidth + addW > maxWidth && currentLine.length > 0) {
-      lines.push(currentLine);
-      currentLine = [t];
-      currentWidth = t.width;
-    } else {
-      currentLine.push(t);
-      currentWidth += addW;
-    }
-  }
-  if (currentLine.length > 0) {
-    lines.push(currentLine);
-  }
-
-  let y = startY;
-  ctx.save();
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'alphabetic';
-  for (const line of lines) {
-    let totalW = 0;
-    for (let i = 0; i < line.length; i++) {
-      totalW += line[i].width + (i > 0 ? spaceW : 0);
-    }
-    let cursorX = cx - totalW / 2;
-    for (let i = 0; i < line.length; i++) {
-      const tok = line[i];
-      ctx.font = tok.font;
-      ctx.fillStyle = tok.color;
-      ctx.fillText(tok.word, cursorX, y);
-      cursorX += tok.width + spaceW;
-    }
-    y += lineHeight;
-  }
-  ctx.restore();
-  return y;
 }
 
 function warpOverlayRect(

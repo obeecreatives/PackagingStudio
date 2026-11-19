@@ -9,6 +9,7 @@ import {
 } from '../types/packaging';
 import { getWibDateKey } from './dateUtils';
 import { drawArunikaKawiWordmarkCanvas } from './arunikaWordmarkPaths';
+import { drawRichCenteredParagraph } from './canvasRichText';
 import { downloadCanvas } from './exportSingleElement';
 
 export function loadImage(src: string): Promise<HTMLImageElement> {
@@ -545,12 +546,9 @@ export async function renderPrintSheetCanvas(
 
     const bandCenterY = py + ph * 0.945;
     ctx.fillStyle = isCopper ? '#FAF5EB' : '#1E130D';
-    ctx.textAlign = 'left';
-    ctx.font = `600 ${Math.round(pw * 0.021)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('GUNUNG KAWI · JAWA TIMUR', px + pw * 0.06, bandCenterY);
-    ctx.textAlign = 'right';
-    ctx.font = `700 ${Math.round(pw * 0.026)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText(`Isi Bersih : ${config.netWeight}`, px + pw * 0.94, bandCenterY);
+    ctx.textAlign = 'center';
+    ctx.font = `700 ${Math.round(pw * 0.044)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText(`Isi Bersih : ${config.netWeight}`, cx, bandCenterY);
   };
 
   const drawGussetContent = (px: number, py: number, pw: number, ph: number, side: 'left' | 'right') => {
@@ -586,8 +584,8 @@ export async function renderPrintSheetCanvas(
 
     ctx.fillStyle = isCopper ? '#FAF5EB' : '#1E130D';
     ctx.textAlign = 'center';
-    ctx.font = `700 ${Math.round(pw * 0.035)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('JAWA TIMUR · INDONESIA', cx, py + ph * 0.945);
+    ctx.font = `700 ${Math.round(pw * 0.056)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText('JAWA TIMUR · ID', cx, py + ph * 0.945);
   };
 
   const drawBackContent = (px: number, py: number, pw: number, ph: number) => {
@@ -620,9 +618,9 @@ export async function renderPrintSheetCanvas(
 
     const cx = px + pw / 2;
 
-    const cw = pw * 0.28;
-    const ch = cw * 0.56;
-    const cy = py + ph * 0.12;
+    const cw = pw * 0.31;
+    const ch = cw * 0.58;
+    const cy = py + ph * 0.14;
     ctx.save();
     ctx.fillStyle = 'rgba(20, 11, 7, 0.65)';
     ctx.strokeStyle = '#D6B373';
@@ -633,77 +631,103 @@ export async function renderPrintSheetCanvas(
     ctx.stroke();
     ctx.textAlign = 'center';
     ctx.fillStyle = '#F4E6C8';
-    ctx.font = `600 ${Math.round(pw * 0.017)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.font = `600 ${Math.round(pw * 0.02)}px "Plus Jakarta Sans", sans-serif`;
     ctx.fillText(roast.crestTop, cx, cy - ch * 0.06);
     ctx.fillStyle = '#D8B474';
-    ctx.font = `700 ${Math.round(pw * 0.032)}px "Cormorant Garamond", Georgia, serif`;
+    ctx.font = `700 ${Math.round(pw * 0.037)}px "Cormorant Garamond", Georgia, serif`;
     ctx.fillText(roast.crestBottom, cx, cy + ch * 0.28);
     ctx.restore();
 
+    const headY = cy + ch * 0.5 + pw * 0.085;
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#C9A35E';
-    ctx.font = `700 ${Math.round(pw * 0.045)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('Arunika Kawi Coffee', cx, py + ph * 0.21);
+    ctx.fillStyle = '#D8B474';
+    ctx.font = `700 ${Math.round(pw * 0.058)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText('Arunika Kawi Coffee', cx, headY);
 
-    ctx.fillStyle = '#F4ECE0';
-    ctx.font = `400 ${Math.round(pw * 0.021)}px "Plus Jakarta Sans", sans-serif`;
-    const lines = [
-      'Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan,',
-      'dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya',
-      `menghadirkan karakter ${variant.storyCharacter}`,
-      roast.storyRoast,
-    ];
-    lines.forEach((line, i) => ctx.fillText(line, cx, py + ph * (0.28 + i * 0.032)));
+    const bodySize = Math.round(pw * 0.032);
+    const normalFont = `400 ${bodySize}px "Plus Jakarta Sans", sans-serif`;
+    const italicFont = `italic 400 ${bodySize}px "Plus Jakarta Sans", sans-serif`;
+    const goldBoldFont = `600 ${bodySize}px "Plus Jakarta Sans", sans-serif`;
 
-    ctx.fillStyle = '#C9A35E';
-    ctx.font = `700 ${Math.round(pw * 0.023)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('Arunika Kawi Coffee harum dan nikmat', cx, py + ph * 0.44);
+    const afterStoryY = drawRichCenteredParagraph(
+      ctx,
+      [
+        { text: 'Diolah secara tradisional (', color: '#F4ECE0', font: normalFont },
+        { text: 'Goreng Kreweng', color: '#F4ECE0', font: italicFont },
+        {
+          text: ') oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter',
+          color: '#F4ECE0',
+          font: normalFont,
+        },
+        { text: variant.storyCharacter, color: '#D8B474', font: goldBoldFont },
+        { text: roast.storyRoast, color: '#F4ECE0', font: normalFont },
+      ],
+      cx,
+      headY + pw * 0.075,
+      pw * 0.84,
+      bodySize * 1.34
+    );
 
+    const tagSize = Math.round(pw * 0.034);
+    const afterTagY = drawRichCenteredParagraph(
+      ctx,
+      [
+        { text: 'Arunika Kawi Coffee', color: '#D8B474', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
+        { text: 'harum dan nikmat', color: '#FAF5EB', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
+      ],
+      cx,
+      afterStoryY + pw * 0.035,
+      pw * 0.86,
+      tagSize * 1.25
+    );
+
+    const compY = Math.min(py + ph * 0.69, afterTagY + pw * 0.085);
     ctx.fillStyle = '#FAF5EB';
-    ctx.font = `700 ${Math.round(pw * 0.023)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.font = `600 ${Math.round(pw * 0.03)}px "Plus Jakarta Sans", sans-serif`;
     ctx.fillText(
       `KOMPOSISI ${config.beanVariant === 'robusta-100' ? '100 % BIJI KOPI ROBUSTA' : variant.frontLabel.toUpperCase()}`,
       cx,
-      py + ph * 0.54
+      compY
     );
 
     if (config.sealPlacement === 'back') {
-      drawKthSeal(ctx, px + pw * 0.13, py + ph * 0.77, pw * 0.068);
+      drawKthSeal(ctx, px + pw * 0.135, py + ph * 0.775, pw * 0.065);
       ctx.fillStyle = '#FAF5EB';
       ctx.textAlign = 'center';
-      ctx.font = `600 ${Math.round(pw * 0.018)}px "Plus Jakarta Sans", sans-serif`;
-      ctx.fillText('PIRT', px + pw * 0.13, py + ph * 0.848);
+      ctx.font = `600 ${Math.round(pw * 0.022)}px "Plus Jakarta Sans", sans-serif`;
+      ctx.fillText('PIRT', px + pw * 0.135, py + ph * 0.848);
     }
 
-    const prodX = config.sealPlacement === 'back' ? px + pw * 0.22 : px + pw * 0.08;
+    const prodX = config.sealPlacement === 'back' ? px + pw * 0.225 : px + pw * 0.08;
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#C9A35E';
-    ctx.font = `700 ${Math.round(pw * 0.024)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillStyle = '#D8B474';
+    ctx.font = `700 ${Math.round(pw * 0.028)}px "Plus Jakarta Sans", sans-serif`;
     ctx.fillText('Diproduksi Oleh', prodX, py + ph * 0.745);
     ctx.fillStyle = '#FAF5EB';
-    ctx.font = `600 ${Math.round(pw * 0.019)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('KUPS Himatarian Blitar', prodX, py + ph * 0.778);
-    ctx.fillText('Jawa Timur – INDONESIA', prodX, py + ph * 0.806);
+    ctx.font = `500 ${Math.round(pw * 0.023)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText('KUPS Himatarian Blitar', prodX, py + ph * 0.776);
+    ctx.fillText('Jawa Timur – INDONESIA', prodX, py + ph * 0.804);
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(prodX, py + ph * 0.822, pw * 0.31, ph * 0.036);
+    ctx.fillRect(prodX, py + ph * 0.822, pw * 0.30, ph * 0.032);
 
     const boxX = px + pw * 0.61;
     const boxW = pw * 0.31;
     ctx.fillStyle = '#FAF5EB';
-    ctx.font = `600 ${Math.round(pw * 0.018)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.font = `500 ${Math.round(pw * 0.022)}px "Plus Jakarta Sans", sans-serif`;
     ctx.fillText('Kode Produksi', boxX, py + ph * 0.74);
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(boxX, py + ph * 0.752, boxW, ph * 0.036);
+    ctx.fillRect(boxX, py + ph * 0.752, boxW, ph * 0.032);
 
     ctx.fillStyle = '#FAF5EB';
-    ctx.fillText('Baik Digunakan Sebelum', boxX, py + ph * 0.81);
+    ctx.fillText('Baik Digunakan Sebelum', boxX, py + ph * 0.808);
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(boxX, py + ph * 0.822, boxW, ph * 0.036);
+    ctx.fillRect(boxX, py + ph * 0.822, boxW, ph * 0.032);
 
     const bandCenterY = py + ph * 0.945;
     ctx.fillStyle = isCopper ? '#FAF5EB' : '#140B07';
     ctx.textAlign = 'center';
-    ctx.font = `700 ${Math.round(pw * 0.026)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.font = `700 ${Math.round(pw * 0.038)}px "Plus Jakarta Sans", sans-serif`;
     ctx.fillText('100 % KOPI ASLI INDONESIA', cx, bandCenterY);
   };
 
