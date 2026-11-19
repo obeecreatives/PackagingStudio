@@ -4,6 +4,12 @@ import {
   ARUNIKA_WORDMARK_VIEWBOX,
   KAWI_GLYPHS,
 } from '../utils/arunikaWordmarkPaths';
+import {
+  BOTANICAL_CHERRIES,
+  BOTANICAL_LEAF_SPECS,
+  BOTANICAL_STEM_PATHS,
+  BOTANICAL_VIEWBOX,
+} from '../utils/botanicalPaths';
 
 export function ArunikaKawiWordmark({
   className = 'w-[62cqi] h-auto',
@@ -255,39 +261,65 @@ export function MandalaHeritageCrest({
 export function BotanicalCornerArt({ className = '' }: { className?: string }) {
   const gradId = `botanical-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
   return (
-    <svg viewBox="0 0 120 120" fill="none" className={className} aria-hidden="true">
+    <svg viewBox={BOTANICAL_VIEWBOX} fill="none" className={className} aria-hidden="true">
       <defs>
-        <linearGradient id={gradId} x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#F2DFB3" />
-          <stop offset="60%" stopColor="#C99C52" />
-          <stop offset="100%" stopColor="#8C6429" />
+        <linearGradient id={gradId} x1="0" y1="0" x2="140" y2="180" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#F5E4BC" />
+          <stop offset="45%" stopColor="#D8B474" />
+          <stop offset="100%" stopColor="#9E7334" />
         </linearGradient>
       </defs>
-      {/* Delicate gold coffee leaf & cherry botanical line-art */}
-      <path d="M8 108C28 74 58 46 102 18" stroke={`url(#${gradId})`} strokeWidth="1.1" strokeOpacity="0.7" />
-      <path
-        d="M36 78C18 68 14 48 26 36C42 42 48 62 36 78Z"
-        stroke={`url(#${gradId})`}
-        strokeWidth="1"
-        fill="rgba(201,156,82,0.08)"
-      />
-      <path d="M26 36C31 51 34 64 36 78" stroke={`url(#${gradId})`} strokeWidth="0.7" strokeOpacity="0.6" />
-      <path
-        d="M66 48C50 38 48 20 62 12C76 20 78 36 66 48Z"
-        stroke={`url(#${gradId})`}
-        strokeWidth="1"
-        fill="rgba(201,156,82,0.08)"
-      />
-      <path
-        d="M44 74C58 84 78 82 88 68C76 58 58 60 44 74Z"
-        stroke={`url(#${gradId})`}
-        strokeWidth="1"
-        fill="rgba(201,156,82,0.08)"
-      />
-      {/* Coffee cherries */}
-      <circle cx="52" cy="56" r="5" stroke={`url(#${gradId})`} strokeWidth="1" fill="rgba(201,156,82,0.12)" />
-      <circle cx="62" cy="61" r="4.5" stroke={`url(#${gradId})`} strokeWidth="1" fill="rgba(201,156,82,0.12)" />
-      <circle cx="55" cy="66" r="4.2" stroke={`url(#${gradId})`} strokeWidth="1" fill="rgba(201,156,82,0.12)" />
+
+      {BOTANICAL_STEM_PATHS.map((d, idx) => (
+        <path
+          key={`stem-${idx}`}
+          d={d}
+          stroke={`url(#${gradId})`}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ))}
+
+      {BOTANICAL_LEAF_SPECS.map((leaf, idx) => (
+        <g key={`leaf-${idx}`}>
+          <path
+            d={leaf.outline}
+            fill="rgba(216, 180, 116, 0.11)"
+            stroke={`url(#${gradId})`}
+            strokeWidth="1.25"
+            strokeLinejoin="round"
+          />
+          <path d={leaf.midrib} stroke={`url(#${gradId})`} strokeWidth="0.9" strokeLinecap="round" />
+          {leaf.veins.map((v, vIdx) => (
+            <path
+              key={vIdx}
+              d={v}
+              stroke={`url(#${gradId})`}
+              strokeWidth="0.65"
+              strokeOpacity="0.7"
+              strokeLinecap="round"
+            />
+          ))}
+        </g>
+      ))}
+
+      {BOTANICAL_CHERRIES.map((ch, idx) => (
+        <g key={`cherry-${idx}`}>
+          {ch.stem && (
+            <path d={ch.stem} stroke={`url(#${gradId})`} strokeWidth="1.05" strokeLinecap="round" />
+          )}
+          <circle
+            cx={ch.cx}
+            cy={ch.cy}
+            r={ch.r}
+            fill="rgba(216, 180, 116, 0.2)"
+            stroke={`url(#${gradId})`}
+            strokeWidth="1.25"
+          />
+          <circle cx={ch.cx + ch.r * 0.34} cy={ch.cy + ch.r * 0.32} r={Math.max(0.9, ch.r * 0.16)} fill="#EBD39F" />
+        </g>
+      ))}
     </svg>
   );
 }

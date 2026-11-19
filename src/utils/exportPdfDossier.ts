@@ -136,12 +136,10 @@ function drawContainedImage(
   boxY: number,
   boxW: number,
   boxH: number,
-  bgRgb: [number, number, number] = [24, 16, 12]
+  bgRgb: [number, number, number] = [24, 16, 12],
+  fitTight = false
 ) {
-  doc.setFillColor(...bgRgb);
-  doc.roundedRect(boxX, boxY, boxW, boxH, 2, 2, 'F');
-
-  const pad = 2;
+  const pad = fitTight ? 1.2 : 2;
   const innerW = boxW - pad * 2;
   const innerH = boxH - pad * 2;
   const scale = Math.min(innerW / Math.max(1, imgW), innerH / Math.max(1, imgH));
@@ -149,6 +147,13 @@ function drawContainedImage(
   const drawH = imgH * scale;
   const drawX = boxX + (boxW - drawW) / 2;
   const drawY = boxY + (boxH - drawH) / 2;
+
+  doc.setFillColor(...bgRgb);
+  if (fitTight) {
+    doc.roundedRect(drawX - pad, drawY - pad, drawW + pad * 2, drawH + pad * 2, 1.5, 1.5, 'F');
+  } else {
+    doc.roundedRect(boxX, boxY, boxW, boxH, 2, 2, 'F');
+  }
 
   doc.addImage(dataUrl, 'JPEG', drawX, drawY, drawW, drawH, undefined, 'FAST');
 }
@@ -345,7 +350,8 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
       y,
       panelBoxW,
       showcaseH,
-      [22, 15, 12]
+      [22, 15, 12],
+      true
     );
   }
   if (backSheet) {
@@ -358,7 +364,8 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
       y,
       panelBoxW,
       showcaseH,
-      [22, 15, 12]
+      [22, 15, 12],
+      true
     );
   }
   doc.text(pdfSafe(`Panel Depan (Isi Bersih : ${config.netWeight})`), MARGIN + leftBoxW + 6, y + showcaseH + 4);
@@ -490,7 +497,8 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
       y,
       halfW,
       bgPreviewH,
-      [22, 15, 12]
+      [22, 15, 12],
+      true
     );
   }
   if (bgBackSheet) {
@@ -503,7 +511,8 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
       y,
       halfW,
       bgPreviewH,
-      [22, 15, 12]
+      [22, 15, 12],
+      true
     );
   }
   doc.setTextColor(26, 20, 18);

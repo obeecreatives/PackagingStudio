@@ -110,9 +110,9 @@ function FrontTextOverlay({
   const isCopper = variantStyle === 'copper';
   const isDoypack = variantStyle === 'doypack';
 
-  const topPadPct = hasValveGap ? 5.5 : isBotanical ? 14.5 : isCopper ? 14.0 : 12.2;
-  const titleGapPct = hasValveGap ? 14.5 : isBotanical ? 9.0 : isCopper ? 10.0 : 9.5;
-  const subGapPct = hasValveGap ? 5.2 : isCopper ? 8.5 : 8.4;
+  const topPadPct = hasValveGap ? 5.5 : isBotanical ? 18.8 : isCopper ? 14.0 : 12.2;
+  const titleGapPct = hasValveGap ? 14.5 : isBotanical ? 6.8 : isCopper ? 10.0 : 9.5;
+  const subGapPct = hasValveGap ? 5.2 : isBotanical ? 6.0 : isCopper ? 8.5 : 8.4;
 
   return (
     <div className="absolute pointer-events-none select-none z-20 overflow-visible" style={getBoxTransform(rect, stageSize)}>
@@ -165,20 +165,30 @@ function FrontTextOverlay({
 
           <ArunikaSunBeanCrest
             className={
-              isDoypack ? 'w-[11cqi] h-[11cqi] shrink-0' : isCopper ? 'w-[13.2cqi] h-[13.2cqi] shrink-0' : 'w-[12.2cqi] h-[12.2cqi] shrink-0'
+              isDoypack
+                ? 'w-[11cqi] h-[11cqi] shrink-0'
+                : isBotanical
+                  ? 'w-[11.2cqi] h-[11.2cqi] shrink-0'
+                  : isCopper
+                    ? 'w-[13.2cqi] h-[13.2cqi] shrink-0'
+                    : 'w-[12.2cqi] h-[12.2cqi] shrink-0'
             }
           />
           <p
             className="mt-[1.8%] font-sans font-bold uppercase tracking-[0.14em] text-[#D8B474] whitespace-nowrap drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] shrink-0"
-            style={{ fontSize: isCopper ? '6cqi' : isDoypack ? '4.5cqi' : '5.1cqi' }}
+            style={{ fontSize: isCopper ? '6cqi' : isDoypack ? '4.5cqi' : isBotanical ? '4.7cqi' : '5.1cqi' }}
           >
             COFFE BEAN
           </p>
-          <div className="mt-[0.8%] flex items-center justify-center gap-[4%] w-[56%] shrink-0">
+          <div
+            className={`mt-[0.8%] flex items-center justify-center gap-[4%] shrink-0 ${
+              isBotanical ? 'w-[46%]' : 'w-[56%]'
+            }`}
+          >
             <span className="h-px flex-1 bg-[#FAF5EB]/55" />
             <span
               className="font-sans font-medium uppercase tracking-[0.14em] text-[#FAF5EB] whitespace-nowrap drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]"
-              style={{ fontSize: isCopper ? '3.8cqi' : isDoypack ? '3cqi' : '3.3cqi' }}
+              style={{ fontSize: isCopper ? '3.8cqi' : isDoypack ? '3cqi' : isBotanical ? '3.1cqi' : '3.3cqi' }}
             >
               EST 2024
             </span>

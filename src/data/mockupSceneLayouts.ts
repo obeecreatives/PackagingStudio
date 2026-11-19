@@ -161,12 +161,12 @@ export const NATURAL_MOCKUP_LAYOUTS: Record<PouchShapeId, NaturalMockupLayoutSpe
     rear: {
       x: 60.2,
       y: 19.0,
-      w: 33.6,
+      w: 32.0,
       h: 65.2,
       quad: [
         { x: 60.2, y: 19.0 },
-        { x: 91.2, y: 20.2 },
-        { x: 93.8, y: 82.0 },
+        { x: 89.8, y: 20.2 },
+        { x: 92.2, y: 82.0 },
         { x: 61.4, y: 84.2 },
       ],
       topPadPct: 18.5,

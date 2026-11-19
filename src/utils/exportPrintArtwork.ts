@@ -9,8 +9,10 @@ import {
 } from '../types/packaging';
 import { getWibDateKey } from './dateUtils';
 import { drawArunikaKawiWordmarkCanvas } from './arunikaWordmarkPaths';
+import { drawBotanicalCornerCanvas } from './botanicalPaths';
 import { drawRichCenteredParagraph } from './canvasRichText';
 import { downloadCanvas } from './exportSingleElement';
+import { drawKthGreenSealCanvas } from './kthSealCanvas';
 
 export function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -180,44 +182,6 @@ function drawMandalaRing(ctx: CanvasRenderingContext2D, cx: number, cy: number, 
   ctx.restore();
 }
 
-function drawKthSeal(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) {
-  ctx.save();
-  ctx.fillStyle = '#1E140E';
-  ctx.strokeStyle = '#D6B373';
-  ctx.lineWidth = r * 0.06;
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = '#2A1D14';
-  ctx.lineWidth = r * 0.03;
-  ctx.beginPath();
-  ctx.arc(cx, cy, r * 0.7, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = '#5E4B2C';
-  ctx.beginPath();
-  ctx.moveTo(cx - r * 0.55, cy + r * 0.22);
-  ctx.lineTo(cx - r * 0.18, cy - r * 0.32);
-  ctx.lineTo(cx + r * 0.02, cy - r * 0.05);
-  ctx.lineTo(cx + r * 0.24, cy - r * 0.38);
-  ctx.lineTo(cx + r * 0.55, cy + r * 0.22);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = '#F1DEC0';
-  ctx.font = `700 ${Math.round(r * 0.18)}px "Plus Jakarta Sans", sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText('PRODUK ASLI', cx, cy - r * 0.77);
-  ctx.font = `600 ${Math.round(r * 0.15)}px "Plus Jakarta Sans", sans-serif`;
-  ctx.fillText('JAWA TIMUR', cx, cy + r * 0.42);
-  ctx.font = `600 ${Math.round(r * 0.13)}px "Plus Jakarta Sans", sans-serif`;
-  ctx.fillText('KELOMPOK TANI HUTAN', cx, cy + r * 0.87);
-  ctx.restore();
-}
-
 export type ExportScope =
   | 'full-dieline'
   | 'front-only'
@@ -248,6 +212,7 @@ export async function renderPrintSheetCanvas(
   const isDoypack = config.pouchShape === 'doypack-valve';
   const tall = isTallGusset(config.pouchShape);
   const isHeritage = config.pouchShape === 'tall-heritage';
+  const isBotanical = config.pouchShape === 'tall-botanical';
   const isCopper = config.pouchShape === 'tall-copper';
   const weightSpecs = getWeightSpecs(config.pouchShape, config.netWeight);
   const bleedPx = 3 * scale;
@@ -373,10 +338,25 @@ export async function renderPrintSheetCanvas(
           { offset: 0.58, alpha: 0.95 },
           { offset: 1, alpha: 1 },
         ],
-        isCopper ? 0.72 : 1,
+        isCopper ? 0.72 : isBotanical ? 0.88 : 1,
         'bottom'
       );
     }
+
+    // Subtle matte vignette matching live CSS radial vignette so gold botanical corners pop cleanly
+    const vig = ctx.createRadialGradient(
+      px + pw * 0.5,
+      py + ph * 0.34,
+      pw * 0.08,
+      px + pw * 0.5,
+      py + ph * 0.45,
+      Math.max(pw, ph) * 0.72
+    );
+    vig.addColorStop(0, 'rgba(214, 179, 115, 0.06)');
+    vig.addColorStop(0.65, 'rgba(16, 9, 6, 0.26)');
+    vig.addColorStop(1, 'rgba(12, 7, 4, 0.56)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(px, py, pw, ph);
 
     const bandH = ph * 0.118;
     const bandY = py + ph - bandH;
@@ -436,30 +416,30 @@ export async function renderPrintSheetCanvas(
       ctx.strokeRect(px + pw * 0.035, py + ph * 0.035, pw * 0.93, ph * 0.93);
     }
 
-    if (config.pouchShape === 'tall-botanical' && !isBackgroundOnly) {
-      ctx.save();
-      ctx.strokeStyle = 'rgba(216, 180, 116, 0.55)';
-      ctx.lineWidth = 2;
-      const corners = [
-        [px + pw * 0.04, py + ph * 0.04, 1, 1],
-        [px + pw * 0.96, py + ph * 0.04, -1, 1],
-        [px + pw * 0.04, py + ph * 0.84, 1, -1],
-        [px + pw * 0.96, py + ph * 0.84, -1, -1],
-      ];
-      corners.forEach(([cx0, cy0, sx, sy]) => {
-        ctx.save();
-        ctx.translate(cx0, cy0);
-        ctx.scale(sx, sy);
-        ctx.beginPath();
-        ctx.moveTo(0, ph * 0.09);
-        ctx.quadraticCurveTo(pw * 0.05, ph * 0.04, pw * 0.14, 0);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.ellipse(pw * 0.06, ph * 0.04, pw * 0.035, ph * 0.015, -0.5, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
+    if (isBotanical) {
+      const bw = pw * 0.35;
+      const bh = bw * (200 / 180);
+      const bandTopY = py + ph * 0.882;
+      drawBotanicalCornerCanvas(ctx, px - pw * 0.01, py - ph * 0.005, bw, bh, {
+        flipX: false,
+        flipY: false,
+        opacity: 0.92,
       });
-      ctx.restore();
+      drawBotanicalCornerCanvas(ctx, px + pw - bw + pw * 0.01, py - ph * 0.005, bw, bh, {
+        flipX: true,
+        flipY: false,
+        opacity: 0.92,
+      });
+      drawBotanicalCornerCanvas(ctx, px - pw * 0.01, bandTopY - bh, bw, bh, {
+        flipX: false,
+        flipY: true,
+        opacity: 0.86,
+      });
+      drawBotanicalCornerCanvas(ctx, px + pw - bw + pw * 0.01, bandTopY - bh, bw, bh, {
+        flipX: true,
+        flipY: true,
+        opacity: 0.86,
+      });
     }
     if (isBackgroundOnly) return;
 
@@ -493,25 +473,44 @@ export async function renderPrintSheetCanvas(
       ctx.fillText(roast.subtitle, cx, py + ph * 0.538);
       ctx.fillText(variant.frontLabel, cx, py + ph * 0.585);
     } else if (tall) {
-      drawArunikaCrest(ctx, cx, py + ph * 0.14, pw * 0.068);
+      const crestY = isBotanical ? py + ph * 0.172 : py + ph * 0.145;
+      const crestR = isBotanical ? pw * 0.062 : pw * 0.068;
+      drawArunikaCrest(ctx, cx, crestY, crestR);
+
       ctx.textAlign = 'center';
       ctx.fillStyle = '#D8B474';
-      ctx.font = `700 ${Math.round(pw * 0.029)}px "Plus Jakarta Sans", sans-serif`;
-      ctx.fillText('COFFE BEAN', cx, py + ph * 0.205);
-      ctx.fillStyle = '#FAF5EB';
-      ctx.font = `500 ${Math.round(pw * 0.021)}px "Plus Jakarta Sans", sans-serif`;
-      ctx.fillText('EST 2024', cx, py + ph * 0.232);
+      ctx.font = `700 ${Math.round(pw * (isBotanical ? 0.027 : 0.029))}px "Plus Jakarta Sans", sans-serif`;
+      const coffeY = isBotanical ? py + ph * 0.232 : py + ph * 0.205;
+      ctx.fillText('COFFE BEAN', cx, coffeY);
 
-      drawArunikaKawiWordmarkCanvas(ctx, cx, py + ph * 0.268, pw * 0.66);
+      ctx.fillStyle = '#FAF5EB';
+      ctx.font = `500 ${Math.round(pw * (isBotanical ? 0.02 : 0.021))}px "Plus Jakarta Sans", sans-serif`;
+      const estY = isBotanical ? py + ph * 0.256 : py + ph * 0.232;
+      ctx.fillText('EST 2024', cx, estY);
+
+      const lineHalf = pw * (isBotanical ? 0.22 : 0.26);
+      const estInner = pw * 0.085;
+      ctx.strokeStyle = 'rgba(250, 245, 235, 0.55)';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(cx - lineHalf, estY - pw * 0.008);
+      ctx.lineTo(cx - estInner, estY - pw * 0.008);
+      ctx.moveTo(cx + estInner, estY - pw * 0.008);
+      ctx.lineTo(cx + lineHalf, estY - pw * 0.008);
+      ctx.stroke();
+
+      const wordmarkTopY = isBotanical ? py + ph * 0.292 : py + ph * 0.268;
+      drawArunikaKawiWordmarkCanvas(ctx, cx, wordmarkTopY, pw * (isBotanical ? 0.64 : 0.66));
 
       ctx.fillStyle = '#FAF5EB';
       ctx.font = `600 ${Math.round(pw * 0.035)}px "Plus Jakarta Sans", sans-serif`;
-      ctx.fillText(roast.subtitle, cx, py + ph * 0.445);
+      const subY = isBotanical ? py + ph * 0.422 : py + ph * 0.405;
+      ctx.fillText(roast.subtitle, cx, subY);
 
       if (isHeritage) {
-        drawMandalaRing(ctx, cx, py + ph * 0.56, pw * 0.22, variant.frontLabel);
+        drawMandalaRing(ctx, cx, py + ph * 0.54, pw * 0.22, variant.frontLabel);
       } else {
-        ctx.fillText(variant.frontLabel, cx, py + ph * 0.485);
+        ctx.fillText(variant.frontLabel, cx, subY + ph * 0.038);
       }
     } else {
       drawArunikaCrest(ctx, cx, py + ph * 0.155, pw * 0.068);
@@ -541,7 +540,7 @@ export async function renderPrintSheetCanvas(
     }
 
     if (config.sealPlacement === 'front') {
-      drawKthSeal(ctx, px + pw * 0.84, py + ph * 0.8, pw * 0.085);
+      drawKthGreenSealCanvas(ctx, px + pw * 0.84, py + ph * 0.8, pw * 0.085);
     }
 
     const bandCenterY = py + ph * 0.945;
@@ -553,6 +552,19 @@ export async function renderPrintSheetCanvas(
 
   const drawGussetContent = (px: number, py: number, pw: number, ph: number, side: 'left' | 'right') => {
     drawPanelBase(px, py, pw, ph, true);
+    if (isBotanical) {
+      const gw = pw * 0.54;
+      const gh = gw * (200 / 180);
+      const bandTopY = py + ph * 0.882;
+      drawBotanicalCornerCanvas(
+        ctx,
+        side === 'left' ? px + pw - gw + pw * 0.03 : px - pw * 0.03,
+        bandTopY - gh,
+        gw,
+        gh,
+        { flipX: side === 'left', flipY: true, opacity: 0.78 }
+      );
+    }
     if (isBackgroundOnly) return;
 
     const cx = px + pw / 2;
@@ -613,6 +625,20 @@ export async function renderPrintSheetCanvas(
       ctx.strokeStyle = 'rgba(216, 180, 116, 0.45)';
       ctx.lineWidth = 2;
       ctx.strokeRect(px + pw * 0.035, py + ph * 0.035, pw * 0.93, ph * 0.93);
+    }
+    if (isBotanical) {
+      const bw = pw * 0.27;
+      const bh = bw * (200 / 180);
+      drawBotanicalCornerCanvas(ctx, px - pw * 0.01, py - ph * 0.005, bw, bh, {
+        flipX: false,
+        flipY: false,
+        opacity: 0.72,
+      });
+      drawBotanicalCornerCanvas(ctx, px + pw - bw + pw * 0.01, py - ph * 0.005, bw, bh, {
+        flipX: true,
+        flipY: false,
+        opacity: 0.72,
+      });
     }
     if (isBackgroundOnly) return;
 
@@ -692,7 +718,7 @@ export async function renderPrintSheetCanvas(
     );
 
     if (config.sealPlacement === 'back') {
-      drawKthSeal(ctx, px + pw * 0.135, py + ph * 0.775, pw * 0.065);
+      drawKthGreenSealCanvas(ctx, px + pw * 0.135, py + ph * 0.775, pw * 0.065);
       ctx.fillStyle = '#FAF5EB';
       ctx.textAlign = 'center';
       ctx.font = `600 ${Math.round(pw * 0.022)}px "Plus Jakarta Sans", sans-serif`;

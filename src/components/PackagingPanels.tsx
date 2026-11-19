@@ -116,10 +116,10 @@ function NaturalArtworkLayers({ config, isBack = false }: { config: PackagingCon
 
       {isBotanical && !isBack && (
         <>
-          <BotanicalCornerArt className="absolute -top-[2%] -left-[2%] w-[26cqi] h-[26cqi] opacity-85" />
-          <BotanicalCornerArt className="absolute -top-[2%] -right-[2%] w-[26cqi] h-[26cqi] -scale-x-100 opacity-85" />
-          <BotanicalCornerArt className="absolute bottom-[11%] -left-[2%] w-[26cqi] h-[26cqi] -scale-y-100 opacity-75" />
-          <BotanicalCornerArt className="absolute bottom-[11%] -right-[2%] w-[26cqi] h-[26cqi] scale-[-1] opacity-75" />
+          <BotanicalCornerArt className="absolute -top-[1%] -left-[1%] z-[5] w-[34cqi] h-[38cqi] opacity-90" />
+          <BotanicalCornerArt className="absolute -top-[1%] -right-[1%] z-[5] w-[34cqi] h-[38cqi] -scale-x-100 opacity-90" />
+          <BotanicalCornerArt className="absolute bottom-[11.2%] -left-[1%] z-[5] w-[34cqi] h-[38cqi] -scale-y-100 opacity-85" />
+          <BotanicalCornerArt className="absolute bottom-[11.2%] -right-[1%] z-[5] w-[34cqi] h-[38cqi] scale-[-1] opacity-85" />
         </>
       )}
 
@@ -324,39 +324,45 @@ export function FrontPanel({
             </div>
           ) : isBotanical || isCopper || isMinimal || tall ? (
             <div
-              className={`relative z-10 pt-[13%] flex flex-col items-center text-center ${
-                isCopper ? 'pl-[11%] pr-[7%]' : 'px-[8%]'
+              className={`relative z-10 flex flex-col items-center text-center ${
+                isBotanical ? 'pt-[17%] px-[8%]' : isCopper ? 'pt-[13.5%] pl-[11%] pr-[7%]' : 'pt-[13.5%] px-[8%]'
               }`}
             >
-              <ArunikaSunBeanCrest className="w-[15.5cqi] h-[15.5cqi]" />
+              <ArunikaSunBeanCrest className={isBotanical ? 'w-[14cqi] h-[14cqi]' : 'w-[15.5cqi] h-[15.5cqi]'} />
               <p
-                className="mt-[3.5%] font-sans font-bold uppercase tracking-[0.12em] text-[#D8B474] whitespace-nowrap"
-                style={{ fontSize: '6cqi' }}
+                className="mt-[3%] font-sans font-bold uppercase tracking-[0.12em] text-[#D8B474] whitespace-nowrap"
+                style={{ fontSize: isBotanical ? '5.2cqi' : '6cqi' }}
               >
                 COFFE BEAN
               </p>
-              <div className="mt-[1.5%] flex items-center justify-center gap-[5%] w-[62%]">
+              <div
+                className={`mt-[1.4%] flex items-center justify-center gap-[5%] ${
+                  isBotanical ? 'w-[48%]' : 'w-[62%]'
+                }`}
+              >
                 <span className="h-px flex-1 bg-[#FAF5EB]/55" />
                 <span
                   className="font-sans font-medium uppercase tracking-[0.14em] text-[#FAF5EB] whitespace-nowrap"
-                  style={{ fontSize: '3.9cqi' }}
+                  style={{ fontSize: isBotanical ? '3.5cqi' : '3.9cqi' }}
                 >
                   EST 2024
                 </span>
                 <span className="h-px flex-1 bg-[#FAF5EB]/55" />
               </div>
 
-              <ArunikaKawiWordmark className="mt-[8.5%] w-[66cqi] h-auto shrink-0" />
+              <ArunikaKawiWordmark
+                className={`${isBotanical ? 'mt-[6%] w-[64cqi]' : 'mt-[6.5%] w-[66cqi]'} h-auto shrink-0`}
+              />
 
               <p
-                className="mt-[8%] font-sans font-semibold text-[#FAF5EB] leading-[1.2] tracking-[0.01em]"
-                style={{ fontSize: '5.1cqi' }}
+                className="mt-[5.5%] font-sans font-semibold text-[#FAF5EB] leading-[1.2] tracking-[0.01em]"
+                style={{ fontSize: '5cqi' }}
               >
                 {roast.subtitle}
               </p>
               <p
-                className="mt-[2%] font-sans font-semibold text-[#FAF5EB] leading-[1.2]"
-                style={{ fontSize: '5.1cqi' }}
+                className="mt-[1.8%] font-sans font-semibold text-[#FAF5EB] leading-[1.2]"
+                style={{ fontSize: '5cqi' }}
               >
                 {variant.frontLabel}
               </p>
@@ -458,6 +464,14 @@ export function SideGussetPanel({
           className="w-full h-full object-cover object-bottom"
         />
       </div>
+
+      {config.pouchShape === 'tall-botanical' && (
+        <BotanicalCornerArt
+          className={`absolute bottom-[11.2%] z-[5] w-[52cqi] h-[58cqi] opacity-75 pointer-events-none ${
+            side === 'left' ? '-right-[4%] scale-[-1]' : '-left-[4%] -scale-y-100'
+          }`}
+        />
+      )}
 
       {!backgroundOnly ? (
         <>
@@ -625,8 +639,8 @@ export function BackPanel({ config, backgroundOnly = false }: PanelProps) {
 
       {!backgroundOnly && isBotanical && (
         <>
-          <BotanicalCornerArt className="absolute -top-[1%] -left-[1%] w-[22cqi] h-[22cqi] opacity-80 pointer-events-none" />
-          <BotanicalCornerArt className="absolute -top-[1%] -right-[1%] w-[22cqi] h-[22cqi] -scale-x-100 opacity-80 pointer-events-none" />
+          <BotanicalCornerArt className="absolute -top-[1%] -left-[1%] z-[5] w-[26cqi] h-[29cqi] opacity-75 pointer-events-none" />
+          <BotanicalCornerArt className="absolute -top-[1%] -right-[1%] z-[5] w-[26cqi] h-[29cqi] -scale-x-100 opacity-75 pointer-events-none" />
         </>
       )}
 

@@ -16,6 +16,7 @@ import { drawArunikaKawiWordmarkCanvas } from './arunikaWordmarkPaths';
 import { drawRichCenteredParagraph } from './canvasRichText';
 import { renderPrintSheetCanvas, loadImage } from './exportPrintArtwork';
 import { downloadCanvas } from './exportSingleElement';
+import { drawKthGreenSealCanvas } from './kthSealCanvas';
 import { drawCanvasQuadWarp } from './perspectiveHomography';
 
 function drawCover(
@@ -144,33 +145,6 @@ function drawRoastBadge(
   ctx.fillStyle = '#D8B474';
   ctx.font = `700 ${Math.max(11, Math.round(21 * sy))}px "Cormorant Garamond", Georgia, serif`;
   ctx.fillText(bottomText, cx, cy + 12 * sy);
-  ctx.restore();
-}
-
-function drawKthGreenSeal(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number) {
-  ctx.save();
-  ctx.fillStyle = '#3F6A2B';
-  ctx.strokeStyle = '#D8B474';
-  ctx.lineWidth = Math.max(1, r * 0.07);
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = '#8BC34A';
-  ctx.beginPath();
-  ctx.arc(cx, cy, r * 0.65, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#2E4C1E';
-  ctx.beginPath();
-  ctx.moveTo(cx - r * 0.45, cy + r * 0.22);
-  ctx.lineTo(cx - r * 0.12, cy - r * 0.26);
-  ctx.lineTo(cx + r * 0.06, cy - r * 0.02);
-  ctx.lineTo(cx + r * 0.24, cy - r * 0.3);
-  ctx.lineTo(cx + r * 0.45, cy + r * 0.22);
-  ctx.closePath();
-  ctx.fill();
   ctx.restore();
 }
 
@@ -305,9 +279,9 @@ function drawFrontOverlayCanvas(
   const isDoypack = variantStyle === 'doypack';
   const isHeritage = variantStyle === 'heritage-mandala';
 
-  const topPadPct = hasValve ? 5.5 : isBotanical ? 14.5 : isCopper ? 14.0 : 12.2;
-  const titleGapPct = hasValve ? 14.5 : isBotanical ? 9.0 : isCopper ? 10.0 : 9.5;
-  const subGapPct = hasValve ? 5.2 : isCopper ? 8.5 : 8.4;
+  const topPadPct = hasValve ? 5.5 : isBotanical ? 18.8 : isCopper ? 14.0 : 12.2;
+  const titleGapPct = hasValve ? 14.5 : isBotanical ? 6.8 : isCopper ? 10.0 : 9.5;
+  const subGapPct = hasValve ? 5.2 : isBotanical ? 6.0 : isCopper ? 8.5 : 8.4;
 
   warpOverlayRect(destCtx, sceneW, sceneH, rect, (ctx, bw, bh) => {
     const cx = bw / 2;
@@ -323,22 +297,22 @@ function drawFrontOverlayCanvas(
     ctx.shadowBlur = Math.max(4, cqi * 1.8);
     ctx.shadowOffsetY = 1;
 
-    const crestR = (isCopper ? 6.6 : isDoypack ? 5.5 : 6.1) * cqi;
+    const crestR = (isCopper ? 6.6 : isDoypack ? 5.5 : isBotanical ? 5.6 : 6.1) * cqi;
     const crestY = usableH * (topPadPct / 100) + crestR;
     drawSunBeanCrest(ctx, cx, crestY, crestR);
 
     ctx.textAlign = 'center';
     ctx.fillStyle = '#D8B474';
-    ctx.font = `700 ${Math.round((isCopper ? 6.0 : isDoypack ? 4.5 : 5.1) * cqi)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.font = `700 ${Math.round((isCopper ? 6.0 : isDoypack ? 4.5 : isBotanical ? 4.7 : 5.1) * cqi)}px "Plus Jakarta Sans", sans-serif`;
     const coffeY = crestY + crestR + 4.4 * cqi;
     ctx.fillText('COFFE BEAN', cx, coffeY);
 
     ctx.fillStyle = '#FAF5EB';
-    ctx.font = `500 ${Math.round((isCopper ? 3.8 : isDoypack ? 3.0 : 3.3) * cqi)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.font = `500 ${Math.round((isCopper ? 3.8 : isDoypack ? 3.0 : isBotanical ? 3.1 : 3.3) * cqi)}px "Plus Jakarta Sans", sans-serif`;
     const estY = coffeY + 4.2 * cqi;
     ctx.fillText('EST 2024', cx, estY);
 
-    const lineHalf = bw * 0.28;
+    const lineHalf = bw * (isBotanical ? 0.23 : 0.28);
     const estTextW = ctx.measureText('EST 2024').width;
     ctx.strokeStyle = 'rgba(250, 245, 235, 0.55)';
     ctx.lineWidth = Math.max(1, cqi * 0.35);
@@ -365,7 +339,7 @@ function drawFrontOverlayCanvas(
     }
 
     if (config.sealPlacement === 'front') {
-      drawKthGreenSeal(ctx, bw * 0.82, bh * rect.bandRatioTop - 10 * cqi, 7.5 * cqi);
+      drawKthGreenSealCanvas(ctx, bw * 0.82, bh * rect.bandRatioTop - 10 * cqi, 7.5 * cqi);
     }
     ctx.restore();
 
@@ -468,20 +442,20 @@ function drawRearOverlayCanvas(
         : `KOMPOSISI ${variant.frontLabel.toUpperCase()}`;
     ctx.fillText(compLabel, cx, compY);
 
-    // Footer Columns with clean 8% horizontal margin
-    const padX = bw * 0.08;
-    const rightMargin = bw * 0.92;
+    // Footer Columns with clean 8.5% horizontal margin
+    const padX = bw * 0.085;
+    const rightMargin = bw * 0.91;
 
     if (config.sealPlacement === 'back') {
       const sealR = 5.6 * cqi;
-      drawKthGreenSeal(ctx, padX + sealR, footTop + sealR, sealR);
+      drawKthGreenSealCanvas(ctx, padX + sealR, footTop + sealR, sealR);
       ctx.fillStyle = '#FAF5EB';
       ctx.textAlign = 'center';
       ctx.font = `500 ${Math.round(2.3 * cqi)}px "Plus Jakarta Sans", sans-serif`;
       ctx.fillText('PIRT', padX + sealR, footTop + sealR * 2 + 2.5 * cqi);
     }
 
-    const infoX = config.sealPlacement === 'back' ? padX + 13.5 * cqi : padX;
+    const infoX = config.sealPlacement === 'back' ? padX + 13.2 * cqi : padX;
     ctx.textAlign = 'left';
     ctx.fillStyle = '#D8B474';
     ctx.font = `600 ${Math.round(2.95 * cqi)}px "Plus Jakarta Sans", sans-serif`;
@@ -497,7 +471,7 @@ function drawRearOverlayCanvas(
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(infoX, footTop + 10.3 * cqi, Math.max(12 * cqi, leftBoxW), 2.8 * cqi);
 
-    const rightX = bw * 0.56;
+    const rightX = bw * 0.565;
     const rightBoxW = rightMargin - rightX;
     ctx.shadowBlur = Math.max(3, cqi);
     ctx.fillStyle = '#FAF5EB';
