@@ -145,11 +145,11 @@ export function DesignElementsKit({ config, onExport, isExporting, onExpand }: D
     `JUDUL BELAKANG: Arunika Kawi Coffee (${roast.crestTop} ${roast.crestBottom})`,
     `CERITA PANEL BELAKANG:`,
     `Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast}`,
-    `Arunika Kawi Coffee harum dan nikmat`,
     ``,
     `KOMPOSISI: ${config.beanVariant === 'robusta-100' ? 'KOMPOSISI 100 % BIJI KOPI ROBUSTA' : `KOMPOSISI ${variant.frontLabel.toUpperCase()}`}`,
-    `DIPRODUKSI OLEH: KUPS Himatarian Blitar, Jawa Timur – INDONESIA (Stempel KTH Hijau + PIRT di bawah stempel + Kotak PIRT)`,
-    `KODE PRODUKSI & BAIK DIGUNAKAN SEBELUM: Kotak Putih Cetak Tanggal (${batchCode} · EXP ${expiryCompact} · WIB GMT+7 ${wibDateLabel})`,
+    `STEMPEL: Produk Asli Kelompok Tani Hutan Jawa Timur (Tengah Panel Belakang)`,
+    `DIPRODUKSI OLEH: KUPS Himatarian Blitar, Jawa Timur – INDONESIA, 66186 + Ikon Tidy Man / PP 5 / Respect Recycle`,
+    `KOLOM KANAN (3 KOTAK PUTIH): Kode Produksi (${batchCode}) · Baik Digunakan Sebelum (${expiryCompact} WIB GMT+7 ${wibDateLabel}) · PIRT`,
     `PITA BAWAH BELAKANG: 100 % KOPI ASLI INDONESIA (Tanpa Berat Bersih)`,
   ].join('\n');
 
@@ -770,12 +770,13 @@ export function DesignElementsKit({ config, onExport, isExporting, onExpand }: D
                   </p>
                   <p className="mt-1 text-xs text-[#1A1412] leading-relaxed">
                     Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari
-                    lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter {variant.storyCharacter}{' '}
-                    {roast.storyRoast} <strong className="font-semibold text-[#8A6429]">Arunika Kawi Coffee</strong>{' '}
-                    <strong className="font-semibold">harum dan nikmat</strong>
+                    lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter{' '}
+                    <strong className="font-semibold text-[#8A6429]">{variant.storyCharacter}</strong>{' '}
+                    {roast.storyRoast}
                   </p>
                   <p className="mt-1.5 font-mono text-[11px] text-[#574D47] tabular-nums">
-                    KUPS Himatarian Blitar · Stempel KTH + PIRT · Kode Produksi &amp; Baik Digunakan Sebelum
+                    Stempel KTH Tengah · KUPS Himatarian Blitar 66186 + Respect Recycle · Kode Produksi, Baik Digunakan
+                    Sebelum &amp; PIRT
                   </p>
                 </div>
               </div>

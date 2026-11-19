@@ -246,10 +246,7 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
     renderMockupSceneCanvas(config, 'natural-kawi', 900, 1200).then((c) =>
       c ? { dataUrl: canvasToJpegDataUrl(c, 0.9), width: c.width, height: c.height } : imageUrlToJpegData(naturalMockup.src, 900)
     ),
-    imageUrlToJpegData(
-      config.netWeight === '100 gram' ? ORIGINAL_UPLOADS.revisedFront100 : ORIGINAL_UPLOADS.revisedFront250,
-      700
-    ),
+    imageUrlToJpegData(ORIGINAL_UPLOADS.revisedFront100, 700),
     imageUrlToJpegData(ORIGINAL_UPLOADS.revisedRear, 700),
     imageUrlToJpegData(GENERATED_ASSETS.beansCluster, 700),
     imageUrlToJpegData(
@@ -387,11 +384,11 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
     },
     {
       label: 'BELAKANG (NARASI GORENG KREWENG)',
-      val: `Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast} Arunika Kawi Coffee harum dan nikmat`,
+      val: `Diolah secara tradisional (Goreng Kreweng) oleh Kelompok Tani Hutan, dipetik langsung dari lereng Gunung Kawi. Setiap seduhannya menghadirkan karakter ${variant.storyCharacter} ${roast.storyRoast}`,
     },
     {
-      label: 'KOMPOSISI, PRODUSEN & PITA BAWAH BELAKANG',
-      val: `${config.beanVariant === 'robusta-100' ? 'KOMPOSISI 100 % BIJI KOPI ROBUSTA' : `KOMPOSISI ${variant.frontLabel.toUpperCase()}`} · KUPS Himatarian Blitar, Jawa Timur - INDONESIA · Kotak PIRT · Kode ${batchCode} / EXP ${expiryCompact} (WIB) · Pita Bawah: 100 % KOPI ASLI INDONESIA`,
+      label: 'STEMPEL, KOMPOSISI, PRODUSEN & PITA BAWAH BELAKANG',
+      val: `${config.beanVariant === 'robusta-100' ? 'KOMPOSISI 100 % BIJI KOPI ROBUSTA' : `KOMPOSISI ${variant.frontLabel.toUpperCase()}`} · Stempel KTH Tengah · KUPS Himatarian Blitar, Jawa Timur - INDONESIA, 66186 (+ Tidy Man / PP 5 / Respect Recycle) · Kanan: Kode Produksi (${batchCode}), EXP (${expiryCompact} WIB) & PIRT · Pita Bawah: 100 % KOPI ASLI INDONESIA`,
     },
     {
       label: 'SISTEM TIPOGRAFI',
@@ -480,7 +477,9 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
         ? `Kanvas background murni untuk ${shapeMeta.code} (${config.netWeight} · ${weightSpecs.dimensions}) berisi dasar Deep Espresso Matte, atmosfer ${mood.label}, klaster biji kopi depan tanpa sambungan, ornamen botanikal gold foil di 4 sudut panel depan dan sisi bawah gusset, panel belakang bersih, serta pita Champagne Gold Foil (#D6B373) tanpa teks/logo.`
         : config.pouchShape === 'tall-heritage'
           ? `Kanvas background murni untuk ${shapeMeta.code} (${config.netWeight} · ${weightSpecs.dimensions}) berisi dasar Deep Espresso Matte, atmosfer ${mood.label}, bingkai garis tipis Champagne Gold panel depan, gusset foil emas metalik penuh, panel belakang bersih, serta pita Champagne Gold Foil tanpa teks/logo.`
-          : `Kanvas background murni untuk ${shapeMeta.code} (${config.netWeight} · ${weightSpecs.dimensions}) berisi dasar Deep Espresso Matte (#1C100B -> #2B1912), atmosfer ${mood.label}, taburan biji kopi Robusta sangrai bergradasi halus tanpa garis sambungan, serta pita Champagne Gold Foil (#D6B373) bawah yang sepenuhnya bersih tanpa teks, logo, stempel, maupun barcode.`;
+          : config.pouchShape === 'tall-minimal'
+            ? `Kanvas background murni untuk ${shapeMeta.code} (${config.netWeight} · ${weightSpecs.dimensions}) berisi dasar Deep Espresso Matte (#1C100B -> #2B1912), atmosfer ${mood.label}, taburan biji kopi Robusta sangrai bergradasi halus tanpa ornamen daun (clean minimal), serta pita Champagne Gold Foil (#D6B373) bawah tanpa teks, logo, stempel, maupun barcode.`
+            : `Kanvas background murni untuk ${shapeMeta.code} (${config.netWeight} · ${weightSpecs.dimensions}) berisi dasar Deep Espresso Matte (#1C100B -> #2B1912), atmosfer ${mood.label}, ornamen botanikal 2 sudut atas pada panel depan, taburan biji kopi Robusta sangrai bergradasi halus tanpa garis sambungan, serta pita Champagne Gold Foil (#D6B373) bawah tanpa teks, logo, stempel, maupun barcode.`;
 
   doc.setTextColor(87, 77, 71);
   doc.setFont('helvetica', 'normal');
@@ -608,7 +607,7 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
     '02. Elemen Fotografi Natural & Mockup Produk'
   );
 
-  const selectedFrontId = config.netWeight === '100 gram' ? 'revised-front-100' : 'revised-front-250';
+  const selectedFrontId = 'revised-front-100';
   const activeMockupId =
     config.pouchShape === 'box-gusset'
       ? 'mockup-box'
@@ -622,16 +621,18 @@ export async function exportSelectedDesignPdf(config: PackagingConfig): Promise<
               ? 'mockup-tall-copper'
               : 'mockup-tall-minimal';
 
+  const frontMeta = PHOTO_ASSETS.find((p) => p.id === selectedFrontId)!;
+  const rearMeta = PHOTO_ASSETS.find((p) => p.id === 'revised-rear')!;
   const curatedPhotoEntries = [
     {
-      meta: PHOTO_ASSETS.find((p) => p.id === selectedFrontId)!,
+      meta: frontMeta,
       img: frontMasterImg,
-      desc: `${PHOTO_ASSETS.find((p) => p.id === selectedFrontId)!.usage}. Ditampilkan eksklusif pada panel depan.`,
+      desc: `${frontMeta.usage}. Ditampilkan eksklusif pada panel depan.`,
     },
     {
-      meta: PHOTO_ASSETS.find((p) => p.id === 'revised-rear')!,
+      meta: rearMeta,
       img: rearMasterImg,
-      desc: `${PHOTO_ASSETS.find((p) => p.id === 'revised-rear')!.usage}. Berlaku untuk varian 100 gram & 250 gram.`,
+      desc: `${rearMeta.usage}. Berlaku untuk varian 100 gram & 250 gram.`,
     },
     {
       meta: PHOTO_ASSETS.find((p) => p.id === 'beans-cluster')!,

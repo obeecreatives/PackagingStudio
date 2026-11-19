@@ -431,10 +431,10 @@ export const GENERATED_ASSETS = {
 };
 
 export const ORIGINAL_UPLOADS = {
-  revisedFront100: '/assets/aistudio/Arunika_Kawi_Front_35d762ba.png',
-  revisedFront250: '/assets/aistudio/Arunika_Kawi_Front_250_gr_64a3fb30.png',
-  revisedFront: '/assets/aistudio/Arunika_Kawi_Front_250_gr_64a3fb30.png',
-  revisedRear: '/assets/aistudio/Arunika_Kawi_rear_7407fb99.png',
+  revisedFront100: '/assets/aistudio/_FRONT__Arunika_Kawi_100_gram_bf09e7c2.png',
+  revisedFront250: '/assets/aistudio/_FRONT__Arunika_Kawi_100_gram_bf09e7c2.png',
+  revisedFront: '/assets/aistudio/_FRONT__Arunika_Kawi_100_gram_bf09e7c2.png',
+  revisedRear: '/assets/aistudio/_REAR__Arunika_Kawi_100_gram_46aac015.png',
   draftWithSeal: '/assets/aistudio/1_a10913ea.png',
   draftClean: '/assets/aistudio/2_adb214b7.png',
   referenceMockup: '/assets/aistudio/5_815d0c47.png',

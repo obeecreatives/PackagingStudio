@@ -81,9 +81,9 @@ export function DesignCritiqueSection({
   const activeSource =
     selectedRef === 'revised-final'
       ? {
-          src: config.netWeight === '100 gram' ? ORIGINAL_UPLOADS.revisedFront100 : ORIGINAL_UPLOADS.revisedFront250,
-          title: `Artwork Revisi Terbaru · Depan (${config.netWeight})`,
-          caption: `Desain final terbaru Anda (${config.netWeight}): Traditional Roasted Coffee, 100 % Biji Kopi Robusta, Isi Bersih : ${config.netWeight} tampil khusus di halaman depan, narasi Goreng Kreweng, KOMPOSISI 100 % BIJI KOPI ROBUSTA, dan kotak PIRT baru di belakang.`,
+          src: ORIGINAL_UPLOADS.revisedFront100,
+          title: `Artwork Revisi Terbaru · Depan (100 gram)`,
+          caption: `Desain revisi terbaru Anda: ornamen daun kopi di 2 sudut atas depan, KOMPOSISI 100 % BIJI KOPI ROBUSTA di belakang, stempel KTH di tengah, KUPS Blitar 66186 + ikon Respect Recycle, serta kotak PIRT di kanan.`,
           afterTitle: `Implementasi Live · ${activeShapeMeta.code} (${config.netWeight})`,
           afterCaption: getDynamicShapeDescription(config.pouchShape, config),
         }

@@ -18,6 +18,7 @@ import { drawRichCenteredParagraph } from './canvasRichText';
 import { renderPrintSheetCanvas, loadImage } from './exportPrintArtwork';
 import { downloadCanvas } from './exportSingleElement';
 import { drawKthGreenSealCanvas } from './kthSealCanvas';
+import { drawEcoRecyclingRowCanvas } from './ecoIconsCanvas';
 import { drawCanvasQuadWarp } from './perspectiveHomography';
 
 function drawCover(
@@ -293,6 +294,22 @@ function drawFrontOverlayCanvas(
       drawMasterBeansOverlay(ctx, beanRefImg, bw, bh, rect.bandRatioTop, isCopper);
     }
 
+    if (variantStyle === 'classic' || isDoypack) {
+      const topLeafW = bw * 0.21;
+      const topLeafH = topLeafW * (230 / 180);
+      const topLeafY = isDoypack ? bh * 0.015 : 0;
+      drawBotanicalCornerCanvas(ctx, 0, topLeafY, topLeafW, topLeafH, {
+        flipX: false,
+        flipY: false,
+        opacity: 0.9,
+      });
+      drawBotanicalCornerCanvas(ctx, bw - topLeafW, topLeafY, topLeafW, topLeafH, {
+        flipX: true,
+        flipY: false,
+        opacity: 0.9,
+      });
+    }
+
     ctx.save();
     ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
     ctx.shadowBlur = Math.max(4, cqi * 1.8);
@@ -364,6 +381,7 @@ function drawRearOverlayCanvas(
   const variant = BEAN_VARIANTS[config.beanVariant];
   const roast = ROAST_LEVELS[config.roastLevel];
   const isCopper = variantStyle === 'copper';
+  const isDoypack = variantStyle === 'doypack';
   const topPad = rect.topPadPct ?? 9.5;
 
   warpOverlayRect(destCtx, sceneW, sceneH, rect, (ctx, bw, bh) => {
@@ -377,21 +395,21 @@ function drawRearOverlayCanvas(
     ctx.shadowOffsetY = 1;
 
     // 1. Top Baroque Roast Crest cleanly below zipper/top-fin
-    const badgeW = (isCopper ? 32 : 30) * cqi;
+    const badgeW = (isCopper ? 30 : isDoypack ? 25 : 28) * cqi;
     const badgeH = badgeW * 0.6;
     const badgeY = (topPad / 100) * usableH + badgeH * 0.5;
     drawRoastBadge(ctx, cx, badgeY, badgeW, roast.crestTop, roast.crestBottom);
 
     // 2. Arunika Kawi Coffee sub-headline
-    const headFontPx = Math.round((isCopper ? 6.1 : 5.7) * cqi);
+    const headFontPx = Math.round((isCopper ? 5.8 : isDoypack ? 4.8 : 5.4) * cqi);
     ctx.fillStyle = '#D8B474';
     ctx.textAlign = 'center';
     ctx.font = `700 ${headFontPx}px "Plus Jakarta Sans", sans-serif`;
-    const headY = badgeY + badgeH * 0.5 + 7.2 * cqi;
+    const headY = badgeY + badgeH * 0.5 + 6.4 * cqi;
     ctx.fillText('Arunika Kawi Coffee', cx, headY);
 
-    // 3. Story Paragraph with Gold Highlighted Bean Character
-    const bodySize = Math.round((isCopper ? 3.35 : 3.2) * cqi);
+    // 3. Story Paragraph with Gold Highlighted Bean Character (no tagline below)
+    const bodySize = Math.round((isCopper ? 3.3 : isDoypack ? 2.85 : 3.15) * cqi);
     const normalFont = `400 ${bodySize}px "Plus Jakarta Sans", sans-serif`;
     const italicFont = `italic 400 ${bodySize}px "Plus Jakarta Sans", sans-serif`;
     const goldBoldFont = `600 ${bodySize}px "Plus Jakarta Sans", sans-serif`;
@@ -410,88 +428,79 @@ function drawRearOverlayCanvas(
         { text: ` ${roast.storyRoast}`, color: '#F4ECE0', font: normalFont },
       ],
       cx,
-      headY + 6.2 * cqi,
-      bw * 0.84,
-      bodySize * 1.3
+      headY + 5.2 * cqi,
+      bw * 0.85,
+      bodySize * 1.28
     );
 
-    // 4. Tagline
-    const tagSize = Math.round((isCopper ? 3.45 : 3.3) * cqi);
-    const afterTagY = drawRichCenteredParagraph(
-      ctx,
-      [
-        { text: 'Arunika Kawi Coffee ', color: '#D8B474', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
-        { text: 'harum dan nikmat', color: '#FAF5EB', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
-      ],
-      cx,
-      afterStoryY + 2.8 * cqi,
-      bw * 0.86,
-      tagSize * 1.25
-    );
+    // 4. Footer block metrics (reserve ~21 cqi at bottom of usableH)
+    const footerH = isDoypack ? 19.5 * cqi : 21.5 * cqi;
+    const footTop = usableH - footerH - 3.2 * cqi;
 
-    // 5. Legal Footer (reserve bottom ~20.5% of usable height)
-    const footTop = usableH - 17.5 * cqi;
-
-    // Position KOMPOSISI tightly below tagline (eliminates excessive vertical gap)
-    const compY = Math.min(footTop - 6.5 * cqi, afterTagY + 7.5 * cqi);
+    // 5. KOMPOSISI tightly below story
+    const compY = afterStoryY + (isDoypack ? 4.6 : 5.4) * cqi;
     ctx.fillStyle = '#FAF5EB';
     ctx.textAlign = 'center';
-    ctx.font = `600 ${Math.round((isCopper ? 3.15 : 2.95) * cqi)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.font = `700 ${Math.round((isCopper ? 3.1 : isDoypack ? 2.65 : 2.95) * cqi)}px "Plus Jakarta Sans", sans-serif`;
     const compLabel =
       config.beanVariant === 'robusta-100'
         ? 'KOMPOSISI 100 % BIJI KOPI ROBUSTA'
         : `KOMPOSISI ${variant.frontLabel.toUpperCase()}`;
     ctx.fillText(compLabel, cx, compY);
 
-    // Footer Columns with clean 8.5% horizontal margin
-    const padX = bw * 0.085;
-    const rightMargin = bw * 0.91;
-
+    // 6. Centered KTH Seal in vertical middle between KOMPOSISI and Footer
     if (config.sealPlacement === 'back') {
-      const sealR = 5.6 * cqi;
-      drawKthGreenSealCanvas(ctx, padX + sealR, footTop + sealR, sealR);
-      ctx.fillStyle = '#FAF5EB';
-      ctx.textAlign = 'center';
-      ctx.font = `500 ${Math.round(2.3 * cqi)}px "Plus Jakarta Sans", sans-serif`;
-      ctx.fillText('PIRT', padX + sealR, footTop + sealR * 2 + 2.5 * cqi);
+      const sealR = (isDoypack ? 5.2 : 6.4) * cqi;
+      const midY = (compY + footTop) * 0.5;
+      drawKthGreenSealCanvas(ctx, cx, midY, sealR);
     }
 
-    const infoX = config.sealPlacement === 'back' ? padX + 13.2 * cqi : padX;
+    // 7. Footer Left Column: Diproduksi Oleh + 66186 + Eco Icons
+    const padX = bw * 0.075;
+    const rightMargin = bw * 0.925;
+
     ctx.textAlign = 'left';
     ctx.fillStyle = '#D8B474';
-    ctx.font = `600 ${Math.round(2.95 * cqi)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('Diproduksi Oleh', infoX, footTop + 2.4 * cqi);
+    ctx.font = `600 ${Math.round((isDoypack ? 2.7 : 2.95) * cqi)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText('Diproduksi Oleh', padX, footTop + 2.4 * cqi);
 
     ctx.fillStyle = '#FAF5EB';
-    ctx.font = `400 ${Math.round(2.4 * cqi)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('KUPS Himatarian Blitar', infoX, footTop + 5.6 * cqi);
-    ctx.fillText('Jawa Timur – INDONESIA', infoX, footTop + 8.5 * cqi);
+    const addrFont = Math.round((isDoypack ? 2.25 : 2.45) * cqi);
+    const addrStep = addrFont * 1.2;
+    ctx.font = `400 ${addrFont}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText('KUPS Himatarian Blitar', padX, footTop + 5.2 * cqi);
+    ctx.fillText('Jawa Timur – INDONESIA', padX, footTop + 5.2 * cqi + addrStep);
+    ctx.fillText('66186', padX, footTop + 5.2 * cqi + addrStep * 2);
 
-    const leftBoxW = bw * 0.54 - infoX - 2.5 * cqi;
     ctx.shadowBlur = 0;
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(infoX, footTop + 10.3 * cqi, Math.max(12 * cqi, leftBoxW), 2.8 * cqi);
+    const ecoH = (isDoypack ? 4.2 : 4.9) * cqi;
+    drawEcoRecyclingRowCanvas(ctx, padX, footTop + 5.2 * cqi + addrStep * 2 + 2.0 * cqi, ecoH);
 
-    const rightX = bw * 0.565;
-    const rightBoxW = rightMargin - rightX;
-    ctx.shadowBlur = Math.max(3, cqi);
-    ctx.fillStyle = '#FAF5EB';
-    ctx.font = `500 ${Math.round(2.3 * cqi)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('Kode Produksi', rightX, footTop + 2.4 * cqi);
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(rightX, footTop + 3.5 * cqi, rightBoxW, 2.6 * cqi);
+    // 8. Footer Right Column: 3 Rounded White Boxes (Kode Produksi, Baik Digunakan Sebelum, PIRT)
+    const rightW = bw * 0.38;
+    const rightX = rightMargin - rightW;
+    const lblSize = Math.round((isDoypack ? 2.0 : 2.2) * cqi);
+    const boxH = 2.45 * cqi;
+    const rowStep = (isDoypack ? 6.0 : 6.5) * cqi;
 
-    ctx.shadowBlur = Math.max(3, cqi);
-    ctx.fillStyle = '#FAF5EB';
-    ctx.font = `500 ${Math.round(2.1 * cqi)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('Baik Digunakan Sebelum', rightX, footTop + 9.0 * cqi);
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(rightX, footTop + 10.1 * cqi, rightBoxW, 2.6 * cqi);
+    const rightFields = ['Kode Produksi', 'Baik Digunakan Sebelum', 'PIRT'];
+    rightFields.forEach((lbl, idx) => {
+      const ly = footTop + 2.0 * cqi + idx * rowStep;
+      ctx.shadowBlur = Math.max(3, cqi);
+      ctx.fillStyle = '#FAF5EB';
+      ctx.font = `500 ${lblSize}px "Plus Jakarta Sans", sans-serif`;
+      ctx.fillText(lbl, rightX, ly);
+
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.roundRect(rightX, ly + 0.8 * cqi, rightW, boxH, boxH * 0.24);
+      ctx.fill();
+    });
+
     ctx.restore();
 
-    // 6. Bottom Band (NO net weight on Rear)
+    // 9. Bottom Band (NO net weight on Rear)
     const bandCenterY = bh * (rect.bandRatioTop + rect.bandRatioH * 0.56);
     ctx.fillStyle = rect.bandTextColor;
     ctx.textAlign = 'center';

@@ -145,28 +145,20 @@ export interface PhotoAssetMeta {
 
 export const PHOTO_ASSETS: PhotoAssetMeta[] = [
   {
-    id: 'revised-front-250',
-    title: 'Master Revisi Terbaru · Halaman Depan (250 gram)',
-    usage: 'Artwork final depan 250 gram (Traditional Roasted Coffee, 100 % Biji Kopi Robusta, Isi Bersih : 250 gram)',
-    src: ORIGINAL_UPLOADS.revisedFront250,
-    filename: 'arunika-kawi-master-depan-250gr.png',
-    dims: 'Master Upload · 250 gram',
-  },
-  {
     id: 'revised-front-100',
     title: 'Master Revisi Terbaru · Halaman Depan (100 gram)',
-    usage: 'Artwork final depan 100 gram (Traditional Roasted Coffee, 100 % Biji Kopi Robusta, Isi Bersih : 100 gram)',
+    usage: 'Artwork final depan revisi (2 ornamen botani sudut atas, Traditional Roasted Coffee, 100 % Biji Kopi Robusta, Isi Bersih : 100 gram)',
     src: ORIGINAL_UPLOADS.revisedFront100,
-    filename: 'arunika-kawi-master-depan-100gr.png',
-    dims: 'Master Upload · 100 gram',
+    filename: 'arunika-kawi-master-depan-revisi.png',
+    dims: 'Master Revisi · 1184 × 1892 px',
   },
   {
     id: 'revised-rear',
     title: 'Master Revisi Terbaru · Halaman Belakang',
-    usage: 'Artwork final belakang (Goreng Kreweng, KOMPOSISI 100 % BIJI KOPI ROBUSTA, kotak PIRT, tanpa berat bersih)',
+    usage: 'Artwork final belakang revisi (tanpa tagline harum & nikmat, stempel KTH tengah, KUPS Blitar 66186 + ikon Recycle, dan 3 kotak putih kanan)',
     src: ORIGINAL_UPLOADS.revisedRear,
-    filename: 'arunika-kawi-master-belakang.png',
-    dims: 'Master Upload · Belakang',
+    filename: 'arunika-kawi-master-belakang-revisi.png',
+    dims: 'Master Revisi · 1182 × 1890 px',
   },
   {
     id: 'beans-cluster',
@@ -314,7 +306,7 @@ export function getPrintSpecificationRows(config: PackagingConfig): Array<{ labe
 
   const sealPositionLabel =
     config.sealPlacement === 'back'
-      ? 'Panel Belakang (Bawah Kiri Dekat Produsen)'
+      ? 'Panel Belakang (Tengah di Bawah Komposisi)'
       : config.sealPlacement === 'front'
         ? 'Panel Depan (Pojok Kanan Bawah)'
         : 'Disembunyikan (Tata Letak Bersih)';

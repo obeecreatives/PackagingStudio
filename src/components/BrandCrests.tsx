@@ -280,10 +280,98 @@ export function KthEastJavaSeal({
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const topArcId = `topArc-${uid}`;
   const bottomArcId = `bottomArc-${uid}`;
-  const strokeColor = variant === 'gold-heritage' ? '#D6B373' : '#7BA63F';
-  const fillBg = variant === 'gold-heritage' ? '#1E140E' : '#2E4F1D';
-  const mountainFill = variant === 'gold-heritage' ? '#5E4B2C' : '#58812B';
-  const textColor = variant === 'gold-heritage' ? '#F1DEC0' : '#EBF4D6';
+  const skyGradId = `skyKth-${uid}`;
+  const clipInnerId = `clipKth-${uid}`;
+
+  if (variant === 'original-green') {
+    return (
+      <svg viewBox="0 0 120 120" fill="none" className={className} aria-label="Produk Asli Kelompok Tani Hutan Jawa Timur">
+        <defs>
+          <path id={topArcId} d="M 14,60 A 46,46 0 1,1 106,60" />
+          <path id={bottomArcId} d="M 109,60 A 49,49 0 1,1 11,60" />
+          <radialGradient id={skyGradId} cx="50%" cy="40%" r="55%">
+            <stop offset="0%" stopColor="#FFF6A3" />
+            <stop offset="55%" stopColor="#DCE67B" />
+            <stop offset="100%" stopColor="#9CC654" />
+          </radialGradient>
+          <clipPath id={clipInnerId}>
+            <circle cx="60" cy="60" r="38" />
+          </clipPath>
+        </defs>
+
+        <circle cx="60" cy="60" r="56" fill="#6C9B3A" stroke="#9BC65E" strokeWidth="2.4" />
+
+        <g clipPath={`url(#${clipInnerId})`}>
+          <rect x="20" y="20" width="80" height="80" fill={`url(#${skyGradId})`} />
+          <path d="M18 75 L38 42 L50 53 L60 28 L72 52 L84 41 L102 75 Z" fill="#53862D" />
+
+          {/* Left Adult Farmer */}
+          <path d="M31 76 C32 61 56 61 57 76 Z" fill="#6DA33E" />
+          <circle cx="44" cy="56" r="6" fill="#F2C9A5" />
+          <ellipse cx="44" cy="51.5" rx="10.5" ry="2.6" fill="#CFA358" />
+          <path d="M35.5 51.5 L44 44.5 L52.5 51.5 Z" fill="#DFBA73" />
+
+          {/* Right Adult Farmer */}
+          <path d="M63 76 C64 61 88 61 89 76 Z" fill="#7CB24B" />
+          <circle cx="76" cy="56" r="6" fill="#F2C9A5" />
+          <ellipse cx="76" cy="51.5" rx="10.5" ry="2.6" fill="#CFA358" />
+          <path d="M67.5 51.5 L76 44.5 L84.5 51.5 Z" fill="#DFBA73" />
+
+          {/* Center Child Farmer */}
+          <path d="M49 77 C50 66 70 66 71 77 Z" fill="#4F7D2C" />
+          <circle cx="60" cy="62" r="4.5" fill="#F2C9A5" />
+          <ellipse cx="60" cy="58.5" rx="8" ry="2" fill="#CFA358" />
+          <path d="M53.5 58.5 L60 53 L66.5 58.5 Z" fill="#DFBA73" />
+
+          {/* Foreground Hill & Jawa Timur */}
+          <ellipse cx="60" cy="86" rx="44" ry="18" fill="#4B7D2B" />
+          <text
+            x="60"
+            y="79"
+            textAnchor="middle"
+            fill="#FFFFFF"
+            fontSize="8.2"
+            fontWeight="700"
+            letterSpacing="0.7"
+          >
+            JAWA TIMUR
+          </text>
+          <line x1="49" y1="84" x2="71" y2="84" stroke="rgba(255,255,255,0.75)" strokeWidth="1.1" />
+          <line x1="53" y1="87" x2="67" y2="87" stroke="rgba(255,255,255,0.75)" strokeWidth="1.1" />
+        </g>
+
+        <circle cx="60" cy="60" r="38" stroke="#DCE8A6" strokeWidth="1.2" />
+
+        {/* Left & Right White Leaf Sprigs */}
+        <g fill="#FAFBE8">
+          <ellipse cx="14" cy="56.5" rx="2" ry="3.4" transform="rotate(-18 14 56.5)" />
+          <ellipse cx="12.2" cy="61" rx="1.6" ry="2.8" transform="rotate(-40 12.2 61)" />
+          <ellipse cx="15.5" cy="61" rx="1.6" ry="2.8" transform="rotate(28 15.5 61)" />
+
+          <ellipse cx="106" cy="56.5" rx="2" ry="3.4" transform="rotate(18 106 56.5)" />
+          <ellipse cx="107.8" cy="61" rx="1.6" ry="2.8" transform="rotate(40 107.8 61)" />
+          <ellipse cx="104.5" cy="61" rx="1.6" ry="2.8" transform="rotate(-28 104.5 61)" />
+        </g>
+
+        <text fill="#EFF4A8" fontSize="8.5" fontWeight="700" letterSpacing="1.6">
+          <textPath href={`#${topArcId}`} xlinkHref={`#${topArcId}`} startOffset="50%" textAnchor="middle">
+            PRODUK ASLI
+          </textPath>
+        </text>
+
+        <text fill="#EFF4A8" fontSize="6.7" fontWeight="700" letterSpacing="0.85">
+          <textPath href={`#${bottomArcId}`} xlinkHref={`#${bottomArcId}`} startOffset="50%" textAnchor="middle">
+            KELOMPOK TANI HUTAN
+          </textPath>
+        </text>
+      </svg>
+    );
+  }
+
+  const strokeColor = '#D6B373';
+  const fillBg = '#1E140E';
+  const mountainFill = '#5E4B2C';
+  const textColor = '#F1DEC0';
 
   return (
     <svg viewBox="0 0 120 120" fill="none" className={className} aria-label="Produk Asli Kelompok Tani Hutan Jawa Timur">
@@ -325,6 +413,110 @@ export function KthEastJavaSeal({
       >
         JAWA TIMUR
       </text>
+    </svg>
+  );
+}
+
+export function EcoRecyclingIcons({ className = 'w-auto h-6' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 168 36"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-label="Jaga Kebersihan, Plastik PP 5, Respect Recycle"
+    >
+      {/* 1. Tidy Man / Keep Clean */}
+      <g>
+        <path
+          d="M2.5 16.5H11.5L10.3 33.5H3.7L2.5 16.5Z"
+          stroke="#FAF5EB"
+          strokeWidth="1.15"
+        />
+        <path
+          d="M5.2 16.5L5.6 33.5M8.8 16.5L8.4 33.5M3 22H11M3.3 27.6H10.7"
+          stroke="#FAF5EB"
+          strokeWidth="0.85"
+        />
+        <rect x="5.3" y="8.9" width="4.2" height="3.4" transform="rotate(-24 7.4 10.6)" fill="#FAF5EB" />
+        <circle cx="21.5" cy="6.2" r="2.7" fill="#FAF5EB" />
+        <path
+          d="M19.2 9.6L24 9.8L26.6 33.5H23.9L21.4 21.8L19.3 33.5H16.8L18.6 15.6L11.6 11.4L12.8 9.4L19.2 12.2Z"
+          fill="#FAF5EB"
+        />
+      </g>
+
+      {/* 2. PP 5 Resin Symbol */}
+      <g>
+        {[0, 120, 240].map((deg) => (
+          <g key={deg} transform={`translate(53 14.5) rotate(${deg})`}>
+            <path
+              d="M-6.2 -5.8 Q0 -13.2 6.2 -5.8"
+              stroke="#FAF5EB"
+              strokeWidth="2"
+              strokeLinecap="round"
+              fill="none"
+            />
+            <path d="M7.4 -4.4 L2.4 -5.4 L6.4 -9.2 Z" fill="#FAF5EB" />
+          </g>
+        ))}
+        <text
+          x="53"
+          y="18.6"
+          textAnchor="middle"
+          fill="#FAF5EB"
+          fontSize="11.5"
+          fontWeight="700"
+          fontFamily="Plus Jakarta Sans, sans-serif"
+        >
+          5
+        </text>
+        <text
+          x="53"
+          y="33.2"
+          textAnchor="middle"
+          fill="#FAF5EB"
+          fontSize="7.4"
+          fontWeight="700"
+          fontFamily="Plus Jakarta Sans, sans-serif"
+        >
+          PP
+        </text>
+      </g>
+
+      {/* 3. Respect Recycle Symbol + Stacked Text */}
+      <g>
+        {[0, 120, 240].map((deg) => (
+          <g key={deg} transform={`translate(91 17) rotate(${deg})`}>
+            <path
+              d="M-7.2 -9.8 L2.5 -13.6 L7.8 -6.5 L10 -7.8 L7.8 -0.5 L0.4 -1.8 L2.6 -3.2 L-1 -7.8 L-5.2 -5.6 Z"
+              fill="#FAF5EB"
+            />
+          </g>
+        ))}
+        <text
+          x="110"
+          y="15.5"
+          fill="#FAF5EB"
+          fontSize="10.2"
+          fontWeight="700"
+          fontFamily="Plus Jakarta Sans, sans-serif"
+          letterSpacing="0.4"
+        >
+          RESPECT
+        </text>
+        <text
+          x="110"
+          y="27.8"
+          fill="#FAF5EB"
+          fontSize="10.2"
+          fontWeight="700"
+          fontFamily="Plus Jakarta Sans, sans-serif"
+          letterSpacing="0.4"
+        >
+          RECYCLE
+        </text>
+      </g>
     </svg>
   );
 }

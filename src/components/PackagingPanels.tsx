@@ -13,6 +13,7 @@ import {
   ArunikaKawiWordmark,
   ArunikaSunBeanCrest,
   BotanicalCornerArt,
+  EcoRecyclingIcons,
   KthEastJavaSeal,
   MandalaHeritageCrest,
   RoastProfileCrest,
@@ -147,6 +148,13 @@ function NaturalArtworkLayers({ config, isBack = false }: { config: PackagingCon
         </>
       )}
 
+      {(config.pouchShape === 'box-gusset' || config.pouchShape === 'doypack-valve') && !isBack && (
+        <>
+          <BotanicalCornerArt className="absolute -top-[0.4%] -left-[0.4%] z-[5] w-[21cqi] h-[26.83cqi] opacity-[0.9]" />
+          <BotanicalCornerArt className="absolute -top-[0.4%] -right-[0.4%] z-[5] w-[21cqi] h-[26.83cqi] -scale-x-100 opacity-[0.9]" />
+        </>
+      )}
+
       {isCopper && !isBack && (
         <>
           <div
@@ -196,13 +204,13 @@ export function FrontPanel({
     isUploadedFinal &&
     !backgroundOnly &&
     !tall &&
+    config.netWeight === '100 gram' &&
     config.beanVariant === 'robusta-100' &&
     config.roastLevel === 'traditional' &&
     config.sealPlacement === 'back' &&
     config.naturalMood === 'kawi-beans';
 
-  const uploadedFrontSrc =
-    config.netWeight === '100 gram' ? ORIGINAL_UPLOADS.revisedFront100 : ORIGINAL_UPLOADS.revisedFront250;
+  const uploadedFrontSrc = ORIGINAL_UPLOADS.revisedFront100;
 
   if (matchesExactUploadedMaster) {
     return (
@@ -219,13 +227,13 @@ export function FrontPanel({
         />
 
         {isDoypack && (showValveGraphic || config.showPrintMarks) && (
-          <div className="absolute top-[26.8%] left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+          <div className="absolute top-[27.4%] left-1/2 -translate-x-1/2 z-10 pointer-events-none">
             {showValveGraphic ? (
-              <div className="w-[9.5cqi] h-[9.5cqi] rounded-full bg-gradient-to-br from-[#2B1D16] via-[#1C110C] to-[#110906] border border-[#5A4232]/75 shadow-[inset_0_1px_3px_rgba(255,255,255,0.14),0_2px_5px_rgba(0,0,0,0.65)] flex items-center justify-center">
+              <div className="w-[8.5cqi] h-[8.5cqi] rounded-full bg-gradient-to-br from-[#2B1D16] via-[#1C110C] to-[#110906] border border-[#5A4232]/75 shadow-[inset_0_1px_3px_rgba(255,255,255,0.14),0_2px_5px_rgba(0,0,0,0.65)] flex items-center justify-center">
                 <div className="w-[70%] h-[70%] rounded-full border border-[#0E0704]/80" />
               </div>
             ) : (
-              <div className="w-[9.5cqi] h-[9.5cqi] rounded-full border border-dashed border-[#38BDF8] bg-[#160F0C]/65 flex items-center justify-center">
+              <div className="w-[8.5cqi] h-[8.5cqi] rounded-full border border-dashed border-[#38BDF8] bg-[#160F0C]/65 flex items-center justify-center">
                 <div className="w-[24%] h-[24%] rounded-full bg-[#38BDF8]/80" />
               </div>
             )}
@@ -679,78 +687,71 @@ export function BackPanel({ config, backgroundOnly = false }: PanelProps) {
       {backgroundOnly ? (
         <div className="flex-1" />
       ) : (
-        <div className="relative z-10 flex-1 flex flex-col justify-between pt-[14.5%] pb-[4.5%] px-[7%]">
+        <div className="relative z-10 flex-1 flex flex-col justify-between pt-[13.5%] pb-[4%] px-[6.5%]">
           <div className="flex flex-col items-center text-center">
-            <div className="w-[32cqi]">
+            <div className="w-[29cqi]">
               <RoastProfileCrest topText={roast.crestTop} bottomText={roast.crestBottom} className="w-full h-auto" />
             </div>
 
             <h3
-              className="mt-[3.5%] font-sans font-bold text-[#D8B474] tracking-[0.02em]"
-              style={{ fontSize: '6.2cqi' }}
+              className="mt-[3%] font-sans font-bold text-[#D8B474] tracking-[0.015em]"
+              style={{ fontSize: '5.8cqi' }}
             >
               Arunika Kawi Coffee
             </h3>
 
-            <p className="mt-[4.5%] text-[#F4ECE0] leading-[1.34]" style={{ fontSize: '3.45cqi' }}>
+            <p className="mt-[4%] text-[#F4ECE0] leading-[1.34]" style={{ fontSize: '3.55cqi' }}>
               Diolah secara tradisional (<em>Goreng Kreweng</em>) oleh Kelompok Tani Hutan, dipetik langsung dari lereng
               Gunung Kawi. Setiap seduhannya menghadirkan karakter{' '}
               <span className="font-semibold text-[#D8B474]">{variant.storyCharacter}</span> {roast.storyRoast}
             </p>
 
             <p
-              className="mt-[3.8%] font-sans font-semibold leading-tight whitespace-nowrap"
-              style={{ fontSize: '3.6cqi' }}
-            >
-              <span className="text-[#D8B474]">Arunika Kawi Coffee</span>{' '}
-              <span className="text-[#FAF5EB]">harum dan nikmat</span>
-            </p>
-
-            <p
-              className="mt-[6%] font-sans font-semibold tracking-[0.03em] uppercase text-[#FAF5EB]"
-              style={{ fontSize: '3.15cqi' }}
+              className="mt-[5.5%] font-sans font-bold tracking-[0.02em] uppercase text-[#FAF5EB]"
+              style={{ fontSize: '3.4cqi' }}
             >
               KOMPOSISI {config.beanVariant === 'robusta-100' ? '100 % BIJI KOPI ROBUSTA' : variant.frontLabel.toUpperCase()}
             </p>
           </div>
 
-          <div className="flex items-end justify-between gap-[3%] pt-[3.5%]">
-            <div className="flex items-start gap-[2.4cqi] min-w-0 flex-[1.32]">
-              {config.sealPlacement === 'back' && (
-                <div className="flex flex-col items-center shrink-0">
-                  <KthEastJavaSeal variant="original-green" className="w-[12cqi] h-[12cqi] mt-[0.5cqi]" />
-                  <span className="text-[#FAF5EB] font-medium leading-[1.1] mt-[1cqi]" style={{ fontSize: '2.4cqi' }}>
-                    PIRT
-                  </span>
-                </div>
-              )}
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold text-[#D8B474] leading-[1.15]" style={{ fontSize: '3.15cqi' }}>
+          {config.sealPlacement === 'back' && (
+            <div className="flex items-center justify-center my-auto py-[2%]">
+              <KthEastJavaSeal variant="original-green" className="w-[14cqi] h-[14cqi] drop-shadow-md" />
+            </div>
+          )}
+
+          <div className="flex items-end justify-between gap-[4%] pt-[2%]">
+            <div className="min-w-0 flex-[1.25] flex flex-col justify-between">
+              <div>
+                <p className="font-semibold text-[#D8B474] leading-[1.15]" style={{ fontSize: '3.1cqi' }}>
                   Diproduksi Oleh
                 </p>
-                <p className="text-[#FAF5EB] leading-[1.2] mt-[0.9cqi]" style={{ fontSize: '2.55cqi' }}>
+                <p className="text-[#FAF5EB] leading-[1.2] mt-[1cqi]" style={{ fontSize: '2.7cqi' }}>
                   KUPS Himatarian Blitar
                   <br />
                   Jawa Timur – INDONESIA
+                  <br />
+                  66186
                 </p>
-                {config.sealPlacement !== 'back' && (
-                  <p className="text-[#FAF5EB] font-medium leading-[1.1] mt-[0.9cqi]" style={{ fontSize: '2.4cqi' }}>
-                    PIRT
-                  </p>
-                )}
-                <div className="mt-[1.5cqi] w-full h-[3.1cqi] bg-white rounded-[1px]" />
+              </div>
+              <div className="mt-[2.8cqi]">
+                <EcoRecyclingIcons className="h-[5.4cqi] w-auto" />
               </div>
             </div>
 
-            <div className="flex-1 min-w-0">
-              <p className="text-[#FAF5EB] font-medium leading-[1.1]" style={{ fontSize: '2.4cqi' }}>
+            <div className="w-[38%] shrink-0">
+              <p className="text-[#FAF5EB] font-medium leading-[1.1]" style={{ fontSize: '2.5cqi' }}>
                 Kode Produksi
               </p>
-              <div className="mt-[0.9cqi] w-full h-[2.9cqi] bg-white rounded-[1px]" title={batchCode} />
-              <p className="text-[#FAF5EB] font-medium leading-[1.1] mt-[2cqi]" style={{ fontSize: '2.3cqi' }}>
+              <div className="mt-[0.8cqi] w-full h-[3.2cqi] bg-white rounded-[3px]" title={batchCode} />
+              <p className="text-[#FAF5EB] font-medium leading-[1.1] mt-[1.5cqi]" style={{ fontSize: '2.35cqi' }}>
                 Baik Digunakan Sebelum
               </p>
-              <div className="mt-[0.9cqi] w-full h-[2.9cqi] bg-white rounded-[1px]" title={expiryLabel} />
+              <div className="mt-[0.8cqi] w-full h-[3.2cqi] bg-white rounded-[3px]" title={expiryLabel} />
+              <p className="text-[#FAF5EB] font-medium leading-[1.1] mt-[1.5cqi]" style={{ fontSize: '2.45cqi' }}>
+                PIRT
+              </p>
+              <div className="mt-[0.8cqi] w-full h-[3.2cqi] bg-white rounded-[3px]" />
             </div>
           </div>
         </div>

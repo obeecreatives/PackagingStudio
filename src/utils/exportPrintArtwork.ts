@@ -12,6 +12,7 @@ import { drawArunikaKawiWordmarkCanvas } from './arunikaWordmarkPaths';
 import { drawBotanicalCornerCanvas } from './botanicalPaths';
 import { drawRichCenteredParagraph } from './canvasRichText';
 import { downloadCanvas } from './exportSingleElement';
+import { drawEcoRecyclingRowCanvas } from './ecoIconsCanvas';
 import { drawKthGreenSealCanvas } from './kthSealCanvas';
 
 export function loadImage(src: string): Promise<HTMLImageElement> {
@@ -240,10 +241,8 @@ export async function renderPrintSheetCanvas(
     loadImage(GENERATED_ASSETS.beansCluster).catch(() => null),
     loadImage(GENERATED_ASSETS.kawiMist).catch(() => null),
     loadImage(GENERATED_ASSETS.coffeeCherries).catch(() => null),
-    config.artworkSource === 'uploaded-final' && !isBackgroundOnly
-      ? loadImage(
-          config.netWeight === '100 gram' ? ORIGINAL_UPLOADS.revisedFront100 : ORIGINAL_UPLOADS.revisedFront250
-        ).catch(() => null)
+    config.artworkSource === 'uploaded-final' && !isBackgroundOnly && config.netWeight === '100 gram'
+      ? loadImage(ORIGINAL_UPLOADS.revisedFront100).catch(() => null)
       : Promise.resolve(null),
     config.artworkSource === 'uploaded-final' && !isBackgroundOnly
       ? loadImage(ORIGINAL_UPLOADS.revisedRear).catch(() => null)
@@ -401,6 +400,7 @@ export async function renderPrintSheetCanvas(
       config.artworkSource === 'uploaded-final' &&
       !isBackgroundOnly &&
       !tall &&
+      config.netWeight === '100 gram' &&
       config.beanVariant === 'robusta-100' &&
       config.roastLevel === 'traditional' &&
       config.sealPlacement === 'back' &&
@@ -418,7 +418,7 @@ export async function renderPrintSheetCanvas(
         ctx.strokeStyle = '#38BDF8';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.arc(px + pw / 2, py + ph * 0.27, pw * 0.052, 0, Math.PI * 2);
+        ctx.arc(px + pw / 2, py + ph * 0.274, pw * 0.045, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
       }
@@ -466,6 +466,19 @@ export async function renderPrintSheetCanvas(
         flipX: true,
         flipY: true,
         opacity: 0.86,
+      });
+    } else if (!tall) {
+      const bw = pw * 0.21;
+      const bh = bw * (230 / 180);
+      drawBotanicalCornerCanvas(ctx, px - pw * 0.004, py - ph * 0.004, bw, bh, {
+        flipX: false,
+        flipY: false,
+        opacity: 0.9,
+      });
+      drawBotanicalCornerCanvas(ctx, px + pw - bw + pw * 0.004, py - ph * 0.004, bw, bh, {
+        flipX: true,
+        flipY: false,
+        opacity: 0.9,
       });
     }
     if (isBackgroundOnly) return;
@@ -701,7 +714,7 @@ export async function renderPrintSheetCanvas(
 
     const cx = px + pw / 2;
 
-    const cw = pw * 0.31;
+    const cw = pw * 0.29;
     const ch = cw * 0.58;
     const cy = py + ph * 0.14;
     ctx.save();
@@ -714,20 +727,20 @@ export async function renderPrintSheetCanvas(
     ctx.stroke();
     ctx.textAlign = 'center';
     ctx.fillStyle = '#F4E6C8';
-    ctx.font = `600 ${Math.round(pw * 0.02)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.font = `600 ${Math.round(pw * 0.019)}px "Plus Jakarta Sans", sans-serif`;
     ctx.fillText(roast.crestTop, cx, cy - ch * 0.06);
     ctx.fillStyle = '#D8B474';
-    ctx.font = `700 ${Math.round(pw * 0.037)}px "Cormorant Garamond", Georgia, serif`;
+    ctx.font = `700 ${Math.round(pw * 0.035)}px "Cormorant Garamond", Georgia, serif`;
     ctx.fillText(roast.crestBottom, cx, cy + ch * 0.28);
     ctx.restore();
 
-    const headY = cy + ch * 0.5 + pw * 0.085;
+    const headY = cy + ch * 0.5 + pw * 0.08;
     ctx.textAlign = 'center';
     ctx.fillStyle = '#D8B474';
-    ctx.font = `700 ${Math.round(pw * 0.058)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.font = `700 ${Math.round(pw * 0.056)}px "Plus Jakarta Sans", sans-serif`;
     ctx.fillText('Arunika Kawi Coffee', cx, headY);
 
-    const bodySize = Math.round(pw * 0.032);
+    const bodySize = Math.round(pw * 0.034);
     const normalFont = `400 ${bodySize}px "Plus Jakarta Sans", sans-serif`;
     const italicFont = `italic 400 ${bodySize}px "Plus Jakarta Sans", sans-serif`;
     const goldBoldFont = `600 ${bodySize}px "Plus Jakarta Sans", sans-serif`;
@@ -746,66 +759,65 @@ export async function renderPrintSheetCanvas(
         { text: ` ${roast.storyRoast}`, color: '#F4ECE0', font: normalFont },
       ],
       cx,
-      headY + pw * 0.075,
-      pw * 0.84,
+      headY + pw * 0.072,
+      pw * 0.85,
       bodySize * 1.34
     );
 
-    const tagSize = Math.round(pw * 0.034);
-    const afterTagY = drawRichCenteredParagraph(
-      ctx,
-      [
-        { text: 'Arunika Kawi Coffee ', color: '#D8B474', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
-        { text: 'harum dan nikmat', color: '#FAF5EB', font: `600 ${tagSize}px "Plus Jakarta Sans", sans-serif` },
-      ],
-      cx,
-      afterStoryY + pw * 0.035,
-      pw * 0.86,
-      tagSize * 1.25
-    );
-
-    const compY = Math.min(py + ph * 0.69, afterTagY + pw * 0.085);
+    const compY = afterStoryY + pw * 0.065;
     ctx.fillStyle = '#FAF5EB';
     ctx.textAlign = 'center';
-    ctx.font = `600 ${Math.round(pw * 0.03)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.font = `700 ${Math.round(pw * 0.032)}px "Plus Jakarta Sans", sans-serif`;
     ctx.fillText(
       `KOMPOSISI ${config.beanVariant === 'robusta-100' ? '100 % BIJI KOPI ROBUSTA' : variant.frontLabel.toUpperCase()}`,
       cx,
       compY
     );
 
+    const footTop = py + ph * 0.675;
     if (config.sealPlacement === 'back') {
-      drawKthGreenSealCanvas(ctx, px + pw * 0.135, py + ph * 0.775, pw * 0.065);
-      ctx.fillStyle = '#FAF5EB';
-      ctx.textAlign = 'center';
-      ctx.font = `600 ${Math.round(pw * 0.022)}px "Plus Jakarta Sans", sans-serif`;
-      ctx.fillText('PIRT', px + pw * 0.135, py + ph * 0.848);
+      const sealMidY = (compY + footTop) * 0.5;
+      drawKthGreenSealCanvas(ctx, cx, sealMidY, pw * 0.07);
     }
 
-    const prodX = config.sealPlacement === 'back' ? px + pw * 0.225 : px + pw * 0.08;
+    const prodX = px + pw * 0.068;
     ctx.textAlign = 'left';
     ctx.fillStyle = '#D8B474';
-    ctx.font = `700 ${Math.round(pw * 0.028)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('Diproduksi Oleh', prodX, py + ph * 0.745);
-    ctx.fillStyle = '#FAF5EB';
-    ctx.font = `500 ${Math.round(pw * 0.023)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('KUPS Himatarian Blitar', prodX, py + ph * 0.776);
-    ctx.fillText('Jawa Timur – INDONESIA', prodX, py + ph * 0.804);
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(prodX, py + ph * 0.822, pw * 0.30, ph * 0.032);
-
-    const boxX = px + pw * 0.61;
-    const boxW = pw * 0.31;
-    ctx.fillStyle = '#FAF5EB';
-    ctx.font = `500 ${Math.round(pw * 0.022)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.fillText('Kode Produksi', boxX, py + ph * 0.74);
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(boxX, py + ph * 0.752, boxW, ph * 0.032);
+    ctx.font = `700 ${Math.round(pw * 0.03)}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText('Diproduksi Oleh', prodX, footTop + pw * 0.028);
 
     ctx.fillStyle = '#FAF5EB';
-    ctx.fillText('Baik Digunakan Sebelum', boxX, py + ph * 0.808);
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(boxX, py + ph * 0.822, boxW, ph * 0.032);
+    const addrSize = Math.round(pw * 0.025);
+    const addrStep = addrSize * 1.24;
+    ctx.font = `500 ${addrSize}px "Plus Jakarta Sans", sans-serif`;
+    ctx.fillText('KUPS Himatarian Blitar', prodX, footTop + pw * 0.062);
+    ctx.fillText('Jawa Timur – INDONESIA', prodX, footTop + pw * 0.062 + addrStep);
+    ctx.fillText('66186', prodX, footTop + pw * 0.062 + addrStep * 2);
+
+    drawEcoRecyclingRowCanvas(
+      ctx,
+      prodX,
+      footTop + pw * 0.062 + addrStep * 2 + pw * 0.03,
+      pw * 0.052
+    );
+
+    const boxW = pw * 0.375;
+    const boxX = px + pw * 0.932 - boxW;
+    const boxH = pw * 0.032;
+    const lblSize = Math.round(pw * 0.024);
+    const rowStep = pw * 0.074;
+
+    ['Kode Produksi', 'Baik Digunakan Sebelum', 'PIRT'].forEach((label, idx) => {
+      const ly = footTop + pw * 0.024 + idx * rowStep;
+      ctx.fillStyle = '#FAF5EB';
+      ctx.font = `500 ${lblSize}px "Plus Jakarta Sans", sans-serif`;
+      ctx.fillText(label, boxX, ly);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.roundRect(boxX, ly + pw * 0.01, boxW, boxH, boxH * 0.25);
+      ctx.fill();
+    });
 
     const bandCenterY = py + ph * 0.944;
     ctx.fillStyle = isCopper ? '#FAF5EB' : '#140B07';
