@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   BEAN_VARIANTS,
   GENERATED_ASSETS,
@@ -14,6 +14,7 @@ import {
   STUDIO_DOYPACK_LAYOUT,
 } from '../data/mockupSceneLayouts';
 import { computeQuadHomography } from '../utils/perspectiveHomography';
+import { getCompositedMockupUrl } from '../utils/exportMockupScene';
 import {
   ArunikaKawiWordmark,
   ArunikaSunBeanCrest,
@@ -501,6 +502,37 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
 
   const stageRef = useRef<HTMLDivElement | null>(null);
   const stageSize = useStageSize(stageRef, `${scene}-${isDoypack ? 'doy' : 'gusset'}`);
+  const [compositedUrl, setCompositedUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const isHero = size === 'hero';
+    const w = isStudio ? (isHero ? 1080 : 760) : isHero ? 1080 : 720;
+    const h = isStudio ? (isHero ? 1080 : 760) : isHero ? 1440 : 960;
+
+    setCompositedUrl(null);
+    getCompositedMockupUrl(config, scene, w, h, backgroundOnly).then((url) => {
+      if (!cancelled && url) {
+        setCompositedUrl(url);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    config.pouchShape,
+    config.netWeight,
+    config.beanVariant,
+    config.roastLevel,
+    config.naturalMood,
+    config.sealPlacement,
+    config.artworkSource,
+    scene,
+    size,
+    isStudio,
+    backgroundOnly,
+  ]);
 
   if (isStudio) {
     const showFront = scene === 'studio-front';
@@ -529,7 +561,7 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
               alt={`${shapeMeta.label} ${showFront ? 'Depan' : 'Belakang'}`}
               decoding="async"
               referrerPolicy="no-referrer"
-              className={`w-full h-full object-contain ${
+              className={`w-full h-full object-contain pointer-events-none ${
                 config.naturalMood === 'espresso-matte'
                   ? 'brightness-[0.94] saturate-[0.82]'
                   : config.naturalMood === 'cherries-beans'
@@ -544,6 +576,13 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
                 <RearTextOverlay config={config} rect={overlayRect} stageSize={stageSize} variantStyle="doypack" />
               ))}
           </div>
+          {compositedUrl && (
+            <img
+              src={compositedUrl}
+              alt={`Arunika Kawi ${shapeMeta.code} ${showFront ? 'Depan' : 'Belakang'} (${config.netWeight})`}
+              className="absolute inset-0 z-30 w-full h-full object-contain"
+            />
+          )}
         </div>
       );
     }
@@ -566,6 +605,13 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
           isCompact={isCompact}
           backgroundOnly={backgroundOnly}
         />
+        {compositedUrl && (
+          <img
+            src={compositedUrl}
+            alt={`Arunika Kawi ${shapeMeta.code} ${showFront ? 'Depan' : 'Belakang'} (${config.netWeight})`}
+            className="absolute inset-0 z-30 w-full h-full object-contain"
+          />
+        )}
       </div>
     );
   }
@@ -605,7 +651,7 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
           loading={size === 'card' ? 'lazy' : 'eager'}
           decoding="async"
           referrerPolicy="no-referrer"
-          className={`w-full h-full object-cover object-center transition-all duration-300 ${
+          className={`w-full h-full object-cover object-center pointer-events-none transition-all duration-300 ${
             config.naturalMood === 'espresso-matte'
               ? 'brightness-[0.82] contrast-[1.08] saturate-[0.76]'
               : config.naturalMood === 'cherries-beans'
@@ -627,7 +673,7 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
               alt=""
               decoding="async"
               referrerPolicy="no-referrer"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover pointer-events-none"
             />
           </div>
         )}
@@ -637,6 +683,14 @@ export const LiveMockupScene = React.memo(function LiveMockupScene({
             <FrontTextOverlay config={config} rect={layout.front} stageSize={stageSize} variantStyle={layout.variantStyle} />
             <RearTextOverlay config={config} rect={layout.rear} stageSize={stageSize} variantStyle={layout.variantStyle} />
           </>
+        )}
+
+        {compositedUrl && (
+          <img
+            src={compositedUrl}
+            alt={`Mockup Arunika Kawi ${shapeMeta.code} ${shapeMeta.shortLabel} (${config.netWeight})`}
+            className="absolute inset-0 z-30 w-full h-full object-cover"
+          />
         )}
       </div>
     </div>

@@ -97,7 +97,7 @@ export function ExpandPreviewModal({ target, onClose }: ExpandPreviewModalProps)
         } else if (mockupTab === 'panel-back') {
           await renderAndDownloadPrintSheet(target.config, target.backgroundOnly ? 'bg-back-only' : 'back-only');
         } else {
-          await renderAndDownloadMockup(target.config, mockupTab);
+          await renderAndDownloadMockup(target.config, mockupTab, undefined, 'image/png', Boolean(target.backgroundOnly));
         }
       } else if (target.kind === 'panel') {
         const scope =

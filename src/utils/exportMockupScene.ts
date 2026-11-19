@@ -529,7 +529,8 @@ export async function renderMockupSceneCanvas(
   config: PackagingConfig,
   scene: MockupSceneMode = 'natural-kawi',
   width = 1080,
-  height = 1440
+  height = 1440,
+  backgroundOnly = false
 ): Promise<HTMLCanvasElement | null> {
   const isDoypack = config.pouchShape === 'doypack-valve';
   const tall = isTallGusset(config.pouchShape);
@@ -560,20 +561,28 @@ export async function renderMockupSceneCanvas(
         ctx.drawImage(studioImg, ox, oy, boxSide, boxSide);
       }
 
-      ctx.save();
-      ctx.translate(ox, oy);
-      if (showFront) {
-        drawFrontOverlayCanvas(ctx, config, boxSide, boxSide, overlayRect, 'doypack');
-      } else {
-        drawRearOverlayCanvas(ctx, config, boxSide, boxSide, overlayRect, 'doypack');
+      if (!backgroundOnly) {
+        ctx.save();
+        ctx.translate(ox, oy);
+        if (showFront) {
+          drawFrontOverlayCanvas(ctx, config, boxSide, boxSide, overlayRect, 'doypack');
+        } else {
+          drawRearOverlayCanvas(ctx, config, boxSide, boxSide, overlayRect, 'doypack');
+        }
+        ctx.restore();
       }
-      ctx.restore();
       return canvas;
     }
 
     // Studio Gusset Bag (Box Pouch or Tall Gusset) with Pinched-Top Side Gusset
     const scale = 5;
-    const sheetScope = showFront ? 'front-only' : 'back-only';
+    const sheetScope = backgroundOnly
+      ? showFront
+        ? 'bg-front-only'
+        : 'bg-back-only'
+      : showFront
+        ? 'front-only'
+        : 'back-only';
     const sheet = await renderPrintSheetCanvas(config, sheetScope, scale);
 
     const bg = ctx.createLinearGradient(0, 0, 0, height);
@@ -682,33 +691,120 @@ export async function renderMockupSceneCanvas(
   ctx.fillRect(0, 0, width, height);
 
   if (baseImg) {
+    ctx.save();
+    if (config.naturalMood === 'espresso-matte') {
+      ctx.filter = 'brightness(0.84) contrast(1.06) saturate(0.78)';
+    } else if (config.naturalMood === 'cherries-beans') {
+      ctx.filter = 'brightness(0.95) contrast(1.04) sepia(0.10)';
+    }
     drawCover(ctx, baseImg, 0, 0, width, height);
+    ctx.restore();
   }
 
-  drawFrontOverlayCanvas(ctx, config, width, height, layout.front, layout.variantStyle, beanRefImg);
-  drawRearOverlayCanvas(ctx, config, width, height, layout.rear, layout.variantStyle);
+  if (!backgroundOnly) {
+    drawFrontOverlayCanvas(ctx, config, width, height, layout.front, layout.variantStyle, beanRefImg);
+    drawRearOverlayCanvas(ctx, config, width, height, layout.rear, layout.variantStyle);
+  }
 
   return canvas;
+}
+
+const compositedUrlCache = new Map<string, string>();
+const pendingCompositedPromises = new Map<string, Promise<string | null>>();
+const MAX_CACHE_ENTRIES = 60;
+
+export async function getCompositedMockupUrl(
+  config: PackagingConfig,
+  scene: MockupSceneMode,
+  width: number,
+  height: number,
+  backgroundOnly = false
+): Promise<string | null> {
+  const key = [
+    config.pouchShape,
+    config.netWeight,
+    config.beanVariant,
+    config.roastLevel,
+    config.naturalMood,
+    config.sealPlacement,
+    config.artworkSource,
+    scene,
+    width,
+    height,
+    backgroundOnly ? 'bg' : 'full',
+  ].join('|');
+
+  const cached = compositedUrlCache.get(key);
+  if (cached) return cached;
+
+  const inflight = pendingCompositedPromises.get(key);
+  if (inflight) return inflight;
+
+  const promise = (async () => {
+    try {
+      if (typeof document !== 'undefined' && 'fonts' in document) {
+        await document.fonts.ready;
+      }
+      const canvas = await renderMockupSceneCanvas(config, scene, width, height, backgroundOnly);
+      if (!canvas) return null;
+
+      const blobUrl = await new Promise<string | null>((resolve) => {
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              resolve(null);
+              return;
+            }
+            resolve(URL.createObjectURL(blob));
+          },
+          'image/png',
+          0.92
+        );
+      });
+      if (!blobUrl) return null;
+
+      if (compositedUrlCache.size >= MAX_CACHE_ENTRIES) {
+        const oldestKey = compositedUrlCache.keys().next().value;
+        if (oldestKey) {
+          const oldestUrl = compositedUrlCache.get(oldestKey);
+          if (oldestUrl) URL.revokeObjectURL(oldestUrl);
+          compositedUrlCache.delete(oldestKey);
+        }
+      }
+      compositedUrlCache.set(key, blobUrl);
+      return blobUrl;
+    } catch {
+      return null;
+    } finally {
+      pendingCompositedPromises.delete(key);
+    }
+  })();
+
+  pendingCompositedPromises.set(key, promise);
+  return promise;
 }
 
 export async function renderAndDownloadMockup(
   config: PackagingConfig,
   scene: MockupSceneMode = 'natural-kawi',
   customFilename?: string,
-  mime: 'image/png' | 'image/jpeg' = 'image/png'
+  mime: 'image/png' | 'image/jpeg' = 'image/png',
+  backgroundOnly = false
 ): Promise<void> {
   const isSquareStudio = scene !== 'natural-kawi';
   const canvas = await renderMockupSceneCanvas(
     config,
     scene,
     isSquareStudio ? 1200 : 1080,
-    isSquareStudio ? 1200 : 1440
+    isSquareStudio ? 1200 : 1440,
+    backgroundOnly
   );
   if (!canvas) return;
   const ext = mime === 'image/jpeg' ? 'jpg' : 'png';
   const sceneSlug = scene === 'natural-kawi' ? 'Natural' : scene === 'studio-front' ? 'StudioDepan' : 'StudioBelakang';
+  const bgTag = backgroundOnly ? '-Background' : '';
   const filename =
     customFilename ||
-    `PackagingStudio-${config.pouchShape}-Mockup-${sceneSlug}-${config.netWeight.replace(/\s+/g, '')}-${getWibDateKey()}.${ext}`;
+    `PackagingStudio-${config.pouchShape}-Mockup-${sceneSlug}${bgTag}-${config.netWeight.replace(/\s+/g, '')}-${getWibDateKey()}.${ext}`;
   await downloadCanvas(canvas, filename, mime, 0.94);
 }

@@ -499,7 +499,7 @@ export function DesignElementsKit({ config, onExport, isExporting, onExpand }: D
               } overflow-hidden cursor-zoom-in text-left`}
             >
               <LiveMockupScene config={config} scene={activeKitScene} size="card" />
-              <span className="absolute top-3 right-3 z-30 w-9 h-9 rounded-full bg-[#120C09]/75 text-[#FAF5EB] flex items-center justify-center opacity-85 group-hover:opacity-100 group-hover:bg-[#8A6429] transition-colors shadow">
+              <span className="absolute top-3 right-3 z-40 w-9 h-9 rounded-full bg-[#120C09]/75 text-[#FAF5EB] flex items-center justify-center opacity-85 group-hover:opacity-100 group-hover:bg-[#8A6429] transition-colors shadow">
                 <Maximize2 className="w-4 h-4" />
               </span>
             </button>
@@ -633,7 +633,7 @@ export function DesignElementsKit({ config, onExport, isExporting, onExpand }: D
                         className="w-full h-full object-cover"
                       />
                     )}
-                    <span className="absolute top-2.5 right-2.5 z-30 w-8 h-8 rounded-full bg-[#120C09]/75 text-[#FAF5EB] flex items-center justify-center opacity-85 group-hover:opacity-100 group-hover:bg-[#8A6429] transition-colors shadow">
+                    <span className="absolute top-2.5 right-2.5 z-40 w-8 h-8 rounded-full bg-[#120C09]/75 text-[#FAF5EB] flex items-center justify-center opacity-85 group-hover:opacity-100 group-hover:bg-[#8A6429] transition-colors shadow">
                       <Maximize2 className="w-3.5 h-3.5" />
                     </span>
                   </button>

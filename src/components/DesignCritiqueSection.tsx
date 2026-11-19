@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Maximize2 } from 'lucide-react';
+import { Download, Maximize2 } from 'lucide-react';
 import {
   BEAN_VARIANTS,
   getDynamicShapeDescription,
@@ -11,6 +11,8 @@ import {
 } from '../types/packaging';
 import { LiveMockupScene } from './LiveMockupScene';
 import type { ExpandPreviewTarget } from './ExpandPreviewModal';
+import { renderAndDownloadMockup } from '../utils/exportMockupScene';
+import { downloadImageAsset } from '../utils/exportSingleElement';
 
 type ReferenceTab = 'revised-final' | 'tall-3style' | 'doypack-blank' | 'draft-1' | 'draft-2' | 'ref-3';
 
@@ -22,6 +24,7 @@ export function DesignCritiqueSection({
   onExpand: (target: ExpandPreviewTarget) => void;
 }) {
   const [selectedRef, setSelectedRef] = useState<ReferenceTab>('revised-final');
+  const [downloadingSide, setDownloadingSide] = useState<'before' | 'after' | null>(null);
   const variant = BEAN_VARIANTS[config.beanVariant];
   const roast = ROAST_LEVELS[config.roastLevel];
   const activeShapeMeta = POUCH_SHAPES[config.pouchShape];
@@ -176,8 +179,9 @@ export function DesignCritiqueSection({
 
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
               <div className="flex flex-col">
-                <button
-                  type="button"
+                <div
+                  role="button"
+                  tabIndex={0}
                   onClick={() =>
                     onExpand({
                       kind: 'image',
@@ -188,6 +192,20 @@ export function DesignCritiqueSection({
                       bgClass: 'bg-white',
                     })
                   }
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onExpand({
+                        kind: 'image',
+                        title: activeSource.title,
+                        subtitle: 'Referensi Sebelum · Resolusi Asli',
+                        src: activeSource.src,
+                        filename: `arunika-referensi-${selectedRef}.png`,
+                        bgClass: 'bg-white',
+                      });
+                    }
+                  }}
+                  aria-label={`Perbesar ${activeSource.title}`}
                   className="group relative aspect-[3/4] w-full rounded-lg overflow-hidden bg-white border border-[#1A1412]/12 cursor-zoom-in text-left"
                 >
                   <img
@@ -200,10 +218,47 @@ export function DesignCritiqueSection({
                       selectedRef === 'doypack-blank' ? 'object-contain p-2' : 'object-cover'
                     }`}
                   />
-                  <span className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full bg-[#120C09]/75 text-[#FAF5EB] flex items-center justify-center opacity-85 group-hover:opacity-100 group-hover:bg-[#8A6429] transition-colors shadow">
-                    <Maximize2 className="w-4 h-4" />
-                  </span>
-                </button>
+                  <div className="absolute top-2.5 right-2.5 z-40 flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      disabled={downloadingSide === 'before'}
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        setDownloadingSide('before');
+                        try {
+                          await downloadImageAsset(activeSource.src, `arunika-referensi-${selectedRef}.png`);
+                        } finally {
+                          setDownloadingSide(null);
+                        }
+                      }}
+                      aria-label={`Unduh ${activeSource.title}`}
+                      title="Unduh Gambar"
+                      className="h-9 px-2.5 rounded-full bg-[#120C09]/85 hover:bg-[#8A6429] disabled:opacity-60 text-[#FAF5EB] text-[11px] font-semibold flex items-center gap-1 border border-[#D8B474]/35 shadow transition-colors cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5 text-[#D8B474]" />
+                      <span>{downloadingSide === 'before' ? '...' : 'Unduh'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onExpand({
+                          kind: 'image',
+                          title: activeSource.title,
+                          subtitle: 'Referensi Sebelum · Resolusi Asli',
+                          src: activeSource.src,
+                          filename: `arunika-referensi-${selectedRef}.png`,
+                          bgClass: 'bg-white',
+                        });
+                      }}
+                      aria-label={`Perbesar ${activeSource.title}`}
+                      title="Perbesar"
+                      className="w-9 h-9 rounded-full bg-[#120C09]/85 hover:bg-[#8A6429] text-[#FAF5EB] flex items-center justify-center border border-[#D8B474]/35 shadow transition-colors cursor-pointer"
+                    >
+                      <Maximize2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
                 <div className="mt-3">
                   <p className="text-xs font-medium text-[#8A6429]">Sebelum · {activeSource.title}</p>
                   <p className="mt-1 text-xs text-[#574D47] leading-relaxed">{activeSource.caption}</p>
@@ -211,8 +266,9 @@ export function DesignCritiqueSection({
               </div>
 
               <div className="flex flex-col">
-                <button
-                  type="button"
+                <div
+                  role="button"
+                  tabIndex={0}
                   onClick={() =>
                     onExpand({
                       kind: 'mockup',
@@ -222,13 +278,62 @@ export function DesignCritiqueSection({
                       initialScene: 'natural-kawi',
                     })
                   }
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onExpand({
+                        kind: 'mockup',
+                        title: activeSource.afterTitle,
+                        subtitle: `${targetMeta.label} · ${config.netWeight}`,
+                        config: targetConfig,
+                        initialScene: 'natural-kawi',
+                      });
+                    }
+                  }}
+                  aria-label={`Perbesar ${activeSource.afterTitle}`}
                   className="group relative aspect-[3/4] w-full rounded-lg overflow-hidden bg-[#18100C] border border-[#A67B38]/40 cursor-zoom-in text-left"
                 >
                   <LiveMockupScene config={targetConfig} scene="natural-kawi" size="critique" />
-                  <span className="absolute top-2.5 right-2.5 z-30 w-9 h-9 rounded-full bg-[#120C09]/75 text-[#FAF5EB] flex items-center justify-center opacity-85 group-hover:opacity-100 group-hover:bg-[#8A6429] transition-colors shadow">
-                    <Maximize2 className="w-4 h-4" />
-                  </span>
-                </button>
+                  <div className="absolute top-2.5 right-2.5 z-40 flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      disabled={downloadingSide === 'after'}
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        setDownloadingSide('after');
+                        try {
+                          await renderAndDownloadMockup(targetConfig, 'natural-kawi', undefined, 'image/png');
+                        } finally {
+                          setDownloadingSide(null);
+                        }
+                      }}
+                      aria-label={`Unduh ${activeSource.afterTitle} PNG`}
+                      title="Unduh Mockup PNG"
+                      className="h-9 px-2.5 rounded-full bg-[#120C09]/85 hover:bg-[#8A6429] disabled:opacity-60 text-[#FAF5EB] text-[11px] font-semibold flex items-center gap-1 border border-[#D8B474]/40 shadow transition-colors cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5 text-[#D8B474]" />
+                      <span>{downloadingSide === 'after' ? '...' : 'Unduh'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onExpand({
+                          kind: 'mockup',
+                          title: activeSource.afterTitle,
+                          subtitle: `${targetMeta.label} · ${config.netWeight}`,
+                          config: targetConfig,
+                          initialScene: 'natural-kawi',
+                        });
+                      }}
+                      aria-label={`Perbesar ${activeSource.afterTitle}`}
+                      title="Perbesar"
+                      className="w-9 h-9 rounded-full bg-[#120C09]/85 hover:bg-[#8A6429] text-[#FAF5EB] flex items-center justify-center border border-[#D8B474]/35 shadow transition-colors cursor-pointer"
+                    >
+                      <Maximize2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
                 <div className="mt-3">
                   <p className="text-xs font-medium text-[#1A1412]">{activeSource.afterTitle}</p>
                   <p className="mt-1 text-xs text-[#574D47] leading-relaxed">{activeSource.afterCaption}</p>

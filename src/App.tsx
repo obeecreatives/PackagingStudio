@@ -17,7 +17,7 @@ import {
   SealPlacement,
   WeightOption,
 } from './types/packaging';
-import { Maximize2 } from 'lucide-react';
+import { Download, Maximize2 } from 'lucide-react';
 import { TopBar } from './components/TopBar';
 import {
   BackPanel,
@@ -36,6 +36,7 @@ import { PWAInstallButton } from './components/PWAInstallButton';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { ExportScope, renderAndDownloadPrintSheet } from './utils/exportPrintArtwork';
+import { renderAndDownloadMockup } from './utils/exportMockupScene';
 import { exportSelectedDesignPdf } from './utils/exportPdfDossier';
 
 const ALL_ALTERNATIVE_IDS: PouchShapeId[] = [
@@ -68,6 +69,7 @@ export default function App() {
   const [expandTarget, setExpandTarget] = useState<ExpandPreviewTarget | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const [downloadingMockupKey, setDownloadingMockupKey] = useState<string | null>(null);
   const isOnline = useOnlineStatus();
 
   const handleExport = async (scope: ExportScope = 'full-dieline') => {
@@ -85,6 +87,19 @@ export default function App() {
       await exportSelectedDesignPdf(config);
     } finally {
       setIsExportingPdf(false);
+    }
+  };
+
+  const handleDownloadMockup = async (
+    targetConfig: PackagingConfig,
+    scene: MockupSceneMode,
+    key: string
+  ) => {
+    setDownloadingMockupKey(key);
+    try {
+      await renderAndDownloadMockup(targetConfig, scene, undefined, 'image/png', previewBgOnly);
+    } finally {
+      setDownloadingMockupKey((curr) => (curr === key ? null : curr));
     }
   };
 
@@ -296,6 +311,17 @@ export default function App() {
                       </div>
                       <button
                         type="button"
+                        disabled={downloadingMockupKey === 'hero-top'}
+                        onClick={() => handleDownloadMockup(config, heroScene, 'hero-top')}
+                        aria-label="Unduh gambar mockup aktif PNG"
+                        title="Unduh Mockup PNG"
+                        className="min-h-[40px] px-3 flex items-center justify-center gap-1.5 bg-[#1A1412] hover:bg-[#31221B] disabled:opacity-60 text-[#FAF5EB] rounded-lg text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+                      >
+                        <Download className="w-3.5 h-3.5 text-[#D8B474]" />
+                        <span>{downloadingMockupKey === 'hero-top' ? 'Memproses...' : 'Unduh'}</span>
+                      </button>
+                      <button
+                        type="button"
                         onClick={() =>
                           setExpandTarget({
                             kind: 'mockup',
@@ -352,10 +378,25 @@ export default function App() {
                       size="hero"
                       backgroundOnly={previewBgOnly}
                     />
-                    <span className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[#1A1412]/85 text-[#FAF5EB] text-[11px] font-medium border border-[#D8B474]/30">
-                      <Maximize2 className="w-3.5 h-3.5 text-[#D8B474]" />
-                      Klik untuk Perbesar
-                    </span>
+                    <div className="absolute bottom-3 right-3 z-40 flex items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={downloadingMockupKey === 'hero-overlay'}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownloadMockup(config, heroScene, 'hero-overlay');
+                        }}
+                        aria-label={`Unduh mockup ${activeShapeMeta.code} PNG`}
+                        className="min-h-[36px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#1A1412]/90 hover:bg-[#8A6429] disabled:opacity-60 text-[#FAF5EB] text-[11px] font-semibold border border-[#D8B474]/40 shadow-md transition-colors cursor-pointer"
+                      >
+                        <Download className="w-3.5 h-3.5 text-[#D8B474]" />
+                        <span>{downloadingMockupKey === 'hero-overlay' ? 'Memproses...' : 'Unduh PNG'}</span>
+                      </button>
+                      <span className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity inline-flex items-center gap-1.5 px-2.5 py-1.5 min-h-[36px] rounded-md bg-[#1A1412]/85 text-[#FAF5EB] text-[11px] font-medium border border-[#D8B474]/30">
+                        <Maximize2 className="w-3.5 h-3.5 text-[#D8B474]" />
+                        Perbesar
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -411,26 +452,42 @@ export default function App() {
                           size="card"
                           backgroundOnly={previewBgOnly}
                         />
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setConfig((prev) => ({ ...prev, pouchShape: shapeId }));
-                            setExpandTarget({
-                              kind: 'mockup',
-                              title: `${meta.code} · ${meta.label}`,
-                              subtitle: `${config.netWeight} · ${cardWeightSpecs.dimensions} · ${activeVariantMeta.frontLabel}`,
-                              config: cardConfig,
-                              initialScene: 'natural-kawi',
-                              backgroundOnly: previewBgOnly,
-                            });
-                          }}
-                          aria-label={`Perbesar ${meta.code} ${meta.shortLabel}`}
-                          title="Perbesar mockup"
-                          className="absolute top-2.5 right-2.5 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-md bg-[#1A1412]/80 hover:bg-[#1A1412] text-[#FAF5EB] border border-[#D8B474]/35 transition-colors cursor-pointer"
-                        >
-                          <Maximize2 className="w-4 h-4 text-[#D8B474]" />
-                        </button>
+                        <div className="absolute top-2.5 right-2.5 z-40 flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            disabled={downloadingMockupKey === `alt-${shapeId}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDownloadMockup(cardConfig, 'natural-kawi', `alt-${shapeId}`);
+                            }}
+                            aria-label={`Unduh mockup ${meta.code} ${meta.shortLabel} PNG`}
+                            title="Unduh Mockup PNG"
+                            className="min-h-[36px] px-2.5 flex items-center justify-center gap-1 rounded-md bg-[#1A1412]/85 hover:bg-[#8A6429] disabled:opacity-60 text-[#FAF5EB] text-[11px] font-semibold border border-[#D8B474]/40 transition-colors cursor-pointer"
+                          >
+                            <Download className="w-3.5 h-3.5 text-[#D8B474]" />
+                            <span>{downloadingMockupKey === `alt-${shapeId}` ? '...' : 'Unduh'}</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setConfig((prev) => ({ ...prev, pouchShape: shapeId }));
+                              setExpandTarget({
+                                kind: 'mockup',
+                                title: `${meta.code} · ${meta.label}`,
+                                subtitle: `${config.netWeight} · ${cardWeightSpecs.dimensions} · ${activeVariantMeta.frontLabel}`,
+                                config: cardConfig,
+                                initialScene: 'natural-kawi',
+                                backgroundOnly: previewBgOnly,
+                              });
+                            }}
+                            aria-label={`Perbesar ${meta.code} ${meta.shortLabel}`}
+                            title="Perbesar mockup"
+                            className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-md bg-[#1A1412]/85 hover:bg-[#1A1412] text-[#FAF5EB] border border-[#D8B474]/35 transition-colors cursor-pointer"
+                          >
+                            <Maximize2 className="w-4 h-4 text-[#D8B474]" />
+                          </button>
+                        </div>
                       </div>
                       <div className="p-3.5 flex-1 flex flex-col justify-between">
                         <div>
@@ -732,6 +789,23 @@ export default function App() {
                               </button>
                               <button
                                 type="button"
+                                disabled={downloadingMockupKey === `compare-${shapeId}`}
+                                onClick={() =>
+                                  handleDownloadMockup(
+                                    { ...config, pouchShape: shapeId },
+                                    compareMode === '3d-single' ? 'studio-front' : compareMode,
+                                    `compare-${shapeId}`
+                                  )
+                                }
+                                aria-label={`Unduh mockup ${meta.code} PNG`}
+                                title="Unduh Mockup PNG"
+                                className="min-w-[38px] min-h-[38px] px-2.5 flex items-center justify-center gap-1 rounded-md border border-[#1A1412]/15 bg-[#1A1412] hover:bg-[#8A6429] disabled:opacity-60 text-[#FAF5EB] text-[11px] font-semibold transition-colors cursor-pointer"
+                              >
+                                <Download className="w-3.5 h-3.5 text-[#D8B474]" />
+                                <span>{downloadingMockupKey === `compare-${shapeId}` ? '...' : 'Unduh'}</span>
+                              </button>
+                              <button
+                                type="button"
                                 onClick={() => {
                                   setConfig((prev) => ({ ...prev, pouchShape: shapeId }));
                                   if (compareMode === '3d-single') {
@@ -807,10 +881,29 @@ export default function App() {
                                 size="card"
                                 backgroundOnly={previewBgOnly}
                               />
-                              <span className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-2.5 right-2.5 inline-flex items-center gap-1 px-2 py-1 rounded bg-[#1A1412]/85 text-[#FAF5EB] text-[10px] font-medium">
-                                <Maximize2 className="w-3 h-3 text-[#D8B474]" />
-                                Perbesar
-                              </span>
+                              <div className="absolute bottom-2.5 right-2.5 z-40 flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  disabled={downloadingMockupKey === `compare-img-${shapeId}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDownloadMockup(
+                                      { ...config, pouchShape: shapeId },
+                                      compareMode,
+                                      `compare-img-${shapeId}`
+                                    );
+                                  }}
+                                  aria-label={`Unduh gambar ${meta.code} PNG`}
+                                  className="min-h-[32px] inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#1A1412]/90 hover:bg-[#8A6429] disabled:opacity-60 text-[#FAF5EB] text-[10.5px] font-semibold border border-[#D8B474]/40 shadow transition-colors cursor-pointer"
+                                >
+                                  <Download className="w-3 h-3 text-[#D8B474]" />
+                                  <span>{downloadingMockupKey === `compare-img-${shapeId}` ? '...' : 'Unduh'}</span>
+                                </button>
+                                <span className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity inline-flex items-center gap-1 px-2 py-1 min-h-[32px] rounded bg-[#1A1412]/85 text-[#FAF5EB] text-[10px] font-medium">
+                                  <Maximize2 className="w-3 h-3 text-[#D8B474]" />
+                                  Perbesar
+                                </span>
+                              </div>
                             </div>
                           )}
                         </div>
